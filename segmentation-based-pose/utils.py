@@ -1,13 +1,38 @@
-import os
-import time
 import torch
-import numpy as np
 from torch.autograd import Variable
 
+import os
+import time
+import numpy as np
+import scipy
 import cv2
+import glob
+import random
+import math
 
+def visual_img(img, folder='temp',name="out.png"):
+    # visualize an RGB image
+    scipy.misc.imsave(os.path.join(folder,name),img)
+
+def visual_kp_in_img(img, kp, size=4, folder='temp', name="kp_in_img_out.png"):
+    # visualize kp matrix on an RGB image
+    # kp shape: objXnum_kpX2
+    for obj_id, obj in enumerate(kp):
+        b, g, r = get_class_colors(obj_id)
+        for xy in obj:
+            temp_x = int(xy[0]*img.shape[1])
+            temp_y = int(xy[1]*img.shape[0])
+            for i in range(temp_x-size, temp_x+size):
+                if i<0 or i > img.shape[1] -1 :continue
+                for j in range(temp_y-size, temp_y+size):
+                    if j<0 or j> img.shape[0] -1 :continue
+                    img[j][i][0] = r
+                    img[j][i][1] = g
+                    img[j][i][2] = b
+    scipy.misc.imsave(os.path.join(folder, name), img)
 
 def get_class_colors(class_id):
+    # set colors for each class
     colordict = {'gray': [128, 128, 128], 'silver': [192, 192, 192], 'black': [0, 0, 0],
                  'maroon': [128, 0, 0], 'red': [255, 0, 0], 'purple': [128, 0, 128], 'fuchsia': [255, 0, 255],
                  'green': [0, 128, 0],
@@ -71,18 +96,22 @@ def get_class_colors(class_id):
     return b, g, r  # for OpenCV
 
 def vertices_reprojection(vertices, rt, k):
+    # project a vertex to pixel space
     p = np.matmul(k, np.matmul(rt[:3,0:3], vertices.T) + rt[:3,3].reshape(-1,1))
     p[0] = p[0] / (p[2] + 1e-5)
     p[1] = p[1] / (p[2] + 1e-5)
     return p[:2].T
 
 def convert2cpu(gpu_matrix):
-    return torch.FloatTensor(gpu_matrix.size()).copy_(gpu_matrix)
+    # tensor to cpu (float)
+    return torch.FloatTensor(gpu_matrix.shape).copy_(gpu_matrix)
 
 def convert2cpu_long(gpu_matrix):
-    return torch.LongTensor(gpu_matrix.size()).copy_(gpu_matrix)
+    # tensor tp cpu (long)
+    return torch.LongTensor(gpu_matrix.shape).copy_(gpu_matrix)
 
 def do_detect(model, rawimg, intrinsics, bestCnt, conf_thresh, use_gpu=False):
+    # perform inference on a trained model
     model.eval()
     t0 = time.time()
 
@@ -92,7 +121,7 @@ def do_detect(model, rawimg, intrinsics, bestCnt, conf_thresh, use_gpu=False):
     img = cv2.resize(rawimg, (model.width, model.height))
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-    img = torch.from_numpy(img.transpose(2, 0, 1)).float().div(255.0).unsqueeze(0)
+    img = torch.from_numpy(img.transpose(2, 0, 1)).float().div(255.0).unsqueeze(0) # B * 3 * W * H
 
     t1 = time.time()
     if use_gpu:
@@ -108,19 +137,19 @@ def do_detect(model, rawimg, intrinsics, bestCnt, conf_thresh, use_gpu=False):
 
     t4 = time.time()
 
-    if True:
-    # if False:
-        print('-----------------------------------')
-        print(' image to tensor : %f' % (t1 - t0))
-        if use_gpu:
-            print('  tensor to cuda : %f' % (t2 - t1))
-        print('         predict : %f' % (t3 - t2))
-        print('          fusion : %f' % (t4 - t3))
-        print('           total : %f' % (t4 - t0))
-        print('-----------------------------------')
+    print('-----------------------------------')
+    print(' image to tensor : %f' % (t1 - t0))
+    if use_gpu:
+        print('  tensor to cuda : %f' % (t2 - t1))
+    print('         predict : %f' % (t3 - t2))
+    print('          fusion : %f' % (t4 - t3))
+    print('           total : %f' % (t4 - t0))
+    print('-----------------------------------')
+
     return predPose
 
 def fusion(output, width, height, intrinsics, conf_thresh, batchIdx, bestCnt):
+    # perform points of interest and segmentation fusion using RANSAC-based PnP
     layerCnt = len(output)
     assert(layerCnt == 2)
 
@@ -139,7 +168,7 @@ def fusion(output, width, height, intrinsics, conf_thresh, batchIdx, bestCnt):
     mx = predx.mean(axis=2) # average x positions
     my = predy.mean(axis=2) # average y positions
     mdConf = det_confs.mean(axis=2) # average 2D confidences
-    for cidx in range(nC):
+    for cidx in range(nC): # loop for every class
         # skip background
         if cidx == 0:
             continue
@@ -165,15 +194,15 @@ def fusion(output, width, height, intrinsics, conf_thresh, batchIdx, bestCnt):
         xsi = xs[selected] * width
         ysi = ys[selected] * height
         dsi = ds[selected]
-        csi = cs[selected]
+        csi = cs[selected]  # confidence of selected points
 
-        if csi.mean() < conf_thresh: # valid classification propabilities
+        if csi.mean() < conf_thresh: # valid classification probability
             continue
 
         gridCnt = len(xsi)
         assert(gridCnt > 0)
 
-        # choose best N count
+        # choose best N count, here N = bestCnt (default = 10)
         p2d = None
         p3d = None
         candiBestCnt = min(gridCnt, bestCnt)
@@ -209,12 +238,14 @@ def fusion(output, width, height, intrinsics, conf_thresh, batchIdx, bestCnt):
     return outPred
 
 def read_data_cfg(datacfg):
+    # read data config file
+    # set gpu ids and number of cpu workers
     options = dict()
     options['gpus'] = '0,1,2,3'
     options['num_workers'] = '10'
     with open(datacfg, 'r') as fp:
         lines = fp.readlines()
-
+    # parse config lines
     for line in lines:
         line = line.strip()
         if len(line) > 0 and line[0] != '#' and '=' in line:
@@ -224,14 +255,8 @@ def read_data_cfg(datacfg):
             options[key] = value
     return options
 
-def get_img_list_from(folder_path):
-    file_list = []
-    for path in glob.glob(folder_path+"/*"):
-        if "jpg" in path or "png" in path:
-            file_list.append(path)
-    return file_list
-
 def save_predictions(imgBaseName, predPose, object_names, outpath):
+    # save predicted poses to output file
     for p in predPose:
         id, rt, conf, puv, pxyz, opoint, clsid, partid, cx, cy, layerId = p
         path = outpath + '/' + object_names[int(id)] + '/'
@@ -240,6 +265,7 @@ def save_predictions(imgBaseName, predPose, object_names, outpath):
         np.savetxt(path + imgBaseName + '.txt', rt)
 
 def visualize_predictions(predPose, image, vertex, intrinsics):
+    # visualize predicted poses on RGB image
     height, width, _ = image.shape
     confImg = np.copy(image)
     maskImg = np.zeros((height,width), np.uint8)
@@ -269,6 +295,7 @@ def visualize_predictions(predPose, image, vertex, intrinsics):
     return contourImg
 
 def transform_pred_pose(pred_dir, object_names, transformations):
+    # transform predicted poses to pixel space
     objNameList = [f for f in os.listdir(pred_dir) if os.path.isdir(pred_dir + '/' + f)]
     objNameList.sort()
     for objName in objNameList:
@@ -280,4 +307,121 @@ def transform_pred_pose(pred_dir, object_names, transformations):
             pred_rt = np.loadtxt(f)
             pred_rt = np.matmul(pred_rt, transformations[objId])
             np.savetxt(f, pred_rt)
-    return
+
+def get_bbox(label):
+    # get bounding boxex for a specific label
+    border_list = [-1, 40, 80, 120, 160, 200, 240, 280, 320, 360, 400, 440, 480, 520, 560, 600, 640, 680]
+    img_width = 480
+    img_length = 640
+    rows = np.any(label, axis=1)
+    cols = np.any(label, axis=0)
+    rmin, rmax = np.where(rows)[0][[0, -1]]
+    cmin, cmax = np.where(cols)[0][[0, -1]]
+    rmax += 1
+    cmax += 1
+    r_b = rmax - rmin
+    for tt in range(len(border_list)):
+        if r_b > border_list[tt] and r_b < border_list[tt + 1]:
+            r_b = border_list[tt + 1]
+            break
+    c_b = cmax - cmin
+    for tt in range(len(border_list)):
+        if c_b > border_list[tt] and c_b < border_list[tt + 1]:
+            c_b = border_list[tt + 1]
+            break
+    center = [int((rmin + rmax) / 2), int((cmin + cmax) / 2)]
+    rmin = center[0] - int(r_b / 2)
+    rmax = center[0] + int(r_b / 2)
+    cmin = center[1] - int(c_b / 2)
+    cmax = center[1] + int(c_b / 2)
+    if rmin < 0:
+        delt = -rmin
+        rmin = 0
+        rmax += delt
+    if cmin < 0:
+        delt = -cmin
+        cmin = 0
+        cmax += delt
+    if rmax > img_width:
+        delt = rmax - img_width
+        rmax = img_width
+        rmin -= delt
+    if cmax > img_length:
+        delt = cmax - img_length
+        cmax = img_length
+        cmin -= delt
+    return rmin, rmax, cmin, cmax
+
+def get_img_list_from(folder_path):
+    # get images list from a specific folder
+    file_list = []
+    for path in glob.glob(folder_path+"/*"):
+        if "jpg" in path or "png" in path:
+            file_list.append(path)
+    return file_list
+
+class meters:
+    """
+    save results and calculate average automatically
+    """
+    def __init__(self):
+        self.value = 0.0000
+        self.counter = 0
+        self._reset()
+
+    def update(self, tmp):
+        self.value = (self.counter * self.value + tmp) /(self.counter+1)
+        self.counter += 1
+
+    def _reset(self):
+        self.value = 0.0000
+        self.counter = 0
+
+def pnz(matrix):
+    # print all non-zero elements in a matrix
+    return matrix[np.where(matrix != 0)]
+
+class RandomErasing(object):
+    '''
+    Class that performs Random Erasing in Random Erasing Data Augmentation by Zhong et al.
+    -------------------------------------------------------------------------------------
+    probability: The probability that the operation will be performed.
+    sl: min erasing area
+    sh: max erasing area
+    r1: min aspect ratio
+    mean: erasing value
+    -------------------------------------------------------------------------------------
+    '''
+    def __init__(self, probability=0.6, sl=0.02, sh=0.08, r1=0.5, mean=(0.4914, 0.4822, 0.4465)):
+        self.probability = probability
+        self.mean = mean
+        self.sl = sl
+        self.sh = sh
+        self.r1 = r1
+
+    def __call__(self, img):
+        if random.uniform(0, 1) > self.probability:
+            return img
+
+        for attempt in range(100):
+            area = img.shape[0] * img.shape[1]
+
+            target_area = random.uniform(self.sl, self.sh) * area
+            aspect_ratio = random.uniform(self.r1, 1 / self.r1)
+
+            h = int(round(math.sqrt(target_area * aspect_ratio)))
+            w = int(round(math.sqrt(target_area / aspect_ratio)))
+
+            if w < img.shape[0] and h < img.shape[1]:
+                x1 = random.randint(0, img.shape[0] - h)
+                y1 = random.randint(0, img.shape[1] - w)
+                if img.shape[2] == 3:
+                    img[x1:x1 + h, y1:y1 + w, 0] = self.mean[0]
+                    img[x1:x1 + h, y1:y1 + w, 1] = self.mean[1]
+                    img[x1:x1 + h, y1:y1 + w, 2] = self.mean[2]
+                else:
+                    img[x1:x1 + h, y1:y1 + w, 0] = self.mean[0]
+                return img
+
+        return img
+
