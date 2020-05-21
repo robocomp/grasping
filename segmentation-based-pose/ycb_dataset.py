@@ -2,12 +2,19 @@ import torch
 import torchvision
 import torch.nn as nn
 import torch.utils.data
-from torch.utils.data import Dataset
 import torchvision.transforms as transforms
-from utils import *
-from tqdm import tqdm
+
+import os
 import random
+import pickle
+from tqdm import tqdm
+import cv2
+from PIL import Image
 import numpy as np
+import numpy.ma as ma
+from scipy.io import loadmat
+
+from utils import *
 
 class YCBDataset(Dataset):
     def __init__(self, root, imageset_path, syn_data_path=None, use_real_img = True, num_syn_images=200000 ,target_h=76, target_w=76, 
@@ -59,10 +66,10 @@ class YCBDataset(Dataset):
 
     def gen_train_list(self, imageset_path, out_pkl="data/real_train_path.pkl"):
         # read train/validation list
-        with open(opj(imageset_path, "trainval.txt"), 'r') as file:
+        with open(os.path.join(imageset_path, "trainval.txt"), 'r') as file:
             trainlines = file.readlines()
         # general absolute paths for the training samples
-        real_train_path = [opj(self.root,x.rstrip('\n')) for x in trainlines]
+        real_train_path = [os.path.join(self.root,x.rstrip('\n')) for x in trainlines]
         with open(out_pkl, 'wb') as f:
             pickle.dump(real_train_path, f)
         self.train_paths = real_train_path
@@ -80,6 +87,149 @@ class YCBDataset(Dataset):
         weight = [median_frequency/x for x in combined_frequency]
         # set CE weight to be used during training
         self.weight_cross_entropy =  torch.from_numpy(np.array(weight)).float()
+
+    def gen_balancing_weight(self, save_pkl="data/balancing_weight.pkl"):
+        # get pixel-wise balancing weight for cross entropy loss
+        pixels_per_img = (self.target_h * self.target_w)
+        real_frequency = [0 for x in range(self.num_classes)]
+
+        # get weights of real images
+        print("collect weight for real images")
+        for prefix in tqdm(self.train_paths):
+            label_img = cv2.imread(prefix + "-label.png")[: , : , 0]
+            label_img = cv2.resize(label_img, (self.target_h, self.target_w), interpolation=cv2.INTER_NEAREST)
+            labels_per_img = np.unique(label_img)
+            for img_id in labels_per_img:
+                if len(np.where(label_img==img_id)) <1:
+                    real_frequency[img_id] += 0
+                else:
+                    real_frequency[img_id] += len(np.where(label_img==img_id)[0]) / pixels_per_img
+        real_frequency = np.array(real_frequency)
+        real_frequency/=len(self.train_paths)
+
+        # get weights of synthetic images
+        print("collect weights for syn images")
+        syn_frequency = [0 for x in range(self.num_classes)]
+        prefix = self.syn_data_path
+        for id in tqdm(range(self.syn_range - 1)):
+            item = os.path.join(prefix, "%06d"%id)
+            seg_img = cv2.imread(item + "-label.png")
+            seg_img = cv2.resize(seg_img, (self.target_h, self.target_w), interpolation=cv2.INTER_NEAREST)
+            labels_per_img = np.unique(seg_img)
+            for img_id in labels_per_img:
+                if len(np.where(seg_img==img_id)) <1:
+                    syn_frequency[img_id] += 0
+                else:
+                    syn_frequency[img_id] += len(np.where(seg_img==img_id)[0]) / pixels_per_img
+        
+        # normalize frequencies and write them to output file
+        syn_frequency = np.array(syn_frequency)
+        syn_frequency/=self.syn_range
+        frequencies = {'real':real_frequency, 'syn':syn_frequency}
+        with open(save_pkl, 'wb') as f:
+            pickle.dump(frequencies, f)
+
+    def gen_kp_gt_for_item(self, item):
+        # item is a path prefix
+        out_pkl = item + '-bb8_2d.pkl'
+        # read meta data
+        meta = loadmat(item + '-meta.mat')
+        intrinsic = meta['intrinsic_matrix']
+        poses = meta['poses'].transpose(2, 0, 1)
+        cls_idxs = meta['cls_indexes'] - 1
+        cls_idxs = cls_idxs.squeeze()
+        # get 2d kp matrix
+        kp_2d = np.zeros((len(cls_idxs), self.n_kp, 2))
+        for idx, pose in enumerate(poses):
+            vertex = self.kp3d[int(cls_idxs[idx])].squeeze()
+            kp_2d[idx] = vertices_reprojection(vertex, pose, intrinsic)
+        # normalize kp matrix
+        kp_2d[:, :, 0] /= self.original_width
+        kp_2d[:, :, 1] /= self.original_height
+        # dump into output file to be used later in training
+        with open(out_pkl, 'wb') as f:
+            pickle.dump(kp_2d, f)
+
+    def gen_kp_gt(self, for_syn = True, for_real = True):
+        if for_real:
+            # generate kp for all real images
+            print("generate and save kp gt for real images.")
+            for item in tqdm(self.train_paths):
+                self.gen_kp_gt_for_item(item)
+        if for_syn:
+            # generate kp for synthetic images
+            print("generate and save kp gt for synthetic images.")
+            syn_prefix = self.syn_data_path
+            for id in tqdm(range(self.syn_range)):
+                item = os.path.join(syn_prefix, "%06d" % id)
+                self.gen_kp_gt_for_item(item)
+
+    def gen_synthetic(self):
+        # check for background paths
+        if len(self.syn_bg_image_paths)<1 :
+            print("you need to give bg images folder!")
+
+        # generate a synthetic image on the fly
+        prefix = self.syn_data_path
+        id = random.randint(0, self.syn_range-1)
+        item = os.path.join(prefix, "%06d"%id)
+        raw = cv2.imread(item + "-color.png")
+        img = cv2.resize(raw, (self.input_height, self.input_width))
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+        # get segmentation gt
+        seg_img = cv2.imread(item + "-label.png")
+        seg_img = cv2.resize(seg_img, (self.input_height, self.input_width), interpolation=cv2.INTER_NEAREST)
+        mask_front = ma.getmaskarray(ma.masked_not_equal(seg_img, 0)).astype(int)
+        mask_back = ma.getmaskarray(ma.masked_equal(seg_img, 0)).astype(int)
+
+        # random erase some parts to make the network robust to occlusions
+        random_erasing = RandomErasing(sl=0.01,sh=0.1)
+        img = random_erasing(img)
+
+        # get bg image and combine them together
+        back_img_path = random.choice(self.syn_bg_image_paths)
+        bg_raw = cv2.imread(back_img_path)
+        bg_img = cv2.resize(bg_raw, (self.input_height, self.input_width))
+        bg_img = cv2.cvtColor(bg_img, cv2.COLOR_BGR2RGB)
+        if self.use_bg_img:
+            combined_img = bg_img * mask_back + img * mask_front
+        else:
+            combined_img = img * mask_front
+        color_augmentation = transforms.ColorJitter(0.02, 0.02, 0.02, 0.05)
+        combined_img = Image.fromarray(combined_img.astype('uint8')).convert('RGB')
+        combined_img = color_augmentation(combined_img)
+        combined_img = np.array(combined_img)
+
+        # get segmentation label
+        seg_label = seg_img[:, :, 0] # RGB channels are the same
+        seg_label = cv2.resize(seg_label, (self.target_h, self.target_w), interpolation=cv2.INTER_NEAREST)
+
+        # generate kp gt map of (nH, nW, nV)
+        kp_gt_map_x = np.zeros((self.target_h, self.target_w, self.n_kp))
+        kp_gt_map_y = np.zeros((self.target_h, self.target_w, self.n_kp))
+        in_pkl = item + '-bb8_2d.pkl'
+
+        # load class info
+        meta = loadmat(item + '-meta.mat')
+        class_ids = meta['cls_indexes']
+        with open(in_pkl, 'rb') as f:
+            bb8_2d = pickle.load(f)
+        for i, cid in enumerate(class_ids):
+            class_mask = np.where(seg_label == cid[0])
+            kp_gt_map_x[class_mask] = bb8_2d[:,:,0][i]
+            kp_gt_map_y[class_mask] = bb8_2d[:,:,1][i]
+
+        # get image mask front (used to compute loss)
+        mask_front = cv2.resize(mask_front, (self.target_h, self.target_w), interpolation=cv2.INTER_NEAREST)
+
+        # return training data
+        # input  : normalized RGB image & segmentation mask
+        # output : x ground truth map, y ground truth map & mask front
+        return (torch.from_numpy(combined_img.transpose(2, 0, 1)).float().div(255.0),
+                torch.from_numpy(seg_label).long(),
+                torch.from_numpy(kp_gt_map_x).float(), torch.from_numpy(kp_gt_map_y).float(),
+                torch.from_numpy(mask_front[:,:,0]).float())
 
     def __getitem__(self, index):
         # get a single training sample
@@ -117,12 +267,12 @@ class YCBDataset(Dataset):
                 kp_gt_map_x[class_mask] = bb8_2d[:,:,0][i]
                 kp_gt_map_y[class_mask] = bb8_2d[:,:,1][i]
 
-            # get front image mask
+            # get image mask front (used to compute loss)
             mask_front = ma.getmaskarray(ma.masked_not_equal(label_img, 0)).astype(int)
 
             # return training data
             # input  : normalized RGB image & segmentation mask
-            # output : x ground truth map, y ground truth map & front mask
+            # output : x ground truth map, y ground truth map & mask front
             return (torch.from_numpy(img.transpose(2, 0, 1)).float().div(255.0),
                     torch.from_numpy(label_img).long(),
                     torch.from_numpy(kp_gt_map_x).float(), torch.from_numpy(kp_gt_map_y).float(),
