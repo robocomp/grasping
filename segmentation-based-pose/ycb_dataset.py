@@ -80,3 +80,57 @@ class YCBDataset(Dataset):
         weight = [median_frequency/x for x in combined_frequency]
         # set CE weight to be used during training
         self.weight_cross_entropy =  torch.from_numpy(np.array(weight)).float()
+
+    def __getitem__(self, index):
+        # get a single training sample
+        if not self.use_real_img:
+            # use synthetic images
+            return self.gen_synthetic()
+        if index > len(self.train_paths) - 1:
+            # generate synthetic images if index out of original data range
+            return self.gen_synthetic()
+        else:
+            # use real images from YCB videos
+            prefix = self.train_paths[index]
+
+            # get raw image
+            raw = cv2.imread(prefix + "-color.png")
+            img = cv2.resize(raw, (self.input_height, self.input_width))
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+            # load class info
+            meta = loadmat(prefix + '-meta.mat')
+            class_ids = meta['cls_indexes']
+
+            # get segmentation gt, note 0 is for background
+            label_img = cv2.imread(prefix + "-label.png")[: , : , 0]
+            label_img = cv2.resize(label_img, (self.target_h, self.target_w), interpolation=cv2.INTER_NEAREST)
+
+            # generate kp gt map of (nH, nW, nV)
+            kp_gt_map_x = np.zeros((self.target_h, self.target_w, self.n_kp))
+            kp_gt_map_y = np.zeros((self.target_h, self.target_w, self.n_kp))
+            in_pkl = prefix + '-bb8_2d.pkl'
+            with open(in_pkl, 'rb') as f:
+                bb8_2d = pickle.load(f)
+            for i, cid in enumerate(class_ids):
+                class_mask = np.where(label_img == cid[0])
+                kp_gt_map_x[class_mask] = bb8_2d[:,:,0][i]
+                kp_gt_map_y[class_mask] = bb8_2d[:,:,1][i]
+
+            # get front image mask
+            mask_front = ma.getmaskarray(ma.masked_not_equal(label_img, 0)).astype(int)
+
+            # return training data
+            # input  : normalized RGB image & segmentation mask
+            # output : x ground truth map, y ground truth map & front mask
+            return (torch.from_numpy(img.transpose(2, 0, 1)).float().div(255.0),
+                    torch.from_numpy(label_img).long(),
+                    torch.from_numpy(kp_gt_map_x).float(), torch.from_numpy(kp_gt_map_y).float(),
+                    torch.from_numpy(mask_front).float())
+
+    def __len__(self):
+        # get dataset length
+        if self.use_real_img:
+            return len(self.train_paths)+self.num_syn_images
+        else:
+            return self.num_syn_images
