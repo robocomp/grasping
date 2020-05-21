@@ -224,6 +224,13 @@ def read_data_cfg(datacfg):
             options[key] = value
     return options
 
+def get_img_list_from(folder_path):
+    file_list = []
+    for path in glob.glob(folder_path+"/*"):
+        if "jpg" in path or "png" in path:
+            file_list.append(path)
+    return file_list
+
 def save_predictions(imgBaseName, predPose, object_names, outpath):
     for p in predPose:
         id, rt, conf, puv, pxyz, opoint, clsid, partid, cx, cy, layerId = p
