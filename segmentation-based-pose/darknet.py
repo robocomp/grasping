@@ -122,7 +122,6 @@ class Darknet(nn.Module):
                 desiredOutputIdx.append(ind)
             else:
                 print('unknown type %s' % (block['type']))
-        #
         desiredOutput = []
         for idx in desiredOutputIdx:
             desiredOutput.append(outputs[idx])

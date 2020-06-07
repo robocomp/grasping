@@ -33,9 +33,7 @@ python test.py --gpu <boolean> --ds <dataset_name>
 
 [x] Add dataset class for YCB videos dataset.
 
-[ ] Add dataset class for Occluded-LINEMOD datset.
-
-[ ] Add training forward propagation to network architecture.
+[x] Add training forward propagation to network architecture.
 
 [ ] Add training script for network.
 
