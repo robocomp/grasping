@@ -75,7 +75,7 @@ if __name__ == '__main__':
     # arguments parsing
     argparser = argparse.ArgumentParser(description=__doc__)
     argparser.add_argument('-gpu', '--use_gpu', type=bool, help='set to true to use gpu, otherwise use cpu', default=True)
-    argparser.add_argument('-ds', '--dataset', type=str, help='dataset to be used for train or test', default='linemod')
+    argparser.add_argument('-ds', '--dataset', type=str, help='dataset to be used for train or test', default='ycb')
 
     args = argparser.parse_args()
 

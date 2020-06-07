@@ -14,13 +14,12 @@ Original implementation: https://github.com/cvlab-epfl/segmentation-driven-pose 
 - For training:
 
 ```
-python train.py
+python train.py -ds <dataset_name> -dsp </path/to/dataset/root> -wp </path/to/weights/file>
 ```
-Provide input arguments, if required.
 
 - For inference:
 ```
-python test.py --gpu <boolean> --ds <dataset_name>
+python test.py -gpu <boolean> -ds <dataset_name>
 ```
 
 ## Progress
@@ -35,7 +34,7 @@ python test.py --gpu <boolean> --ds <dataset_name>
 
 [x] Add training forward propagation to network architecture.
 
-[ ] Add training script for network.
+[x] Add training script for network.
 
 [ ] Train the network on given dataset.
 
