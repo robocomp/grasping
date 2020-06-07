@@ -104,5 +104,11 @@ conda-env/
 # mypy
 .mypy_cache/
 
-#folders
+# folders
 .idea
+log/
+models/
+
+# other files
+*.pth
+*.pkl
