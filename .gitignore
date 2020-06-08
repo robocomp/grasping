@@ -108,6 +108,7 @@ conda-env/
 .idea
 log/
 models/
+data/
 
 # other files
 *.pth

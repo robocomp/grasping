@@ -41,6 +41,11 @@ class YCBDataset(torch.utils.data.Dataset):
 
         self.syn_data_path = syn_data_path # path to synthetic data
         self.syn_range = 80000 # number of synthetic data in YCB (80000 sequentially indexed)
+        self.corrupted_ids = [2668, 2809, 6896, 8750, 9579, 10671, # corrupted synthetic data ids (in case of any)
+                            11452, 14843, 15649, 16571, 17658, 19450,
+                            33296, 36485, 38553, 38922, 42968, 45989,
+                            47399, 48169, 50544, 52588, 58769, 65702,
+                            70619, 74220, 75057]
 
         self.syn_bg_image_paths = get_img_list_from(bg_path) if bg_path is not None else [] # paths of background images
         self.use_bg_img = use_bg_img # whether to use background images or not
@@ -111,6 +116,8 @@ class YCBDataset(torch.utils.data.Dataset):
         syn_frequency = [0 for x in range(self.num_classes)]
         prefix = self.syn_data_path
         for id in tqdm(range(self.syn_range - 1)):
+            if id in self.corrupted_ids:
+                continue 
             item = os.path.join(prefix, "%06d"%id)
             seg_img = cv2.imread(item + "-label.png")
             seg_img = cv2.resize(seg_img, (self.target_h, self.target_w), interpolation=cv2.INTER_NEAREST)
@@ -131,6 +138,8 @@ class YCBDataset(torch.utils.data.Dataset):
     def gen_kp_gt_for_item(self, item):
         # item is a path prefix
         out_pkl = item + '-bb8_2d.pkl'
+        if os.path.isfile(out_pkl):
+            return
         # read meta data
         meta = loadmat(item + '-meta.mat')
         intrinsic = meta['intrinsic_matrix']
@@ -160,6 +169,8 @@ class YCBDataset(torch.utils.data.Dataset):
             print("generate and save kp gt for synthetic images.")
             syn_prefix = self.syn_data_path
             for id in tqdm(range(self.syn_range)):
+                if id in self.corrupted_ids:
+                    continue 
                 item = os.path.join(syn_prefix, "%06d" % id)
                 self.gen_kp_gt_for_item(item)
 
@@ -171,6 +182,11 @@ class YCBDataset(torch.utils.data.Dataset):
         # generate a synthetic image on the fly
         prefix = self.syn_data_path
         id = random.randint(0, self.syn_range-1)
+        while True:
+            if id in self.corrupted_ids:
+                id = random.randint(0, self.syn_range-1)
+            else:
+                break
         item = os.path.join(prefix, "%06d"%id)
         raw = cv2.imread(item + "-color.png")
         img = cv2.resize(raw, (self.input_height, self.input_width))

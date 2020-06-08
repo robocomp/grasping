@@ -40,7 +40,7 @@ num_syn_img = 0
 bg_path = None
 
 # training options
-batch_size = 32
+batch_size = 4
 num_workers = 4
 gen_kp_gt = False
 number_point = 8
@@ -89,8 +89,8 @@ def train(cfg_path):
     if not os.path.isfile("data/balancing_weight.pkl"):
         train_dataset.gen_balancing_weight()
     train_dataset.set_balancing_weight()
-    median_balancing_weight = train_dataset.weight_cross_entropy.cuda() if use_gpu \
-        else train_dataset.weight_cross_entropy
+    train_dataset.gen_kp_gt()
+    median_balancing_weight = train_dataset.weight_cross_entropy.to(device)
 
     print('training on %d images'%len(train_dataset))
     if gen_kp_gt:
