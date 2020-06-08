@@ -47,7 +47,6 @@ class YCBDataset(torch.utils.data.Dataset):
         self.num_syn_images = num_syn_images # number of synthetic images for training
 
         self.weight_cross_entropy = None # weight for CE with ratio between real to synthetic
-        self.set_balancing_weight() # weight CE 
 
         # YCB classes names
         self.object_names_ycbvideo = ['002_master_chef_can', '003_cracker_box', '004_sugar_box', '005_tomato_soup_can',
@@ -64,7 +63,7 @@ class YCBDataset(torch.utils.data.Dataset):
         self.kp3d = np.load(kp_path) # camera intrinsic matrices
         self.n_kp = 8 # number of intrinsic properties
 
-    def gen_train_list(self, imageset_path, out_pkl="configs/real_train_path.pkl"):
+    def gen_train_list(self, imageset_path, out_pkl="data/real_train_path.pkl"):
         # read train/validation list
         with open(os.path.join(imageset_path, "trainval.txt"), 'r') as file:
             trainlines = file.readlines()
@@ -74,7 +73,7 @@ class YCBDataset(torch.utils.data.Dataset):
             pickle.dump(real_train_path, f)
         self.train_paths = real_train_path
 
-    def set_balancing_weight(self, save_pkl="configs/balancing_weight.pkl"):
+    def set_balancing_weight(self, save_pkl="data/balancing_weight.pkl"):
         # read file with data frequencies
         print("Loading weight from file ", save_pkl)
         with open(save_pkl, 'rb') as f:
@@ -88,7 +87,7 @@ class YCBDataset(torch.utils.data.Dataset):
         # set CE weight to be used during training
         self.weight_cross_entropy =  torch.from_numpy(np.array(weight)).float()
 
-    def gen_balancing_weight(self, save_pkl="configs/balancing_weight.pkl"):
+    def gen_balancing_weight(self, save_pkl="data/balancing_weight.pkl"):
         # get pixel-wise balancing weight for cross entropy loss
         pixels_per_img = (self.target_h * self.target_w)
         real_frequency = [0 for x in range(self.num_classes)]

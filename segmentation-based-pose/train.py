@@ -32,7 +32,7 @@ imageset_path = None
 kp_path = None
 pretrained_weights_path = None
 data_cfg = None
-checkpoints_dir = './model'
+checkpoints_dir = './models'
 
 # dataset options
 use_real_img = True
@@ -86,6 +86,9 @@ def train(cfg_path):
     train_dataset = YCBDataset(ycb_data_path, imageset_path, syn_data_path=syn_data_path, target_h=out_h, target_w=out_w,
                       use_real_img=use_real_img, bg_path=bg_path, num_syn_images=num_syn_img,
                                 data_cfg=data_cfg, kp_path=kp_path)
+    if not os.path.isfile("data/balancing_weight.pkl"):
+        train_dataset.gen_balancing_weight()
+    train_dataset.set_balancing_weight()
     median_balancing_weight = train_dataset.weight_cross_entropy.cuda() if use_gpu \
         else train_dataset.weight_cross_entropy
 
@@ -169,7 +172,7 @@ def train(cfg_path):
         scheduler.step()
         if epoch % 5 == 1:
             model.module.save_weights(os.path.join(checkpoints_dir, f'ckpt_{epoch}.pth'))
-    model.module.save_weights(checkpoints_dir)
+    model.module.save_weights(os.path.join(checkpoints_dir, 'ckpt_final.pth'))
     writer.close()
 
 if __name__ == '__main__':
@@ -184,6 +187,8 @@ if __name__ == '__main__':
         os.mkdir('./log/')
     if not os.path.isdir('./models/'):
         os.mkdir('./models/')
+    if not os.path.isdir('./data/'):
+        os.mkdir('./data/')
 
     if args.dataset == 'ycb':
         # parse arguments
