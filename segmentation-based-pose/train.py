@@ -170,9 +170,9 @@ def train(cfg_path):
 
         bias_acc._reset()
         scheduler.step()
-        if epoch % 5 == 1:
-            model.module.save_weights(os.path.join(checkpoints_dir, f'ckpt_{epoch}.pth'))
-    model.module.save_weights(os.path.join(checkpoints_dir, 'ckpt_final.pth'))
+        if epoch % 5 == 0:
+            model.save_weights(os.path.join(checkpoints_dir, f'ckpt_{epoch}.pth'))
+    model.save_weights(os.path.join(checkpoints_dir, 'ckpt_final.pth'))
     writer.close()
 
 if __name__ == '__main__':

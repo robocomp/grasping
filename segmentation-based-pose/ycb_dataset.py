@@ -13,6 +13,9 @@ from PIL import Image
 import numpy as np
 import numpy.ma as ma
 from scipy.io import loadmat
+from skimage.io import imread
+from PIL import ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 from utils import *
 
@@ -100,7 +103,7 @@ class YCBDataset(torch.utils.data.Dataset):
         # get weights of real images
         print("collect weight for real images")
         for prefix in tqdm(self.train_paths):
-            label_img = cv2.imread(prefix + "-label.png")[: , : , 0]
+            label_img = imread(prefix + "-label.png")
             label_img = cv2.resize(label_img, (self.target_h, self.target_w), interpolation=cv2.INTER_NEAREST)
             labels_per_img = np.unique(label_img)
             for img_id in labels_per_img:
@@ -119,7 +122,7 @@ class YCBDataset(torch.utils.data.Dataset):
             if id in self.corrupted_ids:
                 continue 
             item = os.path.join(prefix, "%06d"%id)
-            seg_img = cv2.imread(item + "-label.png")
+            seg_img = imread(item + "-label.png")
             seg_img = cv2.resize(seg_img, (self.target_h, self.target_w), interpolation=cv2.INTER_NEAREST)
             labels_per_img = np.unique(seg_img)
             for img_id in labels_per_img:
@@ -188,12 +191,12 @@ class YCBDataset(torch.utils.data.Dataset):
             else:
                 break
         item = os.path.join(prefix, "%06d"%id)
-        raw = cv2.imread(item + "-color.png")
+        raw = imread(item + "-color.png")
         img = cv2.resize(raw, (self.input_height, self.input_width))
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
         # get segmentation gt
-        seg_img = cv2.imread(item + "-label.png")
+        seg_img = imread(item + "-label.png")
         seg_img = cv2.resize(seg_img, (self.input_height, self.input_width), interpolation=cv2.INTER_NEAREST)
         mask_front = ma.getmaskarray(ma.masked_not_equal(seg_img, 0)).astype(int)
         mask_back = ma.getmaskarray(ma.masked_equal(seg_img, 0)).astype(int)
@@ -204,7 +207,7 @@ class YCBDataset(torch.utils.data.Dataset):
 
         # get bg image and combine them together
         back_img_path = random.choice(self.syn_bg_image_paths)
-        bg_raw = cv2.imread(back_img_path)
+        bg_raw = imread(back_img_path)
         bg_img = cv2.resize(bg_raw, (self.input_height, self.input_width))
         bg_img = cv2.cvtColor(bg_img, cv2.COLOR_BGR2RGB)
         if self.use_bg_img:
@@ -259,7 +262,7 @@ class YCBDataset(torch.utils.data.Dataset):
             prefix = self.train_paths[index]
 
             # get raw image
-            raw = cv2.imread(prefix + "-color.png")
+            raw = imread(prefix + "-color.png")
             img = cv2.resize(raw, (self.input_height, self.input_width))
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
@@ -268,7 +271,7 @@ class YCBDataset(torch.utils.data.Dataset):
             class_ids = meta['cls_indexes']
 
             # get segmentation gt, note 0 is for background
-            label_img = cv2.imread(prefix + "-label.png")[: , : , 0]
+            label_img = imread(prefix + "-label.png")
             label_img = cv2.resize(label_img, (self.target_h, self.target_w), interpolation=cv2.INTER_NEAREST)
 
             # generate kp gt map of (nH, nW, nV)

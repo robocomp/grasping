@@ -1,7 +1,9 @@
 import argparse
 from utils import *
 from segpose_net import SegPoseNet
-import cv2
+from skimage.io import imread, imsave
+from PIL import ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 def evaluate(data_cfg, weightfile, listfile, outdir, object_names, intrinsics, vertex,
                          bestCnt, conf_thresh, linemod_index=False, use_gpu=False, gpu_id='0'):
@@ -43,7 +45,7 @@ def evaluate(data_cfg, weightfile, listfile, outdir, object_names, intrinsics, v
     # loop over all images in test list
     for idx in range(len(imglines)):
         imgfile = imglines[idx].rstrip()
-        img = cv2.imread(imgfile) # read image
+        img = imread(imgfile) # read image
 
         dirname, filename = os.path.split(imgfile)
         baseName, _ = os.path.splitext(filename)
@@ -66,7 +68,7 @@ def evaluate(data_cfg, weightfile, listfile, outdir, object_names, intrinsics, v
         # visualize predictions
         vis_start = time.time()
         visImg = visualize_predictions(predPose, img, vertex, intrinsics)
-        cv2.imwrite(outdir + '/' + outFileName + '.jpg', visImg)
+        imsave(outdir + '/' + outFileName + '.jpg', visImg)
         vis_finish = time.time()
         print('%s: Visualization in %f seconds.' % (imgfile, (vis_finish - vis_start)))
 
