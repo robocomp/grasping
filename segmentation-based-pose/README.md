@@ -2,7 +2,15 @@
 
 This is an implementation of [Segmentation-driven 6D Object Pose Estimation](https://arxiv.org/abs/1812.02541) paper based on the original implementation. This architecture is a single-shot segmentation-based network, in which the output points of interest and segmentation masks are fused using to RANSAC-based PnP  get the object pose.
 
-Original implementation : https://github.com/cvlab-epfl/segmentation-driven-pose . 
+Original implementation : https://github.com/cvlab-epfl/segmentation-driven-pose .
+
+# Installation
+
+- Install `python3` and `python3-pip`.
+- Run :
+```
+pip3 install -r requirements.txt
+```
 
 ## Usage
 

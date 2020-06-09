@@ -1,0 +1,7 @@
+torch torchvision
+tensorboardX
+opencv-python
+opencv-contrib-python
+skimage
+pyquaternion
+tqdm
