@@ -2,6 +2,7 @@ import torch
 from torch.autograd import Variable
 
 import os
+import sys
 import time
 import numpy as np
 import scipy
@@ -9,28 +10,11 @@ import cv2
 import glob
 import random
 import math
+from pyquaternion import Quaternion
 
-def visual_img(img, folder='temp',name="out.png"):
-    # visualize an RGB image
-    scipy.misc.imsave(os.path.join(folder,name),img)
-
-def visual_kp_in_img(img, kp, size=4, folder='temp', name="kp_in_img_out.png"):
-    # visualize kp matrix on an RGB image
-    # kp shape: objXnum_kpX2
-    for obj_id, obj in enumerate(kp):
-        b, g, r = get_class_colors(obj_id)
-        for xy in obj:
-            temp_x = int(xy[0]*img.shape[1])
-            temp_y = int(xy[1]*img.shape[0])
-            for i in range(temp_x-size, temp_x+size):
-                if i<0 or i > img.shape[1] -1 :continue
-                for j in range(temp_y-size, temp_y+size):
-                    if j<0 or j> img.shape[0] -1 :continue
-                    img[j][i][0] = r
-                    img[j][i][1] = g
-                    img[j][i][2] = b
-    scipy.misc.imsave(os.path.join(folder, name), img)
-
+####################################################################################################################
+#                                               Visualization Utilities                                            #
+####################################################################################################################
 def get_class_colors(class_id):
     # set colors for each class
     colordict = {'gray': [128, 128, 128], 'silver': [192, 192, 192], 'black': [0, 0, 0],
@@ -95,6 +79,93 @@ def get_class_colors(class_id):
 
     return b, g, r  # for OpenCV
 
+def visual_img(img, folder='temp',name="out.png"):
+    # visualize an RGB image
+    scipy.misc.imsave(os.path.join(folder,name),img)
+
+def visual_kp_in_img(img, kp, size=4, folder='temp', name="kp_in_img_out.png"):
+    # visualize kp matrix on an RGB image
+    # kp shape: objXnum_kpX2
+    for obj_id, obj in enumerate(kp):
+        b, g, r = get_class_colors(obj_id)
+        for xy in obj:
+            temp_x = int(xy[0]*img.shape[1])
+            temp_y = int(xy[1]*img.shape[0])
+            for i in range(temp_x-size, temp_x+size):
+                if i<0 or i > img.shape[1] -1 :continue
+                for j in range(temp_y-size, temp_y+size):
+                    if j<0 or j> img.shape[0] -1 :continue
+                    img[j][i][0] = r
+                    img[j][i][1] = g
+                    img[j][i][2] = b
+    scipy.misc.imsave(os.path.join(folder, name), img)
+
+def visualize_predictions(predPose, image, vertex, intrinsics):
+    # visualize predicted poses on RGB image
+    height, width, _ = image.shape
+    confImg = np.copy(image)
+    maskImg = np.zeros((height,width), np.uint8)
+    contourImg = np.copy(image)
+    for p in predPose:
+        outid, rt, conf, puv, pxyz, opoint, clsid, partid, cx, cy, layerId = p
+
+        # show surface reprojection
+        maskImg.fill(0)
+        if True:
+            # if False:
+            vp = vertices_reprojection(vertex[outid][:], rt, intrinsics)
+            for p in vp:
+                if p[0] != p[0] or p[1] != p[1]:  # check nan
+                    continue
+                maskImg = cv2.circle(maskImg, (int(p[0]), int(p[1])), 1, 255, -1)
+                confImg = cv2.circle(confImg, (int(p[0]), int(p[1])), 1, get_class_colors(outid), -1, cv2.LINE_AA)
+
+        # fill the holes
+        kernel = np.ones((5,5), np.uint8)
+        maskImg = cv2.morphologyEx(maskImg, cv2.MORPH_CLOSE, kernel)
+        # find contour
+        contours, _ = cv2.findContours(maskImg, mode=cv2.RETR_EXTERNAL, method=cv2.CHAIN_APPROX_SIMPLE)
+        contourImg = cv2.drawContours(contourImg, contours, -1, (255, 255, 255), 4, cv2.LINE_AA) # border
+        contourImg = cv2.drawContours(contourImg, contours, -1, get_class_colors(outid), 2, cv2.LINE_AA)
+
+    return contourImg
+
+
+####################################################################################################################
+#                                               Geometry Utilities                                                 #
+####################################################################################################################
+def transform_points(points_3d, mat):
+    rot = np.matmul(mat[:3, :3], points_3d.transpose())
+    return rot.transpose() + mat[:3, 3]
+
+def matrix2quaternion(m):
+    tr = m[0, 0] + m[1, 1] + m[2, 2]
+    if tr > 0:
+        S = np.sqrt(tr + 1.0) * 2
+        qw = 0.25 * S
+        qx = (m[2, 1] - m[1, 2]) / S
+        qy = (m[0, 2] - m[2, 0]) / S
+        qz = (m[1, 0] - m[0, 1]) / S
+    elif (m[0, 0] > m[1, 1]) and (m[0, 0] > m[2, 2]):
+        S = np.sqrt(1. + m[0, 0] - m[1, 1] - m[2, 2]) * 2
+        qw = (m[2, 1] - m[1, 2]) / S
+        qx = 0.25 * S
+        qy = (m[0, 1] + m[1, 0]) / S
+        qz = (m[0, 2] + m[2, 0]) / S
+    elif m[1, 1] > m[2, 2]:
+        S = np.sqrt(1. + m[1, 1] - m[0, 0] - m[2, 2]) * 2
+        qw = (m[0, 2] - m[2, 0]) / S
+        qx = (m[0, 1] + m[1, 0]) / S
+        qy = 0.25 * S
+        qz = (m[1, 2] + m[2, 1]) / S
+    else:
+        S = np.sqrt(1. + m[2, 2] - m[0, 0] - m[1, 1]) * 2
+        qw = (m[1, 0] - m[0, 1]) / S
+        qx = (m[0, 2] + m[2, 0]) / S
+        qy = (m[1, 2] + m[2, 1]) / S
+        qz = 0.25 * S
+    return np.array([qw, qx, qy, qz])
+
 def vertices_reprojection(vertices, rt, k):
     # project a vertex to pixel space
     p = np.matmul(k, np.matmul(rt[:3,0:3], vertices.T) + rt[:3,3].reshape(-1,1))
@@ -102,14 +173,84 @@ def vertices_reprojection(vertices, rt, k):
     p[1] = p[1] / (p[2] + 1e-5)
     return p[:2].T
 
-def convert2cpu(gpu_matrix):
-    # tensor to cpu (float)
-    return torch.FloatTensor(gpu_matrix.shape).copy_(gpu_matrix)
+def transform_pred_pose(pred_dir, object_names, transformations):
+    # transform predicted poses to pixel space
+    objNameList = [f for f in os.listdir(pred_dir) if os.path.isdir(pred_dir + '/' + f)]
+    objNameList.sort()
+    for objName in objNameList:
+        objId = object_names.index(objName.lower())
+        obj_dir = pred_dir + '/' + objName
+        filelist = [f for f in os.listdir(obj_dir) if f.endswith('.txt')]
+        for f in filelist:
+            f = obj_dir + '/' + f
+            pred_rt = np.loadtxt(f)
+            pred_rt = np.matmul(pred_rt, transformations[objId])
+            np.savetxt(f, pred_rt)
 
-def convert2cpu_long(gpu_matrix):
-    # tensor tp cpu (long)
-    return torch.LongTensor(gpu_matrix.shape).copy_(gpu_matrix)
+def get_bbox(label):
+    # get bounding boxex for a specific label
+    border_list = [-1, 40, 80, 120, 160, 200, 240, 280, 320, 360, 400, 440, 480, 520, 560, 600, 640, 680]
+    img_width = 480
+    img_length = 640
+    rows = np.any(label, axis=1)
+    cols = np.any(label, axis=0)
+    rmin, rmax = np.where(rows)[0][[0, -1]]
+    cmin, cmax = np.where(cols)[0][[0, -1]]
+    rmax += 1
+    cmax += 1
+    r_b = rmax - rmin
+    for tt in range(len(border_list)):
+        if r_b > border_list[tt] and r_b < border_list[tt + 1]:
+            r_b = border_list[tt + 1]
+            break
+    c_b = cmax - cmin
+    for tt in range(len(border_list)):
+        if c_b > border_list[tt] and c_b < border_list[tt + 1]:
+            c_b = border_list[tt + 1]
+            break
+    center = [int((rmin + rmax) / 2), int((cmin + cmax) / 2)]
+    rmin = center[0] - int(r_b / 2)
+    rmax = center[0] + int(r_b / 2)
+    cmin = center[1] - int(c_b / 2)
+    cmax = center[1] + int(c_b / 2)
+    if rmin < 0:
+        delt = -rmin
+        rmin = 0
+        rmax += delt
+    if cmin < 0:
+        delt = -cmin
+        cmin = 0
+        cmax += delt
+    if rmax > img_width:
+        delt = rmax - img_width
+        rmax = img_width
+        rmin -= delt
+    if cmax > img_length:
+        delt = cmax - img_length
+        cmax = img_length
+        cmin -= delt
+    return rmin, rmax, cmin, cmax
 
+def iou(gt_box, est_box):
+    # compute intersection over union for two boxes
+    xA = max(gt_box[0], est_box[0])
+    yA = max(gt_box[1], est_box[1])
+    xB = min(gt_box[2], est_box[2])
+    yB = min(gt_box[3], est_box[3])
+    if xB <= xA or yB <= yA:
+        return 0.0
+    interArea = (xB - xA) * (yB - yA)
+    # compute the area of both the prediction and ground-truth rectangles
+    boxAArea = (gt_box[2] - gt_box[0]) * (gt_box[3] - gt_box[1])
+    boxBArea = (est_box[2] - est_box[0]) * (est_box[3] - est_box[1])
+    # compute the intersection over union by dividing the intersection
+    # area by (prediction + ground-truth areas - the interesection area)
+    return interArea / float(boxAArea + boxBArea - interArea)
+
+
+####################################################################################################################
+#                                               Inference Utilities                                                #
+####################################################################################################################
 def do_detect(model, rawimg, intrinsics, bestCnt, conf_thresh, use_gpu=False):
     # perform inference on a trained model
     model.eval()
@@ -237,6 +378,119 @@ def fusion(output, width, height, intrinsics, conf_thresh, batchIdx, bestCnt):
 
     return outPred
 
+
+####################################################################################################################
+#                                               Metrics Utilities                                                  #
+####################################################################################################################
+class meters:
+    """
+    save results and calculate average automatically
+    """
+    def __init__(self):
+        self.value = 0.0000
+        self.counter = 0
+        self._reset()
+
+    def update(self, tmp):
+        self.value = (self.counter * self.value + tmp) /(self.counter+1)
+        self.counter += 1
+
+    def _reset(self):
+        self.value = 0.0000
+        self.counter = 0
+
+def add_err(gt_pose, est_pose, model):
+    """
+    Compute average translation error of point cloud points
+    Arguments:
+    gt_pose  : (np.array) [4 x 4] pose matrix
+    est_pose : (np.array) [4 x 4] pose matrix
+    model    : (np.array) [N x 3] model 3d vertices
+    """
+    v_A = transform_points(model, gt_pose)
+    v_B = transform_points(model, est_pose)
+    v_A = np.array([x for x in v_A])
+    v_B = np.array([x for x in v_B])
+    return np.mean(np.linalg.norm(v_A - v_B, axis=1))
+
+def adds_err(gt_pose, est_pose, model, sample_num=100):
+    """
+    Compute average translation error of point cloud points (for multiple samples)
+    Arguments:
+    gt_pose    : (np.array) [4 x 4] pose matrix
+    est_pose   : (np.array) [4 x 4] pose matrix
+    model      : (np.array) [N x 3] model 3d vertices
+    sample_num : (integer) number of samples
+    """
+    error = []
+    v_A = transform_points(model, gt_pose)
+    v_B = transform_points(model, est_pose)
+    for idx_A, perv_A in enumerate(v_A):
+        if idx_A > sample_num:
+            break
+        min_error_perv_A = 10000.0
+        for idx_B, perv_B in enumerate(v_B):
+            if idx_B > sample_num:
+                break
+            if np.linalg.norm(perv_A - perv_B)<min_error_perv_A:
+                min_error_perv_A = np.linalg.norm(perv_A - perv_B)
+        error.append(min_error_perv_A)
+    return np.mean(error)
+
+def rot_error(gt_pose, est_pose):
+    """
+    Compute rotation error
+    Arguments:
+    gt_pose  : (np.array) [4 x 4] pose matrix
+    est_pose : (np.array) [4 x 4] pose matrix
+    """
+    gt_quat = Quaternion(matrix2quaternion(gt_pose[:3, :3]))
+    est_quat = Quaternion(matrix2quaternion(est_pose[:3, :3]))
+    return np.abs((gt_quat * est_quat.inverse).degrees)
+
+def trans_error(gt_pose, est_pose):
+    """
+    Compute translation error
+    Arguments:
+    gt_pose  : (np.array) [4 x 4] pose matrix
+    est_pose : (np.array) [4 x 4] pose matrix
+    """
+    trans_err_norm = np.linalg.norm(gt_pose[:3, 3] - est_pose[:3, 3])
+    trans_err_single = np.abs(gt_pose[:3, 3] - est_pose[:3, 3])
+    return trans_err_norm, trans_err_single
+
+def projection_error_2d(gt_pose, est_pose, model, cam):
+    """
+    Compute 2d projection error
+    Arguments:
+    gt_pose  : (np.array) [4 x 4] pose matrix
+    est_pose : (np.array) [4 x 4] pose matrix
+    model    : (np.array) [N x 3] model 3d vertices
+    cam      : (np.array) [3 x 3] camera matrix
+    """
+    gt_pose = gt_pose[:3]
+    est_pose = est_pose[:3]
+    model = np.concatenate((model, np.ones((model.shape[0], 1))), axis=1)
+    gt_2d = np.matmul(np.matmul(cam, gt_pose), model.T)
+    est_2d = np.matmul(np.matmul(cam, est_pose), model.T)
+    gt_2d /= gt_2d[2, :]
+    est_2d /= est_2d[2, :]
+    gt_2d = gt_2d[:2, :].T
+    est_2d = est_2d[:2, :].T
+    return np.mean(np.linalg.norm(gt_2d - est_2d, axis=1))
+
+
+####################################################################################################################
+#                                               Miscellaneous Utilities                                            #
+####################################################################################################################
+def convert2cpu(gpu_matrix):
+    # tensor to cpu (float)
+    return torch.FloatTensor(gpu_matrix.shape).copy_(gpu_matrix)
+
+def convert2cpu_long(gpu_matrix):
+    # tensor tp cpu (long)
+    return torch.LongTensor(gpu_matrix.shape).copy_(gpu_matrix)
+
 def read_data_cfg(datacfg):
     # read data config file
     # set gpu ids and number of cpu workers
@@ -264,94 +518,6 @@ def save_predictions(imgBaseName, predPose, object_names, outpath):
             os.makedirs(path)
         np.savetxt(path + imgBaseName + '.txt', rt)
 
-def visualize_predictions(predPose, image, vertex, intrinsics):
-    # visualize predicted poses on RGB image
-    height, width, _ = image.shape
-    confImg = np.copy(image)
-    maskImg = np.zeros((height,width), np.uint8)
-    contourImg = np.copy(image)
-    for p in predPose:
-        outid, rt, conf, puv, pxyz, opoint, clsid, partid, cx, cy, layerId = p
-
-        # show surface reprojection
-        maskImg.fill(0)
-        if True:
-            # if False:
-            vp = vertices_reprojection(vertex[outid][:], rt, intrinsics)
-            for p in vp:
-                if p[0] != p[0] or p[1] != p[1]:  # check nan
-                    continue
-                maskImg = cv2.circle(maskImg, (int(p[0]), int(p[1])), 1, 255, -1)
-                confImg = cv2.circle(confImg, (int(p[0]), int(p[1])), 1, get_class_colors(outid), -1, cv2.LINE_AA)
-
-        # fill the holes
-        kernel = np.ones((5,5), np.uint8)
-        maskImg = cv2.morphologyEx(maskImg, cv2.MORPH_CLOSE, kernel)
-        # find contour
-        contours, _ = cv2.findContours(maskImg, mode=cv2.RETR_EXTERNAL, method=cv2.CHAIN_APPROX_SIMPLE)
-        contourImg = cv2.drawContours(contourImg, contours, -1, (255, 255, 255), 4, cv2.LINE_AA) # border
-        contourImg = cv2.drawContours(contourImg, contours, -1, get_class_colors(outid), 2, cv2.LINE_AA)
-
-    return contourImg
-
-def transform_pred_pose(pred_dir, object_names, transformations):
-    # transform predicted poses to pixel space
-    objNameList = [f for f in os.listdir(pred_dir) if os.path.isdir(pred_dir + '/' + f)]
-    objNameList.sort()
-    for objName in objNameList:
-        objId = object_names.index(objName.lower())
-        obj_dir = pred_dir + '/' + objName
-        filelist = [f for f in os.listdir(obj_dir) if f.endswith('.txt')]
-        for f in filelist:
-            f = obj_dir + '/' + f
-            pred_rt = np.loadtxt(f)
-            pred_rt = np.matmul(pred_rt, transformations[objId])
-            np.savetxt(f, pred_rt)
-
-def get_bbox(label):
-    # get bounding boxex for a specific label
-    border_list = [-1, 40, 80, 120, 160, 200, 240, 280, 320, 360, 400, 440, 480, 520, 560, 600, 640, 680]
-    img_width = 480
-    img_length = 640
-    rows = np.any(label, axis=1)
-    cols = np.any(label, axis=0)
-    rmin, rmax = np.where(rows)[0][[0, -1]]
-    cmin, cmax = np.where(cols)[0][[0, -1]]
-    rmax += 1
-    cmax += 1
-    r_b = rmax - rmin
-    for tt in range(len(border_list)):
-        if r_b > border_list[tt] and r_b < border_list[tt + 1]:
-            r_b = border_list[tt + 1]
-            break
-    c_b = cmax - cmin
-    for tt in range(len(border_list)):
-        if c_b > border_list[tt] and c_b < border_list[tt + 1]:
-            c_b = border_list[tt + 1]
-            break
-    center = [int((rmin + rmax) / 2), int((cmin + cmax) / 2)]
-    rmin = center[0] - int(r_b / 2)
-    rmax = center[0] + int(r_b / 2)
-    cmin = center[1] - int(c_b / 2)
-    cmax = center[1] + int(c_b / 2)
-    if rmin < 0:
-        delt = -rmin
-        rmin = 0
-        rmax += delt
-    if cmin < 0:
-        delt = -cmin
-        cmin = 0
-        cmax += delt
-    if rmax > img_width:
-        delt = rmax - img_width
-        rmax = img_width
-        rmin -= delt
-    if cmax > img_length:
-        delt = cmax - img_length
-        cmax = img_length
-        cmin -= delt
-    return rmin, rmax, cmin, cmax
-
 def get_img_list_from(folder_path):
     # get images list from a specific folder
     file_list = []
@@ -359,23 +525,6 @@ def get_img_list_from(folder_path):
         if "jpg" in path or "png" in path:
             file_list.append(path)
     return file_list
-
-class meters:
-    """
-    save results and calculate average automatically
-    """
-    def __init__(self):
-        self.value = 0.0000
-        self.counter = 0
-        self._reset()
-
-    def update(self, tmp):
-        self.value = (self.counter * self.value + tmp) /(self.counter+1)
-        self.counter += 1
-
-    def _reset(self):
-        self.value = 0.0000
-        self.counter = 0
 
 def pnz(matrix):
     # print all non-zero elements in a matrix
@@ -386,10 +535,10 @@ class RandomErasing(object):
     Class that performs Random Erasing in Random Erasing Data Augmentation by Zhong et al.
     -------------------------------------------------------------------------------------
     probability: The probability that the operation will be performed.
-    sl: min erasing area
-    sh: max erasing area
-    r1: min aspect ratio
-    mean: erasing value
+    sl   : min erasing area
+    sh   : max erasing area
+    r1   : min aspect ratio
+    mean : erasing value
     -------------------------------------------------------------------------------------
     '''
     def __init__(self, probability=0.6, sl=0.02, sh=0.08, r1=0.5, mean=(0.4914, 0.4822, 0.4465)):
@@ -424,4 +573,3 @@ class RandomErasing(object):
                 return img
 
         return img
-
