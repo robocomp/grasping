@@ -109,6 +109,7 @@ conda-env/
 log/
 models/
 data/
+output/
 
 # other files
 *.pth

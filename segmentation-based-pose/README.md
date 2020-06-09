@@ -22,10 +22,15 @@ pip3 install -r requirements.txt
 python train.py -ds <dataset_name> -dsp </path/to/dataset/root/dir> -wp </path/to/weights/file>
 ```
 
-- For inference :
+- For visual inference (outputs to `./output` directory):
 
 ```
 python test.py -gpu <boolean> -ds <dataset_name> -dsp </path/to/dataset/root/dir> -wp </path/to/weights/file>
+```
+
+- For metric evaluation :
+```
+python eval.py -dsp </path/to/dataset/root/dir> -op </path/to/output/poses>
 ```
 
 ## Training Info
@@ -50,7 +55,7 @@ Training the network is conducted in the following settings :
 
 [x] Add training script for network.
 
-[ ] Add evaluation scripts.
+[x] Add evaluation scripts.
 
 [ ] Add API function (for inference in pose estimation component).
 

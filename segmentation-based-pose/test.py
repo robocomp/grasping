@@ -6,10 +6,11 @@ from skimage.io import imread, imsave
 from PIL import ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
-def evaluate(data_cfg, weightfile, listfile, outdir, object_names, intrinsics, vertex,
+def test(data_cfg, weightfile, listfile, outdir, object_names, intrinsics, vertex,
                          bestCnt, conf_thresh, linemod_index=False, use_gpu=False, gpu_id='0'):
     """
-    Main pose estimation evaluation driver.
+    Main pose estimation testing driver,
+    Used to run inference on network and save visual results.
     Arguments:
     data_cfg      : path to data config file.
     weightfile    : path to pretrained weights file.
@@ -95,13 +96,13 @@ if __name__ == '__main__':
         # 8 objects for LINEMOD dataset
         object_names_occlinemod = ['ape', 'can', 'cat', 'driller', 'duck', 'eggbox', 'glue', 'holepuncher']
         vertex_linemod = np.load('./configs/Occluded-LINEMOD/LINEMOD_vertex.npy')
-        evaluate('./configs/data-LINEMOD.cfg',
+        test('./configs/data-LINEMOD.cfg',
                     args.weights_path, listfile,
-                    outdir, object_names_occlinemod, k_linemod, vertex_linemod,
+                    './output', object_names_occlinemod, k_linemod, vertex_linemod,
                     bestCnt=10, conf_thresh=0.3, linemod_index=True, use_gpu=args.use_gpu)
         # LINEMOD visualization transforms
         rt_transforms = np.load('./configs/Occluded-LINEMOD/Transform_RT_to_OccLINEMOD_meshes.npy')
-        transform_pred_pose(outdir, object_names_occlinemod, rt_transforms)
+        transform_pred_pose('./output', object_names_occlinemod, rt_transforms)
     elif args.dataset == 'ycb':
         # generate test list file for linemod
         listfile = './data/ycb-video-testlist.txt'
@@ -116,9 +117,9 @@ if __name__ == '__main__':
                                  '019_pitcher_base', '021_bleach_cleanser', '024_bowl', '025_mug', '035_power_drill', '036_wood_block',
                                  '037_scissors', '040_large_marker', '051_large_clamp', '052_extra_large_clamp', '061_foam_brick']
         vertex_ycbvideo = np.load('./data/YCB-Video/YCB_vertex.npy')
-        evaluate('./configs/data-YCB.cfg',
+        test('./configs/data-YCB.cfg',
                     args.weights_path, listfile,
-                    outdir, object_names_ycbvideo, k_ycbvideo, vertex_ycbvideo,
+                    './output', object_names_ycbvideo, k_ycbvideo, vertex_ycbvideo,
                     bestCnt=10, conf_thresh=0.3, use_gpu=args.use_gpu)
     else:
         print('unsupported dataset \'%s\'.' % dataset)
