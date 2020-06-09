@@ -1,5 +1,6 @@
 import argparse
 from utils import *
+from gen_filelist import *
 from segpose_net import SegPoseNet
 from skimage.io import imread, imsave
 from PIL import ImageFile
@@ -78,21 +79,15 @@ if __name__ == '__main__':
     argparser = argparse.ArgumentParser(description=__doc__)
     argparser.add_argument('-gpu', '--use_gpu', type=bool, help='set to true to use gpu, otherwise use cpu', default=True)
     argparser.add_argument('-ds', '--dataset', type=str, help='dataset to be used for train or test', default='ycb')
+    argparser.add_argument('-dsp', '--dataset_root', type=str, help='root directory of the chosen dataset')
+    argparser.add_argument('-wp', '--weights_path', type=str, help='path to the pretrained weights file', default='models/ckpt_final.pth')
 
     args = argparser.parse_args()
 
-    use_gpu = args.use_gpu
-
     if args.dataset == 'linemod':
-        dataset = 'Occluded-LINEMOD'
-        outdir = './Occluded-LINEMOD-Out'
-    elif args.dataset == 'ycb':
-        dataset = 'YCB-Video'
-        outdir = './YCB-Video-Out'
-    elif args.dataset == 'custom':
-        dataset = 'Custom'
-        
-    if dataset == 'Occluded-LINEMOD':
+        # generate test list file for linemod
+        listfile = './data/occluded-linemod-testlist.txt'
+        collect_ycb_testlist(args.dataset_root, listfile)
         # intrinsics of LINEMOD dataset
         k_linemod = np.array([[572.41140, 0.0, 325.26110],
                               [0.0, 573.57043, 242.04899],
@@ -101,14 +96,16 @@ if __name__ == '__main__':
         object_names_occlinemod = ['ape', 'can', 'cat', 'driller', 'duck', 'eggbox', 'glue', 'holepuncher']
         vertex_linemod = np.load('./configs/Occluded-LINEMOD/LINEMOD_vertex.npy')
         evaluate('./configs/data-LINEMOD.cfg',
-                             './model/occluded-linemod.pth',
-                             './occluded-linemod-testlist.txt',
-                             outdir, object_names_occlinemod, k_linemod, vertex_linemod,
-                             bestCnt=10, conf_thresh=0.3, linemod_index=True, use_gpu=use_gpu)
+                    args.weights_path, listfile,
+                    outdir, object_names_occlinemod, k_linemod, vertex_linemod,
+                    bestCnt=10, conf_thresh=0.3, linemod_index=True, use_gpu=args.use_gpu)
         # LINEMOD visualization transforms
         rt_transforms = np.load('./configs/Occluded-LINEMOD/Transform_RT_to_OccLINEMOD_meshes.npy')
         transform_pred_pose(outdir, object_names_occlinemod, rt_transforms)
-    elif dataset == 'YCB-Video':
+    elif args.dataset == 'ycb':
+        # generate test list file for linemod
+        listfile = './data/ycb-video-testlist.txt'
+        collect_ycb_testlist(args.dataset_root, listfile)
         # intrinsics of YCB-VIDEO dataset
         k_ycbvideo = np.array([[1.06677800e+03, 0.00000000e+00, 3.12986900e+02],
                                [0.00000000e+00, 1.06748700e+03, 2.41310900e+02],
@@ -120,11 +117,8 @@ if __name__ == '__main__':
                                  '037_scissors', '040_large_marker', '051_large_clamp', '052_extra_large_clamp', '061_foam_brick']
         vertex_ycbvideo = np.load('./data/YCB-Video/YCB_vertex.npy')
         evaluate('./configs/data-YCB.cfg',
-                             './model/ycb-video.pth',
-                             './ycb-video-testlist.txt',
-                             outdir, object_names_ycbvideo, k_ycbvideo, vertex_ycbvideo,
-                             bestCnt=10, conf_thresh=0.3, use_gpu=use_gpu)
-    elif dataset == 'Custom':
-        pass
+                    args.weights_path, listfile,
+                    outdir, object_names_ycbvideo, k_ycbvideo, vertex_ycbvideo,
+                    bestCnt=10, conf_thresh=0.3, use_gpu=args.use_gpu)
     else:
         print('unsupported dataset \'%s\'.' % dataset)

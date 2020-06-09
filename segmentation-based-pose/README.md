@@ -16,11 +16,8 @@ python train.py -ds <dataset_name> -dsp </path/to/dataset/root/dir> -wp </path/t
 
 - For inference :
 
-Generate test input list : 
-`python gen_filelist.py` ,
-then :
 ```
-python test.py -gpu <boolean> -ds <dataset_name>
+python test.py -gpu <boolean> -ds <dataset_name> -dsp </path/to/dataset/root/dir> -wp </path/to/weights/file>
 ```
 
 ## Training Info
@@ -44,6 +41,10 @@ Training the network is conducted in the following settings :
 [x] Add training forward propagation to network architecture.
 
 [x] Add training script for network.
+
+[ ] Add evaluation scripts.
+
+[ ] Add API function (for inference in pose estimation component).
 
 [ ] Train the network on given dataset.
 
