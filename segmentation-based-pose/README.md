@@ -33,6 +33,19 @@ python test.py -gpu <boolean> -ds <dataset_name> -dsp </path/to/dataset/root/dir
 python eval.py -dsp </path/to/dataset/root/dir> -op </path/to/output/poses>
 ```
 
+- For API functions :
+
+`api.py` contains two functions, `configure_network` and `get_pose`, for dealing with external calls (through a component, for example). 
+
+```python
+import api
+
+api.configure_network(class_names, intrinsics, vertices)
+
+predicted_poses = api.get_pose(rgb_img)
+```
+
+
 ## Training Info
 
 Training the network is conducted in the following settings :
@@ -57,7 +70,7 @@ Training the network is conducted in the following settings :
 
 [x] Add evaluation scripts.
 
-[ ] Add API function (for inference in pose estimation component).
+[x] Add API function (for inference in pose estimation component).
 
 [ ] Train the network on given dataset.
 
