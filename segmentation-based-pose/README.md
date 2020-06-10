@@ -16,6 +16,8 @@ pip3 install -r requirements.txt
 
 - Download [YCB videos dataset](https://rse-lab.cs.washington.edu/projects/posecnn/) or [Occluded-LINEMOD datset](https://hci.iwr.uni-heidelberg.de/vislearn/iccv2015-occlusion-challenge/) .
 
+- Download [pretrained weights for YCB dataset](https://drive.google.com/file/d/1N-qI5dqFVSNryZ0WwKlLn7npDkyVs_eh/view?usp=sharing) . 
+
 - For training :
 
 ```
@@ -72,6 +74,6 @@ Training the network is conducted in the following settings :
 
 [x] Add API function (for inference in pose estimation component).
 
-[ ] Train the network on given dataset.
+[x] Train the network on given dataset.
 
-[ ] Evaluate network performance.
+[x] Evaluate network performance.
