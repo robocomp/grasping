@@ -29,7 +29,7 @@ def test(data_cfg, weightfile, listfile, outdir, object_names, intrinsics, verte
 
     # parse config data and load network
     data_options = read_data_cfg(data_cfg)
-    m = SegPoseNet(data_options)
+    m = SegPoseNet(data_options, False)
 
     # print network and load weights
     m.print_network()
@@ -116,7 +116,7 @@ if __name__ == '__main__':
                                  '007_tuna_fish_can', '008_pudding_box', '009_gelatin_box', '010_potted_meat_can', '011_banana',
                                  '019_pitcher_base', '021_bleach_cleanser', '024_bowl', '025_mug', '035_power_drill', '036_wood_block',
                                  '037_scissors', '040_large_marker', '051_large_clamp', '052_extra_large_clamp', '061_foam_brick']
-        vertex_ycbvideo = np.load('./data/YCB-Video/YCB_vertex.npy')
+        vertex_ycbvideo = np.load('./configs/YCB-Video/YCB_vertex.npy')
         test('./configs/data-YCB.cfg',
                     args.weights_path, listfile,
                     './output', object_names_ycbvideo, k_ycbvideo, vertex_ycbvideo,

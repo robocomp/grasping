@@ -42,9 +42,9 @@ python eval.py -dsp </path/to/dataset/root/dir> -op </path/to/output/poses>
 ```python
 import api
 
-api.configure_network(class_names, intrinsics, vertices)
+model = api.configure_network()
 
-predicted_poses = api.get_pose(rgb_img)
+predicted_pose = api.get_pose(model, img, class_names, intrinsics, vertices)
 ```
 
 
