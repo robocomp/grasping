@@ -1,0 +1,59 @@
+import sys
+sys.path.append("../../segmentation-based-pose")
+
+from api import *
+
+import os
+import numpy as np
+from skimage.io import imsave
+
+from pyrep import PyRep
+from pyrep.objects.vision_sensor import VisionSensor
+from pyrep.objects.shape import Shape
+
+if not os.path.isdir("./output/"):
+    os.mkdir("./output/")
+
+# launch scene file
+SCENE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'scenes/primitive_scene.ttt')
+pr = PyRep()
+pr.launch(SCENE_FILE, headless=True)
+pr.start()
+
+pr.step()
+
+# define vision sensor
+camera = VisionSensor("cam")
+
+# read vision sensor RGB image
+print("Reading vision sensor RGB signal ...")
+img = camera.capture_rgb()
+img = np.uint8(img * 255.0)
+
+# save sensor image
+print("Saving output image ...")
+imsave("output/sim_out.png", img)
+
+print("Getting visual poses ...")
+# vision sensor intrinsics
+intrinsics = np.array([[1.06677800e+03, 0.00000000e+00, 3.12986900e+02],
+                        [0.00000000e+00, 1.06748700e+03, 2.41310900e+02],
+                        [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
+# classes names for ycb dataset
+class_names = ['002_master_chef_can', '003_cracker_box', '004_sugar_box', '005_tomato_soup_can', '006_mustard_bottle',
+                            '007_tuna_fish_can', '008_pudding_box', '009_gelatin_box', '010_potted_meat_can', '011_banana',
+                            '019_pitcher_base', '021_bleach_cleanser', '024_bowl', '025_mug', '035_power_drill', '036_wood_block',
+                            '037_scissors', '040_large_marker', '051_large_clamp', '052_extra_large_clamp', '061_foam_brick']
+# point cloud vertices of ycb models
+vertices = np.load('configs/YCB-Video/YCB_vertex.npy')
+# configure network
+model = configure_network()
+# run inference
+pred_pose = get_pose(model, img, class_names, intrinsics, vertices)
+# log results
+print("Predicted Poses :")
+print(pred_pose)
+
+# stop simulation
+pr.stop()
+pr.shutdown()
