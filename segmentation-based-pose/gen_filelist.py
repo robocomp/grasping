@@ -2,6 +2,7 @@ import os
 import argparse
 
 def collect_occluded_linemod_testlist(rootpath, outname):
+    # generate list of test images for Occluded-Linemod dataset
     path = rootpath + 'RGB-D/rgb_noseg/'
     imgs = [f for f in os.listdir(path) if f.endswith('.jpg') or f.endswith('.png')]
     imgs.sort()
@@ -11,6 +12,7 @@ def collect_occluded_linemod_testlist(rootpath, outname):
         allf.write(path + i +'\n')
 
 def collect_ycb_testlist(rootpath, outfile):
+    # generate list of test images for YCB-Videos dataset
     testListFile = rootpath + '/image_sets/keyframe.txt'
     with open(testListFile, 'r') as file:
         testlines = file.readlines()

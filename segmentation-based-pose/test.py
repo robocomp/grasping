@@ -18,7 +18,7 @@ def test(data_cfg, weightfile, listfile, outdir, object_names, intrinsics, verte
     outdir        : path to output directory.
     object_names  : list of object names in dataset.
     intrinsics    : intrinsic matrix of camera.
-    vertex        : vertex coordinates extracted from dataset for visualization.
+    vertex        : vertices of 3d point cloud of different dataset objects (for visualization).
     bestCnt       : best count.
     conf_thresh   : confidence threshold.
     linemod_index : whether to use linemod index or not.

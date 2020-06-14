@@ -129,7 +129,7 @@ def train(cfg_path):
             output = model(images)
 
             # segmentation
-            pred_seg = output[0] # (BxOHxOW,C)
+            pred_seg = output[0] # (B,OH,OW,C)
             seg_label = seg_label.view(-1)
 
             l_seg =seg_loss(pred_seg, seg_label)

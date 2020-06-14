@@ -58,9 +58,9 @@ class SegPoseNet(nn.Module):
         self.coreModel.print_network()
 
     def load_weights(self, weightfile):
-        # load DarkNet pretrained weights
+        # load Darknet pretrained weights
         self.coreModel.load_state_dict(torch.load(weightfile))
 
     def save_weights(self, weightfile):
-        # save DarkNet pretrained weights
+        # save Darknet pretrained weights
         torch.save(self.coreModel.state_dict(), weightfile)

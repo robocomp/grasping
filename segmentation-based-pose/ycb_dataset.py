@@ -68,8 +68,8 @@ class YCBDataset(torch.utils.data.Dataset):
         for i, item in enumerate(self.object_names_ycbvideo):
             self.ycb_class_to_idx[item] = i
 
-        self.kp3d = np.load(kp_path) # camera intrinsic matrices
-        self.n_kp = 8 # number of intrinsic properties
+        self.kp3d = np.load(kp_path) # 3d keypoints of bounding boxes of different objects (centred)
+        self.n_kp = 8 # number of keypoints per box
 
     def gen_train_list(self, imageset_path, out_pkl="data/real_train_path.pkl"):
         # read train/validation list
@@ -149,12 +149,12 @@ class YCBDataset(torch.utils.data.Dataset):
         poses = meta['poses'].transpose(2, 0, 1)
         cls_idxs = meta['cls_indexes'] - 1
         cls_idxs = cls_idxs.squeeze()
-        # get 2d kp matrix
+        # get 2d keypoints matrix
         kp_2d = np.zeros((len(cls_idxs), self.n_kp, 2))
         for idx, pose in enumerate(poses):
             vertex = self.kp3d[int(cls_idxs[idx])].squeeze()
             kp_2d[idx] = vertices_reprojection(vertex, pose, intrinsic)
-        # normalize kp matrix
+        # normalize keypoints matrix
         kp_2d[:, :, 0] /= self.original_width
         kp_2d[:, :, 1] /= self.original_height
         # dump into output file to be used later in training
@@ -163,12 +163,12 @@ class YCBDataset(torch.utils.data.Dataset):
 
     def gen_kp_gt(self, for_syn = True, for_real = True):
         if for_real:
-            # generate kp for all real images
+            # generate keypoints for all real images (for regression)
             print("generate and save kp gt for real images.")
             for item in tqdm(self.train_paths):
                 self.gen_kp_gt_for_item(item)
         if for_syn:
-            # generate kp for synthetic images
+            # generate keypoints for synthetic images (for regression)
             print("generate and save kp gt for synthetic images.")
             syn_prefix = self.syn_data_path
             for id in tqdm(range(self.syn_range)):
@@ -205,7 +205,7 @@ class YCBDataset(torch.utils.data.Dataset):
         random_erasing = RandomErasing(sl=0.01,sh=0.1)
         img = random_erasing(img)
 
-        # get bg image and combine them together
+        # get background image and combine them together
         back_img_path = random.choice(self.syn_bg_image_paths)
         bg_raw = imread(back_img_path)
         bg_img = cv2.resize(bg_raw, (self.input_height, self.input_width))

@@ -84,8 +84,8 @@ def visual_img(img, folder='temp',name="out.png"):
     scipy.misc.imsave(os.path.join(folder,name),img)
 
 def visual_kp_in_img(img, kp, size=4, folder='temp', name="kp_in_img_out.png"):
-    # visualize kp matrix on an RGB image
-    # kp shape: objXnum_kpX2
+    # visualize keypoints matrix on an RGB image
+    # kp shape: obj X num_kp X 2
     for obj_id, obj in enumerate(kp):
         b, g, r = get_class_colors(obj_id)
         for xy in obj:

@@ -1,5 +1,5 @@
 def parse_cfg(cfgfile):
-    # parse DarkNet config file
+    # parse Darknet config file
     blocks = []
     fp = open(cfgfile, 'r')
     block =  None
