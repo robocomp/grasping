@@ -77,3 +77,9 @@ Training the network is conducted in the following settings :
 [x] Train the network on given dataset.
 
 [x] Evaluate network performance.
+
+## Visual Results (From VREP)
+
+![](./assets/out1.jpg)
+
+Figure(1): Results of pose estimation in VREP simulator on seen objects during training.
