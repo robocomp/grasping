@@ -1,6 +1,6 @@
 import argparse
 import sys
-sys.path.append("../../segmentation-based-pose")
+sys.path.append("./")
 from api import *
 
 import numpy as np

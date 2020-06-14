@@ -1,5 +1,5 @@
 import sys
-sys.path.append("../../segmentation-based-pose")
+sys.path.append("./")
 
 from api import *
 
