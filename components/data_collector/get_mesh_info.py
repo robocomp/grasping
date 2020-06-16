@@ -53,9 +53,9 @@ if __name__ == '__main__':
     # arguments parsing
     argparser = argparse.ArgumentParser(description=__doc__)
     argparser.add_argument('-bbp', '--bbox_path', type=str, help='path to original dataset bounding boxes', 
-                            default='../../segmentation-based-pose/configs/YCB-Video/YCB_bbox.npy')
+                        default='../../segmentation-based-pose/configs/YCB-Video/YCB_bbox.npy')
     argparser.add_argument('-vp', '--vertices_path', type=str, help='path to original dataset point cloud vertices', 
-                            default='../../segmentation-based-pose/configs/YCB-Video/YCB_vertex.npy')
+                        default='../../segmentation-based-pose/configs/YCB-Video/YCB_vertex.npy')
 
     args = argparser.parse_args()
 

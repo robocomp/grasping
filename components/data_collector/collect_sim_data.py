@@ -1,6 +1,7 @@
 import os
 import argparse
 import random
+import json
 import numpy as np
 from skimage.io import imsave
 from scipy.io import savemat
@@ -20,9 +21,13 @@ def get_object_pose(obj, cam):
     obj_pose_mat = np.concatenate((obj_rot_mat, obj_position), 1)
     return obj_pose_mat
 
-def simulate(scene_dir):
+def simulate(scene_dir, cls_indices):
     # loop over all scene files in scenes directory
     for scene_path in os.listdir(scene_dir):
+        # check whether it's a scene file or not
+        if not scene_path[-3:] == 'ttt':
+            continue
+
         # create an output directory for each scene
         scene_out_dir = os.path.join('./sim_data/', scene_path[:-4])
         if not os.path.isdir(scene_out_dir):
@@ -76,7 +81,7 @@ def simulate(scene_dir):
             # set random pose and color to objects in the scene
             for shape in shapes:
                 shape.set_pose([
-                        random.uniform(-2,2), random.uniform(-2,2), random.uniform(4,11),
+                        random.uniform(-2,2), random.uniform(-2,2), random.uniform(4,10),
                         random.uniform(-1,1), random.uniform(-1,1), random.uniform(-1,1),
                         random.uniform(-1,1)
                     ])
@@ -108,7 +113,7 @@ def simulate(scene_dir):
             print("Saving meta-data ...")
             # save meta-data .mat
             meta_dict = {
-                'cls_indexes'      : [],
+                'cls_indexes'      : np.array(cls_indices[scene_path]),
                 'intrinsic_matrix' : intrinsics,
                 'poses'            : pose_mat
             }
@@ -122,10 +127,15 @@ if __name__ == '__main__':
     # arguments parsing
     argparser = argparse.ArgumentParser(description=__doc__)
     argparser.add_argument('-sd', '--scene_dir', type=str, help='path to the scenes directory', default='scenes/')
+    argparser.add_argument('-cl', '--classes_json', type=str, help='json file containing ordered classes indices for each scene',
+                        default='scenes/classes.json')
 
     args = argparser.parse_args()
 
     if not os.path.isdir('./sim_data/'):
         os.mkdir('./sim_data/')
 
-    simulate(args.scene_dir)
+    with open(args.classes_json) as file:
+        cls_indices = json.load(file)
+
+    simulate(args.scene_dir, cls_indices)
