@@ -50,7 +50,7 @@ class YCBEvaluator:
         self.diameters = []
         self._load_diameters()
 
-    def evaluate_one(self, est_pose, class_name=None, image_id):
+    def evaluate_one(self, est_pose, class_name=None, image_id=None):
         if class_name is None or class_name not in self.ycb_class_to_idx.keys():
             print("class name not specified!")
             return

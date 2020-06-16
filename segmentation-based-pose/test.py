@@ -1,4 +1,7 @@
+import os
+import time
 import argparse
+import numpy as np
 from utils import *
 from gen_filelist import *
 from segpose_net import SegPoseNet
@@ -122,4 +125,4 @@ if __name__ == '__main__':
                     './output', object_names_ycbvideo, k_ycbvideo, vertex_ycbvideo,
                     bestCnt=10, conf_thresh=0.3, use_gpu=args.use_gpu)
     else:
-        print('unsupported dataset \'%s\'.' % dataset)
+        print('unsupported dataset \'%s\'.' % args.dataset)
