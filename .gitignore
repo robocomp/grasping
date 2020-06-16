@@ -106,11 +106,14 @@ conda-env/
 
 # folders
 .idea
+.vscode
 log/
 models/
 data/
 output/
 scenes/
+mesh_data/
+sim_data/
 
 # other files
 *.pth
