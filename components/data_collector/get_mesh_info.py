@@ -1,15 +1,17 @@
 import os
 import argparse
+import json
 import numpy as np
 import trimesh
 
-def augment_gt_data(bbox_npy, vertex_npy):
+def augment_gt_data(bbox_npy, vertex_npy, cls_indices):
     """
     Produces mesh data information npys 
     Returns centred bounding boxes and mesh point cloud vertices
     Arguments:
-    bbox_npy   : path to original bounding boxes npy.
-    vertex_npy : path to original vertices npy. 
+    bbox_npy    : path to original bounding boxes npy.
+    vertex_npy  : path to original vertices npy.
+    cls_indices : dictionary of new classes indices.
     """
     # load original npys
     full_bbox_arr = np.load(bbox_npy)
@@ -23,7 +25,7 @@ def augment_gt_data(bbox_npy, vertex_npy):
     vertices = []
 
     # loop over all meshes
-    for filename in os.listdir('meshes'):
+    for filename in cls_indices.keys():
         print(f'Getting information of {filename} ...')
 
         print(f'Loading mesh ...')
@@ -56,10 +58,15 @@ if __name__ == '__main__':
                         default='../../segmentation-based-pose/configs/YCB-Video/YCB_bbox.npy')
     argparser.add_argument('-vp', '--vertices_path', type=str, help='path to original dataset point cloud vertices', 
                         default='../../segmentation-based-pose/configs/YCB-Video/YCB_vertex.npy')
+    argparser.add_argument('-cl', '--classes_json', type=str, help='json file indices for new classes',
+                        default='meshes/new_classes.json')
 
     args = argparser.parse_args()
 
     if not os.path.isdir("./mesh_data/"):
         os.mkdir("./mesh_data/")
 
-    augment_gt_data(args.bbox_path, args.vertices_path)
+    with open(args.classes_json) as file:
+        cls_indices = json.load(file)
+
+    augment_gt_data(args.bbox_path, args.vertices_path, cls_indices)
