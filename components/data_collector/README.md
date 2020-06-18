@@ -11,6 +11,14 @@ This is the code for data collection and preparation from V-REP simulator for tr
 
 1) Create different scenes from provided meshes in `meshes` folder. Currently, the scene must contain 4 objects (named _Shape1_, _Shape2_, _Shape3_ and _Shape4_) and a vision sensor (named _cam_). 
 
+**Notes :** 
+
+- Make sure that objects are centred around the world origin and that principal axes are aligned.
+
+- [free3d.com](https://free3d.com/) contains a wide collection of meshes that can be used for data augmentation.
+
+- Add new classes indices to json file with similar format to that in `meshes/new_classes.json` .
+
 2) Run `get_mesh_info.py` that generates bounding boxes and vertices files in `mesh_data` folder.
 
 ```bash
@@ -32,11 +40,12 @@ For each output sample :
 
 - RGB image.
 - depth image.
-- meta data : containing _cls_indexes_, _intrinsic_matrix_ and _poses_.
+- meta data : contains _cls_indexes_, _intrinsic_matrix_ and _poses_.
+- visualization image : contains visualizations for poses of all objects in the scene.
 
 **Note :** new classes indices start from 22, as YCB-Videos dataset contains 21 classes.
 
-4) Perform semantic segmentation on RGB images to get segmentation masks using an open-source tool like : [Image Labeling Tool](https://github.com/Slava/label-tool) .
+4) Perform semantic segmentation on RGB images to get segmentation masks using an open-source tool like : [Supervise.ly](https://supervise.ly/) .
 
 5) Add output data to the training dataset. The following data is required :
 
