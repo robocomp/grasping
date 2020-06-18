@@ -2,65 +2,15 @@ import os
 import argparse
 import random
 import json
-import cv2
 import numpy as np
 from skimage.io import imsave
 from scipy.io import savemat
-from scipy.spatial.transform import Rotation
 from math import tan, atan, radians, degrees
 
+from utils import *
 from pyrep import PyRep
 from pyrep.objects.vision_sensor import VisionSensor
 from pyrep.objects.shape import Shape
-
-def vertices_reprojection(vertices, rt, k):
-    # project a vertex to pixel space
-    p = np.matmul(k, np.matmul(rt[:3,0:3], vertices.T) + rt[:3,3].reshape(-1,1))
-    p[0] = p[0] / (p[2] + 1e-5)
-    p[1] = p[1] / (p[2] + 1e-5)
-    return p[:2].T
-
-def visualize_predictions(predPose, cls_idx, image, vertex, intrinsics):
-    # visualize estimated poses on RGB image
-    height, width, _ = image.shape
-    maskImg = np.zeros((height,width), np.uint8)
-    contourImg = np.copy(image)
-    for i in range(len(predPose)):
-        # show surface reprojection
-        maskImg.fill(0)
-        vp = vertices_reprojection(vertex[cls_idx[i]-1][:], predPose[i], intrinsics)
-        for p in vp:
-            if p[0] != p[0] or p[1] != p[1]:  # check nan
-                continue
-            maskImg = cv2.circle(maskImg, (int(p[0]), int(p[1])), 1, 255, -1)
-
-        # fill the holes
-        kernel = np.ones((5,5), np.uint8)
-        maskImg = cv2.morphologyEx(maskImg, cv2.MORPH_CLOSE, kernel)
-        # find contour
-        contours, _ = cv2.findContours(maskImg, mode=cv2.RETR_EXTERNAL, method=cv2.CHAIN_APPROX_SIMPLE)
-        contourImg = cv2.drawContours(contourImg, contours, -1, (255, 255, 255), 4, cv2.LINE_AA) # border
-        contourImg = cv2.drawContours(contourImg, contours, -1, (255, 0, 0), 2, cv2.LINE_AA)
-
-    return contourImg
-
-def get_object_pose(obj, cam):
-    # get pose matrix of a shape using its position and quaternion
-    # get translation (x & y axes are flipped)
-    obj_position = obj.get_position(relative_to=cam).reshape((-1,1))
-    obj_position[0] = obj_position[0] * -1
-    obj_position[1] = obj_position[1] * -1
-
-    # get rotation from quaternion (rotated 180 around z axis)
-    obj_quat = obj.get_quaternion(relative_to=cam)
-    obj_rot = Rotation.from_quat(obj_quat)
-    flip_mat = np.array([[-1,0,0],[0,-1,0],[0,0,1]])
-    obj_rot_mat = np.matmul(flip_mat, obj_rot.as_matrix())
-
-    # concatenate rotation and translation matrices 
-    obj_pose_mat = np.concatenate((obj_rot_mat, obj_position), 1)
-    
-    return obj_pose_mat
 
 def simulate(scene_dir, cls_indices):
     # read 3d point cloud vertices npy (for visualization)
@@ -89,6 +39,10 @@ def simulate(scene_dir, cls_indices):
         camera = VisionSensor('cam')
         # set camera absolute pose to world coordinates
         camera.set_pose([0,0,0,0,0,0,1])
+        pr.step()
+
+        # define background plane
+        plane = Shape('Plane')
         pr.step()
 
         # define scene shapes
@@ -123,13 +77,15 @@ def simulate(scene_dir, cls_indices):
         for i in range(100):
             print("Randomizing objects' poses and colors ...")
             # set random pose and color to objects in the scene
+            obj_colors = []
             for shape in shapes:
                 shape.set_pose([
                         random.uniform(-2,2), random.uniform(-2,2), random.uniform(4,10),
                         random.uniform(-1,1), random.uniform(-1,1), random.uniform(-1,1),
                         random.uniform(-1,1)
                     ])
-                shape.set_color([random.uniform(0,1), random.uniform(0,1), random.uniform(0,1)])
+                obj_colors.append([random.uniform(0,1), random.uniform(0,1), random.uniform(0,1)])
+                shape.set_color(obj_colors[-1])
                 pr.step()
 
             print("Reading vision sensor RGB signal ...")
@@ -165,6 +121,21 @@ def simulate(scene_dir, cls_indices):
                 'poses'            : pose_mat
             }
             savemat(scene_out_dir+f'/meta_{i}.mat', meta_dict)
+
+            print("Performing semantic segmentation of RGB signal ...")
+            # perform semantic segmentation of RGB image
+            # get background color
+            bg_color = plane.get_color()
+            # set background to black
+            plane.set_color([0, 0, 0])
+            pr.step()
+            # re-capture RGB signal
+            seg_img = camera.capture_rgb()
+            seg_img = perform_segmentation(seg_img, cls_indices[scene_path], poses, vertex_npy, intrinsics)
+            imsave(scene_out_dir+f'/mask_{i}.png', seg_img)
+            # reset background color
+            plane.set_color(bg_color)
+            pr.step()
 
         # stop simulation
         pr.stop()

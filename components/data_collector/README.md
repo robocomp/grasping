@@ -40,14 +40,13 @@ For each output sample :
 
 - RGB image.
 - depth image.
+- Segmentation mask : labels mask for objects in the scene.
 - meta data : contains _cls_indexes_, _intrinsic_matrix_ and _poses_.
 - visualization image : contains visualizations for poses of all objects in the scene.
 
 **Note :** new classes indices start from 22, as YCB-Videos dataset contains 21 classes.
 
-4) Perform semantic segmentation on RGB images to get segmentation masks using an open-source tool like : [Supervise.ly](https://supervise.ly/) .
-
-5) Add output data to the training dataset. The following data is required :
+4) Add output data to the training dataset. The following data is required :
 
 - RGB image.
 - depth image.
