@@ -73,8 +73,8 @@ def simulate(scene_dir, cls_indices):
                                 [0.00000000e+00, cam_focal_y, float(cam_res[1]/2.0)],
                                 [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
 
-        # loop to get 100 samples per scene
-        for i in range(100):
+        # loop to get 300 samples per scene
+        for i in range(300):
             print("Randomizing objects' poses and colors ...")
             # set random pose and color to objects in the scene
             obj_colors = []
@@ -100,8 +100,8 @@ def simulate(scene_dir, cls_indices):
 
             print("Saving sensor output ...")
             # save sensor output
-            imsave(scene_out_dir+f'/img_{i}.png', img)
-            imsave(scene_out_dir+f'/depth_{i}.png', depth)
+            imsave(scene_out_dir+f'/{str(i).zfill(6)}-color.png', img)
+            imsave(scene_out_dir+f'/{str(i).zfill(6)}-depth.png', depth)
             
             print("Getting objects' poses ...")
             # get poses for all objects in scene
@@ -111,7 +111,7 @@ def simulate(scene_dir, cls_indices):
             pose_mat = np.stack(poses, axis=2)
             # save pose visualization on RGB image
             img_viz = visualize_predictions(poses, cls_indices[scene_path], img, vertex_npy, intrinsics)
-            imsave(scene_out_dir+f'/viz_{i}.png', img_viz)
+            imsave(scene_out_dir+f'/{str(i).zfill(6)}-viz.png', img_viz)
 
             print("Saving meta-data ...")
             # save meta-data .mat
@@ -120,7 +120,7 @@ def simulate(scene_dir, cls_indices):
                 'intrinsic_matrix' : intrinsics,
                 'poses'            : pose_mat
             }
-            savemat(scene_out_dir+f'/meta_{i}.mat', meta_dict)
+            savemat(scene_out_dir+f'/{str(i).zfill(6)}-meta.mat', meta_dict)
 
             print("Performing semantic segmentation of RGB signal ...")
             # perform semantic segmentation of RGB image
@@ -132,7 +132,7 @@ def simulate(scene_dir, cls_indices):
             # re-capture RGB signal
             seg_img = camera.capture_rgb()
             seg_img = perform_segmentation(seg_img, cls_indices[scene_path], poses, vertex_npy, intrinsics)
-            imsave(scene_out_dir+f'/mask_{i}.png', seg_img)
+            imsave(scene_out_dir+f'/{str(i).zfill(6)}-label.png', seg_img)
             # reset background color
             plane.set_color(bg_color)
             pr.step()
