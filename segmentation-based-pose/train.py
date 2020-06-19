@@ -22,7 +22,7 @@ from utils import *
 initial_lr = 0.001
 momentum = 0.9
 weight_decay = 5e-4
-num_epoch = 100
+num_epoch = 30
 
 # data paths
 ycb_root = None
@@ -106,7 +106,7 @@ def train(cfg_path):
     # train/val split
     train_db, val_db = torch.utils.data.random_split(train_dataset, [len(train_dataset)-2000, 2000])
 
-    train_loader = torch.utils.data.DataLoader(dataset=train_dataset,
+    train_loader = torch.utils.data.DataLoader(dataset=train_db,
                                                batch_size=batch_size, num_workers=num_workers,
                                                shuffle=True)
     val_loader = torch.utils.data.DataLoader(dataset=val_db,
@@ -119,6 +119,7 @@ def train(cfg_path):
         i=-1
         for images, seg_label, kp_gt_x, kp_gt_y, mask_front in tqdm(train_loader):
             i += 1
+            # data to device
             images = images.to(device)
             seg_label = seg_label.to(device)
             kp_gt_x = kp_gt_x.to(device)
@@ -132,7 +133,7 @@ def train(cfg_path):
             pred_seg = output[0] # (B,OH,OW,C)
             seg_label = seg_label.view(-1)
 
-            l_seg =seg_loss(pred_seg, seg_label)
+            l_seg = seg_loss(pred_seg, seg_label)
 
             # regression
             mask_front = mask_front.repeat(number_point,1, 1, 1).permute(1,2,3,0).contiguous() # (B,OH,OW,NV)
@@ -168,10 +169,56 @@ def train(cfg_path):
                 writer.add_scalar('conf_loss', l_conf.item(), epoch*total_step+i)
                 writer.add_scalar('pixel_wise bias', bias_acc.value, epoch*total_step+i)
 
+        # reset pixel_wise bias meter
         bias_acc._reset()
+        # LR scheduler step
         scheduler.step()
-        if epoch % 5 == 0:
-            model.save_weights(os.path.join(checkpoints_dir, f'ckpt_{epoch}.pth'))
+
+        # model validation
+        with torch.no_grad():
+            total_seg_loss = 0
+            total_pos_loss = 0
+            total_conf_loss = 0
+            total_loss = 0
+            for images, seg_label, kp_gt_x, kp_gt_y, mask_front in tqdm(val_loader):
+                # data to device
+                images = images.to(device)
+                seg_label = seg_label.to(device)
+                kp_gt_x = kp_gt_x.to(device)
+                kp_gt_y = kp_gt_y.to(device)
+                mask_front = mask_front.to(device)
+                # forward pass
+                output = model(images)
+                # segmentation
+                pred_seg = output[0]
+                seg_label = seg_label.view(-1)
+                l_seg = seg_loss(pred_seg, seg_label)
+                # regression
+                mask_front = mask_front.repeat(number_point,1, 1, 1).permute(1,2,3,0).contiguous()
+                pred_x = output[1][0] * mask_front
+                pred_y = output[1][1] * mask_front
+                kp_gt_x = kp_gt_x.float() * mask_front
+                kp_gt_y = kp_gt_y.float() * mask_front
+                l_pos = pos_loss(pred_x, kp_gt_x) + pos_loss(pred_y, kp_gt_y)
+                # confidence
+                conf = output[1][2] * mask_front
+                bias = torch.sqrt((pred_y-kp_gt_y)**2 + (pred_x-kp_gt_x)**2)
+                conf_target = torch.exp(-modulating_factor * bias) * mask_front
+                conf_target = conf_target.detach()
+                l_conf = conf_loss(conf, conf_target)
+                # combine all losses
+                all_loss = l_seg + l_pos * pos_loss_factor + l_conf * conf_loss_factor
+                total_seg_loss += l_seg.item()
+                total_pos_loss += l_pos.item()
+                total_conf_loss += l_conf.item()
+                total_loss += all_loss.item()
+            print('Epoch [{}/{}], Validation Loss: \n seg loss: {:.4f}, pos loss: {:.4f}, conf loss: {:.4f}, total loss: {:.4f}'
+                    .format(epoch + 1, num_epoch, total_seg_loss, total_pos_loss, total_conf_loss, total_loss))
+
+        # save model checkpoint per epoch
+        model.save_weights(os.path.join(checkpoints_dir, f'ckpt_{epoch}.pth'))
+    
+    # save last model checkpoints
     model.save_weights(os.path.join(checkpoints_dir, 'ckpt_final.pth'))
     writer.close()
 
@@ -180,6 +227,7 @@ if __name__ == '__main__':
     argparser.add_argument('-ds', '--dataset', type=str, help='dataset to be used for train or test', default='ycb')
     argparser.add_argument('-dsp', '--dataset_root', type=str, help='root directory of the chosen dataset')
     argparser.add_argument('-wp', '--weights_path', type=str, help='path to the pretrained weights file', default=None)
+    argparser.add_argument('-bg', '--background_path', type=str, help='path to background images for synthetic data', default=None)
 
     args = argparser.parse_args()
 
@@ -196,9 +244,10 @@ if __name__ == '__main__':
         ycb_data_path = os.path.join(ycb_root, 'data')
         syn_data_path = os.path.join(ycb_root, 'data_syn')
         imageset_path = os.path.join(ycb_root, 'image_sets')
-        kp_path = './configs/YCB-Video/YCB_bbox.npy'
-        data_cfg = 'configs/data-YCB.cfg'
+        kp_path = './configs/Custom/custom_bbox.npy'
+        data_cfg = 'configs/data-Custom.cfg'
         pretrained_weights_path = args.weights_path
-        train('./configs/data-YCB.cfg')
+        bg_path = args.background_path
+        train('./configs/data-Custom.cfg')
     else:
-        print('unsupported dataset \'%s\'.' % dataset)
+        print('unsupported dataset \'%s\'.' % args.dataset)

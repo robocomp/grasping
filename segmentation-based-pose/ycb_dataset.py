@@ -21,7 +21,7 @@ from utils import *
 
 class YCBDataset(torch.utils.data.Dataset):
     def __init__(self, root, imageset_path, syn_data_path=None, use_real_img = True, num_syn_images=200000 ,target_h=76, target_w=76, 
-                bg_path = None, kp_path="configs/YCB-Video/YCB_bbox.npy", data_cfg="configs/data-YCB.cfg",
+                bg_path = None, kp_path="configs/Custom/custom_bbox.npy", data_cfg="configs/data-Custom.cfg",
                 use_bg_img = True):
         self.root = root # data root directory
         data_options = read_data_cfg(data_cfg) # data config
@@ -58,12 +58,13 @@ class YCBDataset(torch.utils.data.Dataset):
 
         # YCB classes names
         self.object_names_ycbvideo = ['002_master_chef_can', '003_cracker_box', '004_sugar_box', '005_tomato_soup_can',
-                                 '006_mustard_bottle', '007_tuna_fish_can', '008_pudding_box', '009_gelatin_box',
-                                 '010_potted_meat_can', '011_banana', '019_pitcher_base', '021_bleach_cleanser',
-                                 '024_bowl', '025_mug', '035_power_drill',
-                                 '036_wood_block', '037_scissors', '040_large_marker', '051_large_clamp',
-                                 '052_extra_large_clamp',
-                                 '061_foam_brick']
+                                '006_mustard_bottle', '007_tuna_fish_can', '008_pudding_box', '009_gelatin_box',
+                                '010_potted_meat_can', '011_banana', '019_pitcher_base', '021_bleach_cleanser',
+                                '024_bowl', '025_mug', '035_power_drill', '036_wood_block',
+                                '037_scissors', '040_large_marker', '051_large_clamp', '052_extra_large_clamp',
+                                '061_foam_brick', 'custom-fork-01', 'custom-fork-02', 'custom-glass-01',
+                                'custom-jar-01', 'custom-jar-02', 'custom-plate-01', 'custom-plate-02',
+                                'custom-plate-03', 'custom-spoon-01', 'custom-spoon-02']
         self.ycb_class_to_idx = {} # class name to index
         for i, item in enumerate(self.object_names_ycbvideo):
             self.ycb_class_to_idx[item] = i
