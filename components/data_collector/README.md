@@ -2,6 +2,8 @@
 
 This is the code for data collection and preparation from V-REP simulator for training data augmentation.
 
+**Note :** This data collector outputs data samples in YCB-Videos dataset format.
+
 ## Dependencies
 
 - [PyRep API](https://github.com/stepjam/PyRep) .

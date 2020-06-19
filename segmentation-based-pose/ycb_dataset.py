@@ -44,11 +44,7 @@ class YCBDataset(torch.utils.data.Dataset):
 
         self.syn_data_path = syn_data_path # path to synthetic data
         self.syn_range = 80000 # number of synthetic data in YCB (80000 sequentially indexed)
-        self.corrupted_ids = [2668, 2809, 6896, 8750, 9579, 10671, # corrupted synthetic data ids (in case of any)
-                            11452, 14843, 15649, 16571, 17658, 19450,
-                            33296, 36485, 38553, 38922, 42968, 45989,
-                            47399, 48169, 50544, 52588, 58769, 65702,
-                            70619, 74220, 75057]
+        self.corrupted_ids = [] # corrupted synthetic data ids (in case of any)
 
         self.syn_bg_image_paths = get_img_list_from(bg_path) if bg_path is not None else [] # paths of background images
         self.use_bg_img = use_bg_img # whether to use background images or not
@@ -167,7 +163,12 @@ class YCBDataset(torch.utils.data.Dataset):
             # generate keypoints for all real images (for regression)
             print("generate and save kp gt for real images.")
             for item in tqdm(self.train_paths):
-                self.gen_kp_gt_for_item(item)
+                try:
+                    self.gen_kp_gt_for_item(item)
+                except:
+                    print(f"error reading item : {item}")
+                    print("remove from train_paths")
+                    self.train_paths.remove(item)
         if for_syn:
             # generate keypoints for synthetic images (for regression)
             print("generate and save kp gt for synthetic images.")
@@ -176,7 +177,12 @@ class YCBDataset(torch.utils.data.Dataset):
                 if id in self.corrupted_ids:
                     continue 
                 item = os.path.join(syn_prefix, "%06d" % id)
-                self.gen_kp_gt_for_item(item)
+                try:
+                    self.gen_kp_gt_for_item(item)
+                except:
+                    print(f"error reading item : {item}")
+                    print("add to corrupted_ids")
+                    self.corrupted_ids.append(id)
 
     def gen_synthetic(self):
         # check for background paths

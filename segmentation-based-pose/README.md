@@ -21,7 +21,7 @@ pip3 install -r requirements.txt
 - For training :
 
 ```
-python train.py -ds <dataset_name> -dsp </path/to/dataset/root/dir> -wp </path/to/weights/file>
+python train.py -ds <dataset_name> -dsp </path/to/dataset/root/dir> -wp </path/to/weights/file> -bg </path/to/background/images/dir>
 ```
 
 - For visual inference (outputs to `./output` directory):

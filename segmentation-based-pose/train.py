@@ -218,13 +218,13 @@ def train(cfg_path):
         # save model checkpoint per epoch
         model.save_weights(os.path.join(checkpoints_dir, f'ckpt_{epoch}.pth'))
     
-    # save last model checkpoints
+    # save final model checkpoint
     model.save_weights(os.path.join(checkpoints_dir, 'ckpt_final.pth'))
     writer.close()
 
 if __name__ == '__main__':
     argparser = argparse.ArgumentParser(description=__doc__)
-    argparser.add_argument('-ds', '--dataset', type=str, help='dataset to be used for train or test', default='ycb')
+    argparser.add_argument('-ds', '--dataset', type=str, help='dataset to be used for train or test', default='custom')
     argparser.add_argument('-dsp', '--dataset_root', type=str, help='root directory of the chosen dataset')
     argparser.add_argument('-wp', '--weights_path', type=str, help='path to the pretrained weights file', default=None)
     argparser.add_argument('-bg', '--background_path', type=str, help='path to background images for synthetic data', default=None)
@@ -239,7 +239,18 @@ if __name__ == '__main__':
         os.mkdir('./data/')
 
     if args.dataset == 'ycb':
-        # parse arguments
+        # initialize paths
+        ycb_root = args.dataset_root
+        ycb_data_path = os.path.join(ycb_root, 'data')
+        syn_data_path = os.path.join(ycb_root, 'data_syn')
+        imageset_path = os.path.join(ycb_root, 'image_sets')
+        kp_path = './configs/YCB-Video/YCB_bbox.npy'
+        data_cfg = 'configs/data-YCB.cfg'
+        pretrained_weights_path = args.weights_path
+        bg_path = args.background_path
+        train('./configs/data-YCB.cfg')
+    elif args.dataset == 'custom':
+        # initialize paths
         ycb_root = args.dataset_root
         ycb_data_path = os.path.join(ycb_root, 'data')
         syn_data_path = os.path.join(ycb_root, 'data_syn')
