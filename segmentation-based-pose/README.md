@@ -4,6 +4,21 @@ This is an implementation of [Segmentation-driven 6D Object Pose Estimation](htt
 
 Original implementation : https://github.com/cvlab-epfl/segmentation-driven-pose .
 
+# Network Description
+
+![](./assets/network.jpg)
+
+Figure(1): Network diagram from original paper.
+
+A brief description of network :
+
+1) The input to the network is a simple RGB image.
+2) The network has an encoder of Darknet-53 from YOLOv3, which is used for feature extraction of input image.
+3) The network, then, has two streams :
+- Segmentation stream : to produce the output segmentation masks (pixel-wise object classification).
+- Regression stream : to get 2D keypoints corresponding to the 3D keypoints of the object in the world (object) frame. Usually, the keypoints are 8 vertices of the 3D bounding box.
+4) The output 2D keypoints are used to solve a 2D-3D correspondance problem with the 3D keypoints, using RANSAC-based PnP to get object pose (extrinsics), knowing the camera intrinsics. Also, the segmentation masks are used to define object class.
+
 # Installation
 
 - Install `python3` and `python3-pip`.
@@ -82,4 +97,4 @@ Training the network is conducted in the following settings :
 
 ![](./assets/out1.jpg)
 
-Figure(1): Results of pose estimation in VREP simulator on seen objects during training.
+Figure(2): Results of pose estimation in VREP simulator on seen objects during training.
