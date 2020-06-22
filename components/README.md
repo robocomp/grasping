@@ -19,6 +19,6 @@ chmod +x run.sh
 ```
 
 ## Data Collector
-`data_collector` folder contains the code for data collection and preparation from V-REP simulator for training data augmentation. 
+`data_collector` folder contains the code for data collection and preparation from V-REP simulator for training and testing data augmentation. 
 
 Refer to `data_collector/README.md` for more information about its usage.

@@ -12,45 +12,45 @@ Figure(1): Network diagram from original paper.
 
 A brief description of network :
 
-1) The input to the network is a simple RGB image.
-2) The network has an encoder of Darknet-53 from YOLOv3, which is used for feature extraction of input image.
-3) The network, then, has two streams :
-- Segmentation stream : to produce the output segmentation masks (pixel-wise object classification).
-- Regression stream : to get 2D keypoints corresponding to the 3D keypoints of the object in the world (object) frame. Usually, the keypoints are 8 vertices of the 3D bounding box.
-4) The output 2D keypoints are used to solve a 2D-3D correspondance problem with the 3D keypoints, using RANSAC-based PnP to get object pose (extrinsics), knowing the camera intrinsics. Also, the segmentation masks are used to define object class.
+1)  The input to the network is a simple RGB image.
+2)  The network has an encoder of Darknet-53 from YOLOv3, which is used for feature extraction of input image.
+3)  The network, then, has two streams :
+    -   Segmentation stream : to produce the output segmentation masks (pixel-wise object classification).
+    -   Regression stream : to get 2D keypoints corresponding to the 3D keypoints of the object in the world (object) frame. Usually, the keypoints are 8 vertices of the 3D bounding box.
+4)  The output 2D keypoints are used to solve a 2D-3D correspondance problem with the 3D keypoints, using RANSAC-based PnP to get object pose (extrinsics), knowing the camera intrinsics. Also, the segmentation masks are used to define object class.
 
 # Installation
 
-- Install `python3` and `python3-pip`.
-- Run :
+-   Install `python3` and `python3-pip`.
+-   Run :
 ```
 pip3 install -r requirements.txt
 ```
 
 ## Usage
 
-- Download [YCB videos dataset](https://rse-lab.cs.washington.edu/projects/posecnn/) or [Occluded-LINEMOD datset](https://hci.iwr.uni-heidelberg.de/vislearn/iccv2015-occlusion-challenge/) .
+-   Download [YCB videos dataset](https://rse-lab.cs.washington.edu/projects/posecnn/) or [Occluded-LINEMOD datset](https://hci.iwr.uni-heidelberg.de/vislearn/iccv2015-occlusion-challenge/) .
 
-- Download [pretrained weights for YCB dataset](https://drive.google.com/file/d/1N-qI5dqFVSNryZ0WwKlLn7npDkyVs_eh/view?usp=sharing) . 
+-   Download [pretrained weights for YCB dataset](https://drive.google.com/file/d/1N-qI5dqFVSNryZ0WwKlLn7npDkyVs_eh/view?usp=sharing) . 
 
-- For training :
+-   For training :
 
 ```
 python train.py -ds <dataset_name> -dsp </path/to/dataset/root/dir> -wp </path/to/weights/file> -bg </path/to/background/images/dir>
 ```
 
-- For visual inference (outputs to `./output` directory):
+-   For visual inference (outputs to `./output` directory):
 
 ```
 python test.py -gpu <boolean> -ds <dataset_name> -dsp </path/to/dataset/root/dir> -wp </path/to/weights/file>
 ```
 
-- For metric evaluation :
+-   For metric evaluation :
 ```
 python eval.py -dsp </path/to/dataset/root/dir> -op </path/to/output/poses>
 ```
 
-- For API functions :
+-   For API functions :
 
 `api.py` contains two functions, `configure_network` and `get_pose`, for dealing with external calls (through a component, for example). 
 
@@ -67,9 +67,9 @@ predicted_pose = api.get_pose(model, img, class_names, intrinsics, vertices)
 
 Training the network is conducted in the following settings :
 
-- Device : Nvidia Geforce RTX 2080 (VRAM = 8 GB).
-- Batch Size : 4 (6.5 GB).
-- Elapsed Time : 5.5 ~ 6 hours/epoch.
+-   Device : Nvidia Geforce RTX 2080 (VRAM = 8 GB).
+-   Batch Size : 4 (6.5 GB).
+-   Elapsed Time : 5.5 ~ 6 hours/epoch.
 
 ## Progress
 
