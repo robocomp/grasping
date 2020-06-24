@@ -36,18 +36,19 @@ pip3 install -r requirements.txt
 -   For training :
 
 ```
-python train.py -ds <dataset_name> -dsp </path/to/dataset/root/dir> -wp </path/to/weights/file> -bg </path/to/background/images/dir>
+python train.py -ds dataset_name -dsp /path/to/dataset/root/dir -wp /path/to/weights/file -bg /path/to/background/images/dir
 ```
 
 -   For visual inference (outputs to `./output` directory):
 
 ```
-python test.py -gpu <boolean> -ds <dataset_name> -dsp </path/to/dataset/root/dir> -wp </path/to/weights/file>
+python test.py -gpu True|False -ds dataset_name -dsp /path/to/dataset/root/dir -wp /path/to/weights/file
 ```
 
 -   For metric evaluation :
+
 ```
-python eval.py -dsp </path/to/dataset/root/dir> -op </path/to/output/poses>
+python eval.py -dsp /path/to/dataset/root/dir -op /path/to/output/poses
 ```
 
 -   For API functions :
@@ -60,6 +61,12 @@ import api
 model = api.configure_network()
 
 predicted_pose = api.get_pose(model, img, class_names, intrinsics, vertices)
+```
+
+-   For network traced script (used in C++ deployment) :
+
+```
+python get_trace.py -cfg /path/to/config/file -wp /path/to/weights/file -op /path/to/output/file
 ```
 
 
