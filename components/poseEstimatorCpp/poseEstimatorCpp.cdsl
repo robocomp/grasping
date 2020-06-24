@@ -1,0 +1,15 @@
+import "CameraRGBDSimple.idsl";
+import "PoseEstimator.idsl";
+import "PoseEstimatorPub.idsl";
+
+Component poseEstimator
+{
+    Communications
+    {
+        implements PoseEstimator;
+        requires CameraRGBDSimple;
+        publishes PoseEstimatorPub;
+    };
+    language Cpp11;
+};
+
