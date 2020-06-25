@@ -1,9 +1,0 @@
-import "PoseEstimator.idsl";
-
-module RoboCompPoseEstimatorPub
-{
-  interface PoseEstimatorPub
-  {
-    idempotent void pushObjectPose(RoboCompPoseEstimator::PoseType poses);
-  };
-};
