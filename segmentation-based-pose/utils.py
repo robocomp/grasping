@@ -1,4 +1,5 @@
 import torch
+import torch.nn as nn
 from torch.autograd import Variable
 
 import os
@@ -382,6 +383,27 @@ def fusion(output, width, height, intrinsics, conf_thresh, batchIdx, bestCnt):
 ####################################################################################################################
 #                                               Metrics Utilities                                                  #
 ####################################################################################################################
+class FocalLoss(nn.Module):
+    """
+    Focal loss for dynamically-weighted cross entropy
+    """
+    def __init__(self, alpha=1, gamma=2, weights=None, reduce=True):
+        super(FocalLoss, self).__init__()
+        self.criterion = nn.CrossEntropyLoss(weight=weights, reduce=False)
+        self.alpha = alpha
+        self.gamma = gamma
+        self.reduce = reduce
+
+    def forward(self, inputs, targets):
+        ce_loss = self.criterion(inputs, targets)
+        pt = torch.exp(-ce_loss)
+        f_loss = self.alpha * (1-pt)**self.gamma * ce_loss
+
+        if self.reduce:
+            return torch.mean(f_loss)
+        else:
+            return f_loss
+
 class meters:
     """
     save results and calculate average automatically
