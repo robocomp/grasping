@@ -73,10 +73,11 @@ def simulate(scene_dir, cls_indices):
                                 [0.00000000e+00, cam_focal_y, float(cam_res[1]/2.0)],
                                 [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
 
-        # loop to get 300 samples per scene
-        for i in range(300):
+        # loop to get 5000 samples per scene
+        for i in range(5000):
             print("Randomizing objects' poses and colors ...")
             # set random pose and color to objects in the scene
+            plane.set_color([random.uniform(0,1), random.uniform(0,1), random.uniform(0,1)])
             obj_colors = []
             for shape in shapes:
                 shape.set_pose([

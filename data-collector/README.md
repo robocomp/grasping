@@ -27,7 +27,7 @@ This is the code for data collection and preparation from V-REP simulator for tr
 python get_mesh_info.py -bbp /path/to/original/bbox/file -vp /path/to/original/vertex/file -cl /path/to/classes/indices/json
 ```
 
-3)  Run `collect_sim_data.py` that collects 100 data samples from each scene in the provided directory and saves them to `sim_data` folder.
+3)  Run `collect_sim_data.py` that collects 5000 data samples from each scene in the provided directory and saves them to `sim_data` folder.
 
 ```bash
 python collect_sim_data.py -sd /path/to/scenes/directory -cl /path/to/scenes/classes/json
