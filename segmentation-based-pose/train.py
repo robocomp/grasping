@@ -97,11 +97,11 @@ def train(cfg_path):
         train_dataset.gen_kp_gt()
 
     # loss configurations
-    seg_loss = nn.CrossEntropyLoss(weight=median_balancing_weight)
+    seg_loss = FocalLoss(alpha=1.0, gamma=2.0, weights=median_balancing_weight, reduce=True)
     pos_loss = nn.L1Loss()
-    pos_loss_factor = 1.3  # 0.02 in original paper
+    pos_loss_factor = 1.3
     conf_loss = nn.L1Loss()
-    conf_loss_factor = 0.8  # 0.02 in original paper
+    conf_loss_factor = 1.0
 
     # train/val split
     train_db, val_db = torch.utils.data.random_split(train_dataset, [len(train_dataset)-2000, 2000])
