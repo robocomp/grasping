@@ -107,7 +107,7 @@ if __name__ == '__main__':
         rt_transforms = np.load('./configs/Occluded-LINEMOD/Transform_RT_to_OccLINEMOD_meshes.npy')
         transform_pred_pose('./output', object_names_occlinemod, rt_transforms)
     elif args.dataset == 'ycb':
-        # generate test list file for linemod
+        # generate test list file for ycb
         listfile = './data/ycb-video-testlist.txt'
         collect_ycb_testlist(args.dataset_root, listfile)
         # intrinsics of YCB-VIDEO dataset
@@ -116,13 +116,35 @@ if __name__ == '__main__':
                                [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
         # 21 objects for YCB-Video dataset
         object_names_ycbvideo = ['002_master_chef_can', '003_cracker_box', '004_sugar_box', '005_tomato_soup_can', '006_mustard_bottle',
-                                 '007_tuna_fish_can', '008_pudding_box', '009_gelatin_box', '010_potted_meat_can', '011_banana',
-                                 '019_pitcher_base', '021_bleach_cleanser', '024_bowl', '025_mug', '035_power_drill', '036_wood_block',
-                                 '037_scissors', '040_large_marker', '051_large_clamp', '052_extra_large_clamp', '061_foam_brick']
+                                '007_tuna_fish_can', '008_pudding_box', '009_gelatin_box', '010_potted_meat_can', '011_banana',
+                                '019_pitcher_base', '021_bleach_cleanser', '024_bowl', '025_mug', '035_power_drill', '036_wood_block',
+                                '037_scissors', '040_large_marker', '051_large_clamp', '052_extra_large_clamp', '061_foam_brick']
         vertex_ycbvideo = np.load('./configs/YCB-Video/YCB_vertex.npy')
         test('./configs/data-YCB.cfg',
                     args.weights_path, listfile,
                     './output', object_names_ycbvideo, k_ycbvideo, vertex_ycbvideo,
+                    bestCnt=10, conf_thresh=0.3, use_gpu=args.use_gpu)
+    elif args.dataset == 'custom':
+        # generate test list file for custom dataset
+        listfile = './data/custom-testlist.txt'
+        collect_ycb_testlist(args.dataset_root, listfile)
+        # intrinsics of custom dataset
+        k_custom = np.array([[554.25623977, 0.00000000e+00, 320.0],
+                                [0.00000000e+00, 554.25623977, 240.0],
+                                [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
+        # 21 objects for custom dataset
+        object_names_custom = ['002_master_chef_can', '003_cracker_box', '004_sugar_box', '005_tomato_soup_can',
+                                '006_mustard_bottle', '007_tuna_fish_can', '008_pudding_box', '009_gelatin_box',
+                                '010_potted_meat_can', '011_banana', '019_pitcher_base', '021_bleach_cleanser',
+                                '024_bowl', '025_mug', '035_power_drill', '036_wood_block',
+                                '037_scissors', '040_large_marker', '051_large_clamp', '052_extra_large_clamp',
+                                '061_foam_brick', 'custom-fork-01', 'custom-fork-02', 'custom-glass-01',
+                                'custom-jar-01', 'custom-jar-02', 'custom-plate-01', 'custom-plate-02',
+                                'custom-plate-03', 'custom-spoon-01', 'custom-spoon-02']
+        vertex_custom = np.load('configs/Custom/custom_vertex.npy')
+        test('./configs/data-Custom.cfg',
+                    args.weights_path, listfile,
+                    './output', object_names_custom, k_custom, vertex_custom,
                     bestCnt=10, conf_thresh=0.3, use_gpu=args.use_gpu)
     else:
         print('unsupported dataset \'%s\'.' % args.dataset)

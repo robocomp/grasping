@@ -8,5 +8,5 @@ Some simple tests for pose estimation techniques and different components.
 
 ```bash
 chmod +x run.sh
-./run.sh /path/to/test/image
+./run.sh <dataset_name> </path/to/test/image> </path/to/weights/file>
 ```
