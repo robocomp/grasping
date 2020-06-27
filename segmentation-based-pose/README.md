@@ -29,9 +29,9 @@ pip3 install -r requirements.txt
 
 ## Usage
 
--   Download [YCB videos dataset](https://rse-lab.cs.washington.edu/projects/posecnn/) or [Occluded-LINEMOD datset](https://hci.iwr.uni-heidelberg.de/vislearn/iccv2015-occlusion-challenge/) .
+-   Download [YCB-Videos dataset](https://rse-lab.cs.washington.edu/projects/posecnn/) or [Occluded-LINEMOD datset](https://hci.iwr.uni-heidelberg.de/vislearn/iccv2015-occlusion-challenge/) .
 
--   Download [pretrained weights for YCB dataset](https://drive.google.com/file/d/1N-qI5dqFVSNryZ0WwKlLn7npDkyVs_eh/view?usp=sharing) or [pretrained weights for our custom dataset](https://drive.google.com/file/d/1nU1NfQCtcLLxUaKt1xKs98nFMAtKAsyf/view?usp=sharing) . 
+-   Download [pretrained weights for YCB-Videos dataset](https://drive.google.com/file/d/1N-qI5dqFVSNryZ0WwKlLn7npDkyVs_eh/view?usp=sharing) or [pretrained weights for our custom dataset](https://drive.google.com/file/d/1nU1NfQCtcLLxUaKt1xKs98nFMAtKAsyf/view?usp=sharing) . 
 
 -   For training :
 
@@ -76,32 +76,38 @@ Training the network is conducted in the following settings :
 
 -   Device : Nvidia Geforce RTX 2080 (VRAM = 8 GB).
 -   Batch Size : 4 (6.5 GB).
--   Elapsed Time : 5.5 ~ 6 hours/epoch.
+-   Elapsed Time : 5.5 ~ 6 hours/epoch (on complete YCB-Videos dataset).
 
 ## Progress
 
-[x] Understand, refactor and comment original repo code.
+-   [x] Understand, refactor and comment original repo code.
 
-[x] Add basic code skeleton.
+-   [x] Add basic code skeleton.
 
-[x] Add training and dataset utilities.
+-   [x] Add training and dataset utilities.
 
-[x] Add dataset class for YCB videos dataset.
+-   [x] Add dataset class for YCB-Videos dataset.
 
-[x] Add training forward propagation to network architecture.
+-   [x] Add training forward propagation to network architecture.
 
-[x] Add training script for network.
+-   [x] Add training script for network.
 
-[x] Add evaluation scripts.
+-   [x] Add evaluation scripts.
 
-[x] Add API function (for inference in pose estimation component).
+-   [x] Add API function (for inference in pose estimation component).
 
-[x] Train the network on given dataset.
+-   [x] Tune network losses and hyperparameters.
 
-[x] Evaluate network performance.
+-   [x] Train the network on given dataset.
 
-## Visual Results (From VREP)
+-   [x] Evaluate network performance.
+
+## Visual Results
 
 ![](./assets/out1.jpg)
 
 Figure(2): Results of pose estimation in VREP simulator on seen objects during training.
+
+![](./assets/out2.jpg)
+
+Figure(3): Results of pose estimation on YCB-Videos dataset.
