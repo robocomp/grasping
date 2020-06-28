@@ -22,7 +22,9 @@
 from PySide2.QtCore import QTimer
 from PySide2.QtWidgets import QApplication
 from genericworker import *
+from seg_pose_dnn import *
 import numpy as np
+from scipy.spatial.transform import Rotation as R
 
 
 # If RoboComp was compiled with Python bindings you can use InnerModel in Python
@@ -61,6 +63,8 @@ class SpecificWorker(GenericWorker):
             self.vertices = np.load(params["vertices_file"])
             # configure network
             self.model = configure_network(cfg_file=params["config_file"], weights_file=params["weights_file"])
+            # initialize predicted poses
+            self.final_poses = []
         except:
             print("Error reading config params")
         return True
@@ -68,26 +72,48 @@ class SpecificWorker(GenericWorker):
 
     @QtCore.Slot()
     def compute(self):
-        print('SpecificWorker.compute...')
-        # computeCODE
-        # try:
-        #   self.differentialrobot_proxy.setSpeedBase(100, 0)
-        # except Ice.Exception as e:
-        #   traceback.print_exc()
-        #   print(e)
-
-        # The API of python-innermodel is not exactly the same as the C++ version
-        # self.innermodel.updateTransformValues('head_rot_tilt_pose', 0, 0, 0, 1.3, 0, 0)
-        # z = librobocomp_qmat.QVec(3,0)
-        # r = self.innermodel.transform('rgbd', z, 'laser')
-        # r.printvector('d')
-        # print(r[0], r[1], r[2])
-
+        try:
+            # get RGB image information
+            img_buffer = self.camerargbdsimple_proxy.getImage(self.camera_name)
+            image = np.frombuffer(img_buffer.image, np.uint8).reshape(img_buffer.height, img_buffer.width, img_buffer.depth)
+            # get vision sensor intrinstic parameters
+            cam_res_x = img_buffer.width
+            cam_res_y = img_buffer.height
+            cam_focal_x = img_buffer.focalx
+            cam_focal_y = img_buffer.focaly
+            intrinsics = np.array([[cam_focal_x, 0.00000000e+00, float(cam_res_x/2.0)],
+                                    [0.00000000e+00, cam_focal_y, float(cam_res_y/2.0)],
+                                    [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
+            # perform network inference
+            pred_poses = get_pose(self.model, image, self.class_names, intrinsics, self.vertices, save_results=False)
+            # post-process network output
+            self.final_poses = self.process_poses(pred_poses)
+            # publish predicted poses
+            self.objectposeestimationpub_proxy.pushObjectPose(RoboCompObjectPoseEstimation.PoseType(self.final_poses))
+        except Ice.Exception as e:
+            print(e)
         return True
 
     def startup_check(self):
         QTimer.singleShot(200, QApplication.instance().quit)
 
+    def process_poses(self, pred_poses):
+        prc_poses = []
+        for pose in pred_poses:
+            object_name = self.class_names[pose[0]]
+            trans_mat = pose[1][:3,3]
+            rot_mat = pose[1][:3,0:3]
+            rot = R.from_matrix(rot_mat)
+            rot_euler = rot.as_euler('xyz')
+            obj_pose = RoboCompObjectPoseEstimation.ObjectPose(objectname=object_name,
+                                                                x=trans_mat[0],
+                                                                y=trans_mat[1],
+                                                                z=trans_mat[2],
+                                                                rx=rot_euler[0],
+                                                                ry=rot_euler[1],
+                                                                rz=rot_euler[2])
+            prc_poses.append(obj_pose)
+        return prc_poses
 
 
     # =============== Methods for Component Implements ==================
