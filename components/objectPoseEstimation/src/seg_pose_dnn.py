@@ -2,7 +2,7 @@ from network.utils import *
 from network.segpose_net import SegPoseNet
 from skimage.io import imsave
 
-def configure_network(cfg_file='./configs/data-Custom.cfg', weights_file='./models/ckpt_final.pth', use_gpu=True):
+def configure_network(cfg_file='configs/data-Custom.cfg', weights_file='models/ckpt_final.pth', use_gpu=True):
     """
     API function to configure the pose estimation network.
     Arguments:
@@ -49,11 +49,11 @@ def get_pose(model, img, class_names, intrinsics, vertices, best_cnt=10, conf_th
     
     # save results
     if save_results:
-        if not os.path.isdir('./output/'):
-            os.mkdir('./output/')
-        save_predictions(str(output_file), pred_pose, class_names, './output') # save output poses
+        if not os.path.isdir('output/'):
+            os.mkdir('output/')
+        save_predictions(str(output_file), pred_pose, class_names, 'output') # save output poses
         vis_img = visualize_predictions(pred_pose, img, vertices, intrinsics) # visualize images
-        imsave('./output/' + str(output_file) + '.jpg', vis_img) # save output images
+        imsave('output/' + str(output_file) + '.jpg', vis_img) # save output images
 
     # return predicted poses
     return pred_pose

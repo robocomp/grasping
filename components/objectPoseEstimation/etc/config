@@ -1,14 +1,23 @@
 # Endpoints for implements interfaces
-ObjectPoseEstimation.Endpoints=tcp -p 0
+ObjectPoseEstimation.Endpoints=tcp -p 10117
 
 
 # Proxies for required interfaces
-CameraRGBDSimpleProxy = camerargbdsimple:tcp -h localhost -p 0
-
+CameraRGBDSimpleProxy = camerargbdsimple:tcp -h localhost -p 10096
 
 
 # This property is used by the clients to connect to IceStorm.
 TopicManager.Proxy=IceStorm/TopicManager:default -p 9999
+
+
+# name of camera handler to stream RGB image from
+camera_name = Viriato_head_camera_front_sensor
+
+
+# DNN configuration
+config_file = configs/data-Custom.cfg
+weights_file = models/ckpt_final.pth
+vertices_file = configs/Custom/custom_vertex.npy
 
 
 Ice.Warn.Connections=0

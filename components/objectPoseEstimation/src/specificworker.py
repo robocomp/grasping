@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 #
-#    Copyright (C) 2020 by YOUR NAME HERE
+#    Copyright (C) 2020 by Mohamed Shawky
 #
 #    This file is part of RoboComp
 #
@@ -22,6 +22,7 @@
 from PySide2.QtCore import QTimer
 from PySide2.QtWidgets import QApplication
 from genericworker import *
+import numpy as np
 
 
 # If RoboComp was compiled with Python bindings you can use InnerModel in Python
@@ -44,11 +45,24 @@ class SpecificWorker(GenericWorker):
         print('SpecificWorker destructor')
 
     def setParams(self, params):
-        #try:
-        #	self.innermodel = InnerModel(params["InnerModelPath"])
-        #except:
-        #	traceback.print_exc()
-        #	print("Error reading config params")
+        try:
+            # define camera handler to stream from
+            self.camera_name = params["camera_name"]
+            # define classes names
+            self.class_names = ['002_master_chef_can', '003_cracker_box', '004_sugar_box', '005_tomato_soup_can',
+                                '006_mustard_bottle', '007_tuna_fish_can', '008_pudding_box', '009_gelatin_box',
+                                '010_potted_meat_can', '011_banana', '019_pitcher_base', '021_bleach_cleanser',
+                                '024_bowl', '025_mug', '035_power_drill', '036_wood_block',
+                                '037_scissors', '040_large_marker', '051_large_clamp', '052_extra_large_clamp',
+                                '061_foam_brick', 'custom-fork-01', 'custom-fork-02', 'custom-glass-01',
+                                'custom-jar-01', 'custom-jar-02', 'custom-plate-01', 'custom-plate-02',
+                                'custom-plate-03', 'custom-spoon-01', 'custom-spoon-02']
+            # define point cloud vertices of used models
+            self.vertices = np.load(params["vertices_file"])
+            # configure network
+            self.model = configure_network(cfg_file=params["config_file"], weights_file=params["weights_file"])
+        except:
+            print("Error reading config params")
         return True
 
 
