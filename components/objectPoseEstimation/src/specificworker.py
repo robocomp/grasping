@@ -22,7 +22,7 @@
 from PySide2.QtCore import QTimer
 from PySide2.QtWidgets import QApplication
 from genericworker import *
-from seg_pose_dnn import *
+from pose_estimator import *
 import numpy as np
 from scipy.spatial.transform import Rotation as R
 
@@ -128,11 +128,23 @@ class SpecificWorker(GenericWorker):
     # IMPLEMENTATION of getObjectPose method from ObjectPoseEstimation interface
     #
     def ObjectPoseEstimation_getObjectPose(self, img):
-        ret = RoboCompObjectPoseEstimation.PoseType()
-        #
-        # write your CODE here
-        #
-        return ret
+        # extract RGB image
+        image = np.frombuffer(img.image, np.uint8).reshape(img.height, img.width, img.depth)
+        # get vision sensor intrinstic parameters
+        cam_res_x = img.width
+        cam_res_y = img.height
+        cam_focal_x = img.focalx
+        cam_focal_y = img.focaly
+        intrinsics = np.array([[cam_focal_x, 0.00000000e+00, float(cam_res_x/2.0)],
+                                [0.00000000e+00, cam_focal_y, float(cam_res_y/2.0)],
+                                [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
+        # perform network inference
+        pred_poses = get_pose(self.model, image, self.class_names, intrinsics, self.vertices, save_results=False)
+        # post-process network output
+        ret_poses = self.process_poses(pred_poses)
+        # publish predicted poses
+        return RoboCompObjectPoseEstimation.PoseType(self.final_poses)
+
     # ===================================================================
     # ===================================================================
 

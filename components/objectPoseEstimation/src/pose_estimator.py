@@ -1,5 +1,5 @@
-from network.utils import *
-from network.segpose_net import SegPoseNet
+from dnn.utils import *
+from dnn.segpose_net import SegPoseNet
 from skimage.io import imsave
 
 def configure_network(cfg_file='configs/data-Custom.cfg', weights_file='models/ckpt_final.pth', use_gpu=True):
