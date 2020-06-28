@@ -99,12 +99,17 @@ class SpecificWorker(GenericWorker):
 
     def process_poses(self, pred_poses):
         prc_poses = []
+        # loop over each predicted pose
         for pose in pred_poses:
+            # get class name
             object_name = self.class_names[pose[0]]
+            # get translation matrix
             trans_mat = pose[1][:3,3]
+            # get euler angles for rotation
             rot_mat = pose[1][:3,0:3]
             rot = R.from_matrix(rot_mat)
             rot_euler = rot.as_euler('xyz')
+            # build object pose type
             obj_pose = RoboCompObjectPoseEstimation.ObjectPose(objectname=object_name,
                                                                 x=trans_mat[0],
                                                                 y=trans_mat[1],
