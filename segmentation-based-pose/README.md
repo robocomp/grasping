@@ -31,7 +31,7 @@ pip3 install -r requirements.txt
 
 -   Download [YCB-Videos dataset](https://rse-lab.cs.washington.edu/projects/posecnn/) or [Occluded-LINEMOD datset](https://hci.iwr.uni-heidelberg.de/vislearn/iccv2015-occlusion-challenge/) .
 
--   Download [pretrained weights for YCB-Videos dataset](https://drive.google.com/file/d/1N-qI5dqFVSNryZ0WwKlLn7npDkyVs_eh/view?usp=sharing) or [pretrained weights for our custom dataset](https://drive.google.com/file/d/1nU1NfQCtcLLxUaKt1xKs98nFMAtKAsyf/view?usp=sharing) . 
+-   Download [pretrained weights for YCB-Videos dataset](https://drive.google.com/file/d/1N-qI5dqFVSNryZ0WwKlLn7npDkyVs_eh/view?usp=sharing) or [pretrained weights for our custom dataset](https://drive.google.com/file/d/1GhN81L2lkgpmOqig9--cBX_7fFQM6NED/view?usp=sharing) . 
 
 -   For training :
 
@@ -106,8 +106,16 @@ Training the network is conducted in the following settings :
 
 ![](./assets/out1.jpg)
 
-Figure(2): Results of pose estimation in VREP simulator on seen objects during training.
+Figure(2): Results of pose estimation on YCB-Videos dataset.
 
 ![](./assets/out2.jpg)
 
 Figure(3): Results of pose estimation on YCB-Videos dataset.
+
+![](./assets/out3.jpg)
+
+Figure(4): Results of pose estimation on YCB-Videos dataset.
+
+![](./assets/out4.jpg)
+
+Figure(5): Results of pose estimation on YCB-Videos dataset.
