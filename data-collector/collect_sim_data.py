@@ -86,7 +86,6 @@ def simulate(scene_dir, cls_indices):
                         random.uniform(-1,1)
                     ])
                 obj_colors.append([random.uniform(0,1), random.uniform(0,1), random.uniform(0,1)])
-                shape.set_color(obj_colors[-1])
                 pr.step()
 
             print("Reading vision sensor RGB signal ...")

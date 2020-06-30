@@ -8,6 +8,7 @@ This is the code for data collection and preparation from V-REP simulator for tr
 
 -   [PyRep API](https://github.com/stepjam/PyRep) .
 -   [Trimesh](https://github.com/mikedh/trimesh) .
+-   [Open3D](https://github.com/intel-isl/Open3D) [[Build from Source](http://www.open3d.org/docs/release/compilation.html)] .
 
 ## Usage
 

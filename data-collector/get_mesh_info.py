@@ -3,6 +3,7 @@ import argparse
 import json
 import numpy as np
 import trimesh
+import open3d as o3d
 
 def augment_gt_data(bbox_npy, vertex_npy, cls_indices):
     """
@@ -20,44 +21,38 @@ def augment_gt_data(bbox_npy, vertex_npy, cls_indices):
     # attach trimesh to console logger
     trimesh.util.attach_to_log()
 
-    # set maximum number of vertices per mesh
-    max_vertex = full_vertex_arr.shape[1]
-    vertices = []
-
     # loop over all meshes
     for filename in cls_indices.keys():
         print(f'Getting information of {filename} ...')
 
         print(f'Loading mesh ...')
-        mesh = trimesh.load('meshes/'+filename)
+        tm_mesh = trimesh.load('meshes/'+filename+'/'+filename+'.obj')
+        o3d_mesh = o3d.io.read_triangle_mesh('meshes/'+filename+'/'+filename+'.obj')
 
-        print(f'Saving bounding box vertices ...')
-        obj_bbox = mesh.bounding_box.vertices.reshape((1, 8, 3))
+        print(f'Saving bounding box vertices of size (8,3) ...')
+        obj_bbox = tm_mesh.bounding_box.vertices.reshape((1, 8, 3))
         full_bbox_arr = np.concatenate((full_bbox_arr, obj_bbox), axis=0)
-        np.save('mesh_data/custom_bbox.npy', full_bbox_arr)
 
-        print(f'Storing 3D point cloud of shape {mesh.vertices.shape} (to be written) ...')
-        max_vertex = mesh.vertices.shape[0] if (mesh.vertices.shape[0] > max_vertex) else max_vertex
-        vertices.append(mesh.vertices)
+        print(f'Saving 3D point cloud vertices of size (10000,3) ...')
+        obj_pcd = o3d_mesh.sample_points_uniformly(number_of_points=10000)
+        obj_pcd = np.asarray(obj_pcd.points).reshape((1, 10000, 3))
+        full_vertex_arr = np.concatenate((full_vertex_arr, obj_pcd), axis=0)
 
-    # pad 3d point cloud vertices for all meshes by zeros (for all to have the same shape)
-    print(f'Saving new set of 3D point cloud vertices ...')
-    original_vertices_shape = full_vertex_arr.shape
-    padded_vertices_arr = np.zeros((original_vertices_shape[0], max_vertex, original_vertices_shape[2]))
-    padded_vertices_arr[:,:original_vertices_shape[1],:] = full_vertex_arr
-    for obj_vertex in vertices:
-        padded_obj_vertex = np.zeros((1, max_vertex, 3))
-        padded_obj_vertex[:,:obj_vertex.shape[0],:] = obj_vertex.reshape((1, obj_vertex.shape[0], obj_vertex.shape[1]))
-        padded_vertices_arr = np.concatenate((padded_vertices_arr, padded_obj_vertex), axis=0)
-    np.save('mesh_data/custom_vertex.npy', padded_vertices_arr)
+    # save output bounding boxes
+    print(f'Writing new bounding box vertices ...')
+    np.save('mesh_data/custom_bbox.npy', full_bbox_arr)
+
+    # save point cloud vertices
+    print(f'Writing new 3D point cloud vertices ...')
+    np.save('mesh_data/custom_vertex.npy', full_vertex_arr)
 
 if __name__ == '__main__':
     # arguments parsing
     argparser = argparse.ArgumentParser(description=__doc__)
     argparser.add_argument('-bbp', '--bbox_path', type=str, help='path to original dataset bounding boxes', 
-                        default='segmentation-based-pose/configs/YCB-Video/YCB_bbox.npy')
+                        default='../segmentation-based-pose/configs/YCB-Video/YCB_bbox.npy')
     argparser.add_argument('-vp', '--vertices_path', type=str, help='path to original dataset point cloud vertices', 
-                        default='segmentation-based-pose/configs/YCB-Video/YCB_vertex.npy')
+                        default='../segmentation-based-pose/configs/YCB-Video/YCB_vertex.npy')
     argparser.add_argument('-cl', '--classes_json', type=str, help='json file indices for new classes',
                         default='meshes/new_classes.json')
 
