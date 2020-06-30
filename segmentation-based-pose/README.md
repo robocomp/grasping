@@ -4,7 +4,7 @@ This is an implementation of [Segmentation-driven 6D Object Pose Estimation](htt
 
 Original implementation : https://github.com/cvlab-epfl/segmentation-driven-pose .
 
-# Network Description
+## Network Description
 
 ![](./assets/network.jpg)
 
@@ -19,7 +19,7 @@ A brief description of network :
     -   Regression stream : to get 2D keypoints corresponding to the 3D keypoints of the object in the world (object) frame. Usually, the keypoints are 8 vertices of the 3D bounding box.
 4)  The output 2D keypoints are used to solve a 2D-3D correspondance problem with the 3D keypoints, using RANSAC-based PnP to get object pose (extrinsics), knowing the camera intrinsics. Also, the segmentation masks are used to define object class.
 
-# Installation
+## Installation
 
 -   Install `python3` and `python3-pip`.
 -   Run :
