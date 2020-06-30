@@ -27,13 +27,13 @@ class YCBEvaluator:
         self.vertices = np.load(model_npy)
 
         self.object_names_ycbvideo = ['002_master_chef_can', '003_cracker_box', '004_sugar_box', '005_tomato_soup_can',
-                                '006_mustard_bottle', '007_tuna_fish_can', '008_pudding_box', '009_gelatin_box',
-                                '010_potted_meat_can', '011_banana', '019_pitcher_base', '021_bleach_cleanser',
-                                '024_bowl', '025_mug', '035_power_drill', '036_wood_block',
-                                '037_scissors', '040_large_marker', '051_large_clamp', '052_extra_large_clamp',
-                                '061_foam_brick', 'custom-fork-01', 'custom-fork-02', 'custom-glass-01',
-                                'custom-jar-01', 'custom-jar-02', 'custom-plate-01', 'custom-plate-02',
-                                'custom-plate-03', 'custom-spoon-01', 'custom-spoon-02']
+                                    '006_mustard_bottle', '007_tuna_fish_can', '008_pudding_box', '009_gelatin_box',
+                                    '010_potted_meat_can', '011_banana', '019_pitcher_base', '021_bleach_cleanser',
+                                    '024_bowl', '025_mug', '035_power_drill', '036_wood_block',
+                                    '037_scissors', '040_large_marker', '051_large_clamp', '052_extra_large_clamp',
+                                    '061_foam_brick', 'custom-can-01', 'custom-fork-01', 'custom-fork-02',
+                                    'custom-glass-01', 'custom-jar-01', 'custom-knife-01', 'custom-plate-01',
+                                    'custom-plate-02', 'custom-plate-03', 'custom-spoon-01']
         
         self.ycb_class_to_idx = {}
         for i, item in enumerate(self.object_names_ycbvideo):
