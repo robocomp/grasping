@@ -102,7 +102,7 @@ if __name__ == '__main__':
         test('./configs/data-LINEMOD.cfg',
                     args.weights_path, listfile,
                     './output', object_names_occlinemod, k_linemod, vertex_linemod,
-                    bestCnt=10, conf_thresh=0.7, linemod_index=True, use_gpu=args.use_gpu)
+                    bestCnt=10, conf_thresh=0.6, linemod_index=True, use_gpu=args.use_gpu)
         # LINEMOD visualization transforms
         rt_transforms = np.load('./configs/Occluded-LINEMOD/Transform_RT_to_OccLINEMOD_meshes.npy')
         transform_pred_pose('./output', object_names_occlinemod, rt_transforms)
@@ -123,7 +123,7 @@ if __name__ == '__main__':
         test('./configs/data-YCB.cfg',
                     args.weights_path, listfile,
                     './output', object_names_ycbvideo, k_ycbvideo, vertex_ycbvideo,
-                    bestCnt=10, conf_thresh=0.7, use_gpu=args.use_gpu)
+                    bestCnt=10, conf_thresh=0.6, use_gpu=args.use_gpu)
     elif args.dataset == 'custom':
         # generate test list file for custom dataset
         listfile = './data/custom-testlist.txt'
@@ -145,6 +145,6 @@ if __name__ == '__main__':
         test('./configs/data-Custom.cfg',
                     args.weights_path, listfile,
                     './output', object_names_custom, k_custom, vertex_custom,
-                    bestCnt=10, conf_thresh=0.7, use_gpu=args.use_gpu)
+                    bestCnt=10, conf_thresh=0.6, use_gpu=args.use_gpu)
     else:
         print('unsupported dataset \'%s\'.' % args.dataset)
