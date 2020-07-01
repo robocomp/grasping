@@ -32,6 +32,7 @@ def parse_cfg(cfgfile):
     return blocks
 
 def print_cfg(blocks, width, height, channels):
+    # print Darknet architecture
     print('layer     filters    size              input                output');
     prev_width = width
     prev_height = height

@@ -110,7 +110,7 @@ if __name__ == '__main__':
         # generate test list file for ycb
         listfile = './data/ycb-video-testlist.txt'
         collect_ycb_testlist(args.dataset_root, listfile)
-        # intrinsics of YCB-VIDEO dataset
+        # intrinsics of YCB-Video dataset
         k_ycbvideo = np.array([[1.06677800e+03, 0.00000000e+00, 3.12986900e+02],
                                [0.00000000e+00, 1.06748700e+03, 2.41310900e+02],
                                [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])

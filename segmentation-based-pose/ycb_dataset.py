@@ -50,7 +50,7 @@ class YCBDataset(torch.utils.data.Dataset):
         self.use_bg_img = use_bg_img # whether to use background images or not
         self.num_syn_images = num_syn_images # number of synthetic images for training
 
-        self.weight_cross_entropy = None # weight for CE with ratio between real to synthetic
+        self.weight_cross_entropy = None # weight for CE with classes' ratios
 
         # YCB classes names
         self.object_names_ycbvideo = ['002_master_chef_can', '003_cracker_box', '004_sugar_box', '005_tomato_soup_can',
@@ -89,15 +89,15 @@ class YCBDataset(torch.utils.data.Dataset):
         combined_frequency = self.num_syn_images * syn_frequency + len(self.train_paths) * real_frequency
         median_frequency = np.median(combined_frequency)
         weight = [median_frequency/x for x in combined_frequency]
-        # set CE weight to be used during training
+        # set CE classes weight to be used during training
         self.weight_cross_entropy =  torch.from_numpy(np.array(weight)).float()
 
     def gen_balancing_weight(self, save_pkl="data/balancing_weight.pkl"):
-        # get pixel-wise balancing weight for cross entropy loss
+        # get pixel-wise balancing classes' weight for cross entropy loss
         pixels_per_img = (self.target_h * self.target_w)
         real_frequency = [0 for x in range(self.num_classes)]
 
-        # get weights of real images
+        # get classes' frequencies of real images
         print("collect weight for real images")
         for prefix in tqdm(self.train_paths):
             label_img = imread(prefix + "-label.png")
@@ -111,7 +111,7 @@ class YCBDataset(torch.utils.data.Dataset):
         real_frequency = np.array(real_frequency)
         real_frequency/=len(self.train_paths)
 
-        # get weights of synthetic images
+        # get classes' frequencies of synthetic images
         print("collect weights for syn images")
         syn_frequency = [0 for x in range(self.num_classes)]
         prefix = self.syn_data_path
@@ -136,6 +136,7 @@ class YCBDataset(torch.utils.data.Dataset):
             pickle.dump(frequencies, f)
 
     def gen_kp_gt_for_item(self, item):
+        # generate ground truth keypoints for an item
         # item is a path prefix
         out_pkl = item + '-bb8_2d.pkl'
         if os.path.isfile(out_pkl):
@@ -249,8 +250,8 @@ class YCBDataset(torch.utils.data.Dataset):
         mask_front = cv2.resize(mask_front, (self.target_h, self.target_w), interpolation=cv2.INTER_NEAREST)
 
         # return training data
-        # input  : normalized RGB image & segmentation mask
-        # output : x ground truth map, y ground truth map & mask front
+        # input  : normalized RGB image
+        # output : segmentation mask, x ground truth map, y ground truth map & mask front
         return (torch.from_numpy(combined_img.transpose(2, 0, 1)).float().div(255.0),
                 torch.from_numpy(seg_label).long(),
                 torch.from_numpy(kp_gt_map_x).float(), torch.from_numpy(kp_gt_map_y).float(),
@@ -296,8 +297,8 @@ class YCBDataset(torch.utils.data.Dataset):
             mask_front = ma.getmaskarray(ma.masked_not_equal(label_img, 0)).astype(int)
 
             # return training data
-            # input  : normalized RGB image & segmentation mask
-            # output : x ground truth map, y ground truth map & mask front
+            # input  : normalized RGB image
+            # output : segmentation mask, x ground truth map, y ground truth map & mask front
             return (torch.from_numpy(img.transpose(2, 0, 1)).float().div(255.0),
                     torch.from_numpy(label_img).long(),
                     torch.from_numpy(kp_gt_map_x).float(), torch.from_numpy(kp_gt_map_y).float(),

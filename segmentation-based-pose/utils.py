@@ -136,10 +136,12 @@ def visualize_predictions(predPose, image, vertex, intrinsics):
 #                                               Geometry Utilities                                                 #
 ####################################################################################################################
 def transform_points(points_3d, mat):
+    # transform 3D points with an RT matrix
     rot = np.matmul(mat[:3, :3], points_3d.transpose())
     return rot.transpose() + mat[:3, 3]
 
 def matrix2quaternion(m):
+    # get quaternions from rotation matrix
     tr = m[0, 0] + m[1, 1] + m[2, 2]
     if tr > 0:
         S = np.sqrt(tr + 1.0) * 2
@@ -344,7 +346,8 @@ def fusion(output, width, height, intrinsics, conf_thresh, batchIdx, bestCnt):
         gridCnt = len(xsi)
         assert(gridCnt > 0)
 
-        # choose best N count, here N = bestCnt (default = 10)
+        # choose best N count to define predicted keypoints
+        # here N = bestCnt (default = 10)
         p2d = None
         p3d = None
         candiBestCnt = min(gridCnt, bestCnt)
@@ -549,7 +552,7 @@ def get_img_list_from(folder_path):
     return file_list
 
 def pnz(matrix):
-    # print all non-zero elements in a matrix
+    # return all non-zero elements in a matrix
     return matrix[np.where(matrix != 0)]
 
 class RandomErasing(object):

@@ -16,7 +16,7 @@ from pose_2d_layer import Pose2DLayer
 from pose_seg_layer import PoseSegLayer
 from utils import *
 
-## Global variables
+## GLOBAL VARIABLES
 
 # hyperparameters
 initial_lr = 0.001
@@ -223,6 +223,7 @@ def train(cfg_path):
     writer.close()
 
 if __name__ == '__main__':
+    # arguments parsing
     argparser = argparse.ArgumentParser(description=__doc__)
     argparser.add_argument('-ds', '--dataset', type=str, help='dataset to be used for train or test', default='custom')
     argparser.add_argument('-dsp', '--dataset_root', type=str, help='root directory of the chosen dataset')
