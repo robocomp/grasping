@@ -1,5 +1,16 @@
 # Segmentation-Based Pose Estimation
 
+-   [Introduction](##Introduction)
+-   [Network Description](##Network-Description)
+-   [Installation](##Installation)
+-   [Usage](##Usage)
+-   [Training Info](##Training-Info)
+-   [Progress](##Progress)
+-   [Experiments](##Experiments)
+-   [Visual Results](##Visual-Results)
+
+## Introduction
+
 This is an implementation of [Segmentation-driven 6D Object Pose Estimation](https://arxiv.org/abs/1812.02541) paper based on the original implementation. This architecture is a single-shot segmentation-based network, in which the output points of interest and segmentation masks are fused using to RANSAC-based PnP  get the object pose.
 
 Original implementation : https://github.com/cvlab-epfl/segmentation-driven-pose .
@@ -31,7 +42,7 @@ pip3 install -r requirements.txt
 
 -   Download [YCB-Videos dataset](https://rse-lab.cs.washington.edu/projects/posecnn/) or [Occluded-LINEMOD datset](https://hci.iwr.uni-heidelberg.de/vislearn/iccv2015-occlusion-challenge/) .
 
--   Download [pretrained weights for YCB-Videos dataset](https://drive.google.com/file/d/1N-qI5dqFVSNryZ0WwKlLn7npDkyVs_eh/view?usp=sharing) or [pretrained weights for our custom dataset](https://drive.google.com/file/d/1GhN81L2lkgpmOqig9--cBX_7fFQM6NED/view?usp=sharing) . 
+-   Download the network pretrained weights of the required experiment. 
 
 -   For training :
 
@@ -69,7 +80,6 @@ predicted_pose = api.get_pose(model, img, class_names, intrinsics, vertices)
 python get_trace.py -cfg /path/to/config/file -wp /path/to/weights/file -op /path/to/output/file
 ```
 
-
 ## Training Info
 
 Training the network is conducted in the following settings :
@@ -100,22 +110,44 @@ Training the network is conducted in the following settings :
 
 -   [x] Train the network on given dataset.
 
--   [x] Evaluate network performance.
+-   [x] Evaluate code validity and network performance.
+
+-   [ ] Complete the listed training experiments.
+
+## Experiments
+
+-   [x] `exp-00` : Train the initial network implementation on YCB-Videos only ([pretrained weights file](https://drive.google.com/file/d/1N-qI5dqFVSNryZ0WwKlLn7npDkyVs_eh/view?usp=sharing)).
+
+-   [x] `exp-01` : Train the initial network implementation on YCB-Videos and textureless custom objects ([pretrained weights file](https://drive.google.com/file/d/1nU1NfQCtcLLxUaKt1xKs98nFMAtKAsyf/view?usp=sharing)).
+
+-   [x] `exp-02` : Train the network with focal loss on YCB-Videos and textureless custom objects ([pretrained weights file](https://drive.google.com/file/d/1GhN81L2lkgpmOqig9--cBX_7fFQM6NED/view?usp=sharing)).
+
+-   [x] `exp-03` : Train the network with focal loss on YCB-Videos and textured custom objects ([pretrained weights file](https://drive.google.com/file/d/1N1WHYQdYQLK_GWWhlm_pbk0noyuWnpZv/view?usp=sharing)).
+
+-   [ ] `exp-04` : Train the network with focal loss on YCB-Videos only.
+
+-   [ ] `exp-05` : Train the network with focal loss on synthetic textured custom objects.
+
+-   [ ] `exp-06` : Train the network with focal loss on YCB-Videos and synthetic textured custom objects.
+
+-   [ ] `exp-07` : Add DNN stage instead of RANSAC-PnP, then train the network with focal loss.
+
+-   [ ] `exp-08` : Try [DenseFusion](https://arxiv.org/abs/1901.04780) architecture.
 
 ## Visual Results
 
 ![](./assets/out1.jpg)
 
-Figure(2): Results of pose estimation on YCB-Videos dataset.
+Figure(2): Results of pose estimation on YCB-Videos dataset based on `exp-03`.
 
 ![](./assets/out2.jpg)
 
-Figure(3): Results of pose estimation on YCB-Videos dataset.
+Figure(3): Results of pose estimation on YCB-Videos dataset based on `exp-03`.
 
 ![](./assets/out3.jpg)
 
-Figure(4): Results of pose estimation on YCB-Videos dataset.
+Figure(4): Results of pose estimation on YCB-Videos dataset based on `exp-03`.
 
 ![](./assets/out4.jpg)
 
-Figure(5): Results of pose estimation on YCB-Videos dataset.
+Figure(5): Results of pose estimation on YCB-Videos dataset based on `exp-03`.
