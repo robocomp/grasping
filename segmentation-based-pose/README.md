@@ -1,13 +1,13 @@
 # Segmentation-Based Pose Estimation
 
--   [Introduction](##Introduction)
--   [Network Description](##Network-Description)
--   [Installation](##Installation)
--   [Usage](##Usage)
--   [Training Info](##Training-Info)
--   [Progress](##Progress)
--   [Experiments](##Experiments)
--   [Visual Results](##Visual-Results)
+-   [Introduction](#Introduction)
+-   [Network Description](#Network-Description)
+-   [Installation](#Installation)
+-   [Usage](#Usage)
+-   [Training Info](#Training-Info)
+-   [Progress](#Progress)
+-   [Experiments](#Experiments)
+-   [Visual Results](#Visual-Results)
 
 ## Introduction
 
