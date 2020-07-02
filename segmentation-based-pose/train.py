@@ -4,6 +4,7 @@ import torchvision.transforms as transforms
 import torch.utils.data
 from tensorboardX import SummaryWriter
 
+from skimage.transform import resize
 import argparse
 from tqdm import tqdm
 import numpy as np
@@ -45,6 +46,17 @@ num_workers = 4
 gen_kp_gt = False
 number_point = 8
 modulating_factor = 1.0
+
+# validation options
+img_width = 640
+img_height = 480
+conf_thresh = 0.6
+batch_idx = 0
+best_cnt = 10
+intrinsics = np.array([[1.06677800e+03, 0.00000000e+00, 3.12986900e+02],
+                    [0.00000000e+00, 1.06748700e+03, 2.41310900e+02],
+                    [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
+vertices = None
 
 # log writer
 writer = SummaryWriter(logdir='./log', comment='training log')
@@ -99,7 +111,7 @@ def train(cfg_path):
     # loss configurations
     seg_loss = FocalLoss(alpha=1.0, gamma=2.0, weights=median_balancing_weight, reduce=True)
     pos_loss = nn.L1Loss()
-    pos_loss_factor = 1.3
+    pos_loss_factor = 2.0
     conf_loss = nn.L1Loss()
     conf_loss_factor = 1.0
 
@@ -116,7 +128,7 @@ def train(cfg_path):
     total_step = len(train_loader)
     # loop over number of epochs
     for epoch in range(num_epoch):
-        i=-1
+        i = 0
         for images, seg_label, kp_gt_x, kp_gt_y, mask_front in tqdm(train_loader):
             i += 1
             # data to device
@@ -159,11 +171,7 @@ def train(cfg_path):
             if (i + 1) % 100 == 0:
                 # compute pixel-wise bias to measure training accuracy
                 bias_acc.update(abs(pnz((pred_x - kp_gt_x).cpu()).mean()*img_w))
-                print('Epoch [{}/{}], Step [{}/{}]: \n seg loss: {:.4f}, pos loss: {:.4f}, conf loss: {:.4f}, '
-                      'Pixel-wise bias:{:.4f}'
-                      .format(epoch + 1, num_epoch, i + 1, total_step, l_seg.item(), l_pos.item(),
-                              l_conf.item(), bias_acc.value))
-
+                # write losses to tensorboard writer
                 writer.add_scalar('seg_loss', l_seg.item(), epoch*total_step+i)
                 writer.add_scalar('pos loss', l_pos.item(), epoch*total_step+i)
                 writer.add_scalar('conf_loss', l_conf.item(), epoch*total_step+i)
@@ -180,7 +188,10 @@ def train(cfg_path):
             total_pos_loss = 0
             total_conf_loss = 0
             total_loss = 0
+            viz_imgs = []
+            j = 0
             for images, seg_label, kp_gt_x, kp_gt_y, mask_front in tqdm(val_loader):
+                j += 1
                 # data to device
                 images = images.to(device)
                 seg_label = seg_label.to(device)
@@ -212,8 +223,22 @@ def train(cfg_path):
                 total_pos_loss += l_pos.item()
                 total_conf_loss += l_conf.item()
                 total_loss += all_loss.item()
+                # data visualization
+                if (j + 1) % 100 == 0:
+                    model.eval() # change network to eval mode
+                    output = model(images) # perform inference
+                    pred_pose = fusion(output, img_width, img_height, intrinsics, conf_thresh, batch_idx, best_cnt) # output fusion
+                    image = np.uint8(convert2cpu(images[batch_idx]).detach().numpy().transpose(1, 2, 0) * 255.0) # get image
+                    image = resize(image, (img_height, img_width)) # resize image
+                    viz_img = visualize_predictions(pred_pose, image, vertices, intrinsics).transpose(2, 0, 1) # visualize poses
+                    viz_imgs.append(viz_img) # append to visualizations
+                    model.train() # change network to train mode
+            # print total validation losses
             print('Epoch [{}/{}], Validation Loss: \n seg loss: {:.4f}, pos loss: {:.4f}, conf loss: {:.4f}, total loss: {:.4f}'
                     .format(epoch + 1, num_epoch, total_seg_loss, total_pos_loss, total_conf_loss, total_loss))
+            # write visualizations to tensorboard writer
+            viz_data = np.stack(viz_imgs, axis=0)
+            writer.add_images('pose_viz', torch.from_numpy(viz_data), global_step=epoch+1)
 
         # save model checkpoint per epoch
         model.save_weights(os.path.join(checkpoints_dir, f'ckpt_{epoch}.pth'))
@@ -246,6 +271,7 @@ if __name__ == '__main__':
         syn_data_path = os.path.join(ycb_root, 'data_syn')
         imageset_path = os.path.join(ycb_root, 'image_sets')
         kp_path = './configs/YCB-Video/YCB_bbox.npy'
+        vertices = np.load('./configs/YCB-Video/YCB_vertex.npy')
         data_cfg = 'configs/data-YCB.cfg'
         pretrained_weights_path = args.weights_path
         bg_path = args.background_path
@@ -257,6 +283,7 @@ if __name__ == '__main__':
         syn_data_path = os.path.join(ycb_root, 'data_syn')
         imageset_path = os.path.join(ycb_root, 'image_sets')
         kp_path = './configs/Custom/custom_bbox.npy'
+        vertices = np.load('./configs/Custom/custom_vertex.npy')
         data_cfg = 'configs/data-Custom.cfg'
         pretrained_weights_path = args.weights_path
         bg_path = args.background_path

@@ -45,6 +45,8 @@ class SegPoseNet(nn.Module):
         self.segLayer.train()
         self.regLayer.train()
         self.training = True
+        self.segLayer.training = True
+        self.regLayer.training = True
 
     def eval(self):
         # set different modules to eval mode
@@ -52,6 +54,8 @@ class SegPoseNet(nn.Module):
         self.segLayer.eval()
         self.regLayer.eval()
         self.training = False
+        self.segLayer.training = False
+        self.regLayer.training = False
 
     def print_network(self):
         # print network graph
