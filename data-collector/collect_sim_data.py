@@ -4,6 +4,7 @@ import random
 import json
 import numpy as np
 from skimage.io import imsave
+from PIL import Image
 from scipy.io import savemat
 from math import tan, atan, radians, degrees
 
@@ -43,6 +44,7 @@ def simulate(scene_dir, cls_indices):
 
         # define background plane
         plane = Shape('Plane')
+        plane.set_color([0, 0, 0])
         pr.step()
 
         # define scene shapes
@@ -74,10 +76,9 @@ def simulate(scene_dir, cls_indices):
                                 [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
 
         # loop to get 5000 samples per scene
-        for i in range(5000):
-            print("Randomizing objects' poses and colors ...")
-            # set random pose and color to objects in the scene
-            plane.set_color([random.uniform(0,1), random.uniform(0,1), random.uniform(0,1)])
+        for i in range(1):
+            print("Randomizing objects' poses ...")
+            # set random pose to objects in the scene
             obj_colors = []
             for shape in shapes:
                 shape.set_pose([
@@ -98,9 +99,17 @@ def simulate(scene_dir, cls_indices):
             depth = camera.capture_depth()
             depth = np.uint8(depth * 255.0)
 
+            print("Generating front mask for RGB signal ...")
+            # generate RGB front mask
+            front_mask = np.sum(img, axis=2)
+            front_mask[front_mask != 0] = 255
+            front_mask = Image.fromarray(np.uint8(front_mask))
+            alpha_img = Image.fromarray(img)
+            alpha_img.putalpha(front_mask)
+
             print("Saving sensor output ...")
             # save sensor output
-            imsave(scene_out_dir+f'/{str(i).zfill(6)}-color.png', img)
+            alpha_img.save(scene_out_dir+f'/{str(i).zfill(6)}-color.png')
             imsave(scene_out_dir+f'/{str(i).zfill(6)}-depth.png', depth)
             
             print("Getting objects' poses ...")
@@ -124,18 +133,9 @@ def simulate(scene_dir, cls_indices):
 
             print("Performing semantic segmentation of RGB signal ...")
             # perform semantic segmentation of RGB image
-            # get background color
-            bg_color = plane.get_color()
-            # set background to black
-            plane.set_color([0, 0, 0])
-            pr.step()
-            # re-capture RGB signal
             seg_img = camera.capture_rgb()
             seg_img = perform_segmentation(seg_img, cls_indices[scene_path], poses, vertex_npy, intrinsics)
             imsave(scene_out_dir+f'/{str(i).zfill(6)}-label.png', seg_img)
-            # reset background color
-            plane.set_color(bg_color)
-            pr.step()
 
         # stop simulation
         pr.stop()
