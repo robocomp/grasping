@@ -42,11 +42,6 @@ def simulate(scene_dir, cls_indices):
         camera.set_pose([0,0,0,0,0,0,1])
         pr.step()
 
-        # define background plane
-        plane = Shape('Plane')
-        plane.set_color([0, 0, 0])
-        pr.step()
-
         # define scene shapes
         shapes = []
         shapes.append(Shape('Shape1'))
@@ -76,7 +71,7 @@ def simulate(scene_dir, cls_indices):
                                 [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
 
         # loop to get 5000 samples per scene
-        for i in range(1):
+        for i in range(5000):
             print("Randomizing objects' poses ...")
             # set random pose to objects in the scene
             obj_colors = []

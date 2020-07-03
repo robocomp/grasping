@@ -28,7 +28,7 @@ def vertices_reprojection(vertices, rt, k):
     p = np.matmul(k, np.matmul(rt[:3,0:3], vertices.T) + rt[:3,3].reshape(-1,1))
     p[0] = p[0] / (p[2] + 1e-5)
     p[1] = p[1] / (p[2] + 1e-5)
-    return p[:2].T
+    return p.T
 
 def visualize_predictions(pred_pose, cls_idx, image, vertex, intrinsics):
     # visualize estimated poses on RGB image
@@ -40,7 +40,7 @@ def visualize_predictions(pred_pose, cls_idx, image, vertex, intrinsics):
         mask_img.fill(0)
         vp = vertices_reprojection(vertex[cls_idx[i]-1][:], pred_pose[i], intrinsics)
         for p in vp:
-            if p[0] != p[0] or p[1] != p[1]:  # check nan
+            if p[0] != p[0] or p[1] != p[1] or p[2] != p[2]:  # check nan
                 continue
             mask_img = cv2.circle(mask_img, (int(p[0]), int(p[1])), 1, 255, -1)
 
@@ -84,15 +84,18 @@ def project_poses(pred_pose, cls_idx, image, vertex, intrinsics):
     # project estimated poses on RGB image (to be used in segmentation)
     height, width, depth = image.shape
     mask_img = np.zeros((height,width), np.uint8)
+    depth_img = np.ones((height,width)) * np.inf
     contour_img = np.zeros((height,width,depth), np.uint8)
     for i in range(len(pred_pose)):
         # show surface reprojection
         mask_img.fill(0)
         vp = vertices_reprojection(vertex[cls_idx[i]-1][:], pred_pose[i], intrinsics)
         for p in vp:
-            if p[0] != p[0] or p[1] != p[1]:  # check nan
+            if p[0] != p[0] or p[1] != p[1] or p[2] != p[2]:  # check nan
                 continue
-            mask_img = cv2.circle(mask_img, (int(p[0]), int(p[1])), 1, 255, -1)
+            if p[2] < depth_img[int(p[1])][int(p[0])]: # select closest point to camera
+                depth_img[int(p[1])][int(p[0])] = p[2]
+                mask_img = cv2.circle(mask_img, (int(p[0]), int(p[1])), 1, 255, -1)
 
         # fill the holes
         kernel = np.ones((5,5), np.uint8)
