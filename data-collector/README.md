@@ -39,7 +39,7 @@ Inputs :
 -   json file containing classes indices for each scenes.
 
 For each output sample :
--   RGB image.
+-   RGB image (with transparent background to be used as synthetic).
 -   depth image.
 -   Segmentation mask : labels mask for objects in the scene.
 -   meta data : contains _cls_indexes_, _intrinsic_matrix_ and _poses_.
@@ -48,7 +48,7 @@ For each output sample :
 **Note :** new classes indices start from 22, as YCB-Videos dataset contains 21 classes.
 
 4)  Add output data to the training dataset. The following data is required :
-    -   RGB image.
+    -   RGB image (with transparent background to be used as synthetic).
     -   depth image.
     -   segmentation mask.
     -   meta data `.mat` file.
