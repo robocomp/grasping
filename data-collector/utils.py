@@ -93,7 +93,9 @@ def project_poses(pred_pose, cls_idx, image, vertex, intrinsics):
         for p in vp:
             if p[0] != p[0] or p[1] != p[1] or p[2] != p[2]:  # check nan
                 continue
-            if p[2] < depth_img[int(p[1])][int(p[0])]: # select closest point to camera
+            if p[1] > height or p[1] < 0 or p[0] > width or p[0] < 0:  # skip points outside boundaries
+                continue
+            if p[2] <= depth_img[int(p[1])][int(p[0])]:  # select closest point to camera
                 depth_img[int(p[1])][int(p[0])] = p[2]
                 mask_img = cv2.circle(mask_img, (int(p[0]), int(p[1])), 1, 255, -1)
 
