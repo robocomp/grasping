@@ -1,12 +1,12 @@
 import argparse
-import sys
-sys.path.append("./")
-from api import *
 
 import numpy as np
 from skimage.io import imread
+
 from PIL import ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
+
+from api import *
 
 def api_test(img_path, dataset, weights_path):
     # read test image

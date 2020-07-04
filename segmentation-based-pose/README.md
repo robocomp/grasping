@@ -74,6 +74,12 @@ model = api.configure_network()
 predicted_pose = api.get_pose(model, img, class_names, intrinsics, vertices)
 ```
 
+-   For API test :
+
+```
+python api_test.py -ds dataset_name -img /path/to/test/image -wp /path/to/weights/file
+```
+
 -   For network traced script (used in C++ deployment) :
 
 ```
@@ -124,7 +130,7 @@ Training the network is conducted in the following settings :
 
 -   [x] `exp-03` : Train the network with focal loss on YCB-Videos and textured custom objects ([pretrained weights file](https://drive.google.com/file/d/1N1WHYQdYQLK_GWWhlm_pbk0noyuWnpZv/view?usp=sharing)).
 
--   [ ] `exp-04` : Train the network with focal loss on YCB-Videos only.
+-   [x] `exp-04` : Train the network with focal loss on YCB-Videos only([pretrained weights file](https://drive.google.com/file/d/1MUG7aqhGXlubtSJHlmY0xbFdLRrAOTX-/view?usp=sharing)).
 
 -   [ ] `exp-05` : Train the network with focal loss on synthetic textured custom objects.
 
@@ -138,16 +144,32 @@ Training the network is conducted in the following settings :
 
 ![](./assets/out1.jpg)
 
-Figure(2): Results of pose estimation on YCB-Videos dataset based on `exp-03`.
+Figure(2): Results of pose estimation on YCB-Videos dataset based on `exp-04`.
 
 ![](./assets/out2.jpg)
 
-Figure(3): Results of pose estimation on YCB-Videos dataset based on `exp-03`.
+Figure(3): Results of pose estimation on YCB-Videos dataset based on `exp-04`.
 
 ![](./assets/out3.jpg)
 
-Figure(4): Results of pose estimation on YCB-Videos dataset based on `exp-03`.
+Figure(4): Results of pose estimation on YCB-Videos dataset based on `exp-04`.
 
 ![](./assets/out4.jpg)
 
-Figure(5): Results of pose estimation on YCB-Videos dataset based on `exp-03`.
+Figure(5): Results of pose estimation on YCB-Videos dataset based on `exp-04`.
+
+![](./assets/out5.jpg)
+
+Figure(6): Results of pose estimation on YCB-Videos dataset based on `exp-04`.
+
+![](./assets/out6.jpg)
+
+Figure(7): Results of pose estimation on YCB-Videos dataset based on `exp-04`.
+
+![](./assets/out7.jpg)
+
+Figure(8): Results of pose estimation on YCB-Videos dataset based on `exp-04`.
+
+![](./assets/out8.jpg)
+
+Figure(9): Results of pose estimation on YCB-Videos dataset based on `exp-04`.
