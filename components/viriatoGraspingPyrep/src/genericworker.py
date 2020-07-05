@@ -19,7 +19,7 @@
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys, Ice, os
-from PySide2 import QtWidgets, QtCore
+# from PySide2 import QtWidgets, QtCore
 
 ROBOCOMP = ''
 try:
@@ -228,30 +228,33 @@ import joystickadapterI
 
 
 
-class GenericWorker(QtCore.QObject):
+class GenericWorker():
 
-    kill = QtCore.Signal()
+    # kill = QtCore.Signal()
 
     def __init__(self, mprx):
         super(GenericWorker, self).__init__()
 
         self.objectposeestimation_proxy = mprx["ObjectPoseEstimationProxy"]
         self.camerargbdsimplepub_proxy = mprx["CameraRGBDSimplePubPub"]
+        self.laserpub_proxy = mprx["LaserPubPub"]
+        self.omnirobotpub_proxy = mprx["OmniRobotPubPub"]
+        self.humantodsrpub_proxy = mprx["HumanToDSRPubPub"]
 
-        self.mutex = QtCore.QMutex(QtCore.QMutex.Recursive)
-        self.Period = 30
-        self.timer = QtCore.QTimer(self)
+        # self.mutex = QtCore.QMutex(QtCore.QMutex.Recursive)
+        # self.Period = 30
+        # self.timer = QtCore.QTimer(self)
 
 
-    @QtCore.Slot()
-    def killYourSelf(self):
-        rDebug("Killing myself")
-        self.kill.emit()
+    # @QtCore.Slot()
+    # def killYourSelf(self):
+    #     rDebug("Killing myself")
+    #     self.kill.emit()
 
-    # \brief Change compute period
-    # @param per Period in ms
-    @QtCore.Slot(int)
-    def setPeriod(self, p):
-        print("Period changed", p)
-        self.Period = p
-        self.timer.start(self.Period)
+    # # \brief Change compute period
+    # # @param per Period in ms
+    # @QtCore.Slot(int)
+    # def setPeriod(self, p):
+    #     print("Period changed", p)
+    #     self.Period = p
+    #     self.timer.start(self.Period)

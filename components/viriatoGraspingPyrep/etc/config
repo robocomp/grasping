@@ -16,6 +16,10 @@ ObjectPoseEstimationProxy = objectposeestimation:tcp -h localhost -p 10117
 TopicManager.Proxy=IceStorm/TopicManager:default -p 9999
 
 
+# directory of scene file
+scene_dir=scenes/autonomy-lab.ttt
+
+
 Ice.MessageSizeMax=20004800
 Ice.Warn.Connections=0
 Ice.Trace.Network=0

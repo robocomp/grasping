@@ -39,15 +39,15 @@ import queue
 class SpecificWorker(GenericWorker):
     def __init__(self, proxy_map):
         super(SpecificWorker, self).__init__(proxy_map)
-        #self.timer.timeout.connect(self.compute)
-        #self.Period = 100
+        # self.timer.timeout.connect(self.compute)
+        # self.Period = 100
        
     def __del__(self):
         print('SpecificWorker destructor')
 
     def setParams(self, params):
         
-        SCENE_FILE = '../../etc/autonomy-lab.ttt'
+        SCENE_FILE = params["scene_dir"]
         self.pr = PyRep()
         self.pr.launch(SCENE_FILE, headless=False)
         self.pr.start()
@@ -93,6 +93,14 @@ class SpecificWorker(GenericWorker):
                                                                 "focal": cam.get_resolution()[0]/np.tan(np.radians(cam.get_perspective_angle())), 
                                                                 "rgb": np.array(0), 
                                                                 "depth": np.ndarray(0) }
+
+        self.grasping_objects = {}
+        self.grasping_objects["bowl"] = Shape("bowl")
+        self.grasping_objects["can"] = Shape("can")
+        self.grasping_objects["clamp"] = Shape("clamp")
+        self.grasping_objects["marker"] = Shape("marker")
+        self.grasping_objects["mug"] = Shape("mug")
+        self.grasping_objects["scissors"] = Shape("scissors")
         
         self.hokuyo_base_front_left = VisionSensor("hokuyo_base_front_left")
         self.hokuyo_base_front_right = VisionSensor("hokuyo_base_front_right")
@@ -104,18 +112,18 @@ class SpecificWorker(GenericWorker):
             name = "Bill#" + str(i)
             if Dummy.exists(name):
                 self.people["name"] = Dummy(name)
-        #print (self.people)
-        #self.joy_queue = queue.Queue(1)
-        #self.omnirobot_queue = queue.Queue(1)
+        # print (self.people)
+        # self.joy_queue = queue.Queue(1)
+        # self.omnirobot_queue = queue.Queue(1)
         self.joystick_newdata = []
 
-    #@QtCore.Slot()
+    # @QtCore.Slot()
     def compute(self):
         while True:
             try:
-                #start = time.time()
+                # start = time.time()
                 self.pr.step()
-                #for name,cam in self.cameras.items():
+                # for name,cam in self.cameras.items():
                 cam = self.cameras["Viriato_head_camera_front_sensor"]
                 image_float = cam["handle"].capture_rgb()
                 depth = cam["handle"].capture_depth()
@@ -126,7 +134,7 @@ class SpecificWorker(GenericWorker):
                 # get People position
                 people_data = RoboCompHumanToDSRPub.PeopleData()
                 people_data.timestamp = time.time()
-                people = [] #RoboCompHumanToDSRPub.People()
+                people = [] # RoboCompHumanToDSRPub.People()
                 for name, handle in self.people.items():
                     pos = handle.get_position()
                     rot = handle.get_orientation()
@@ -169,7 +177,7 @@ class SpecificWorker(GenericWorker):
                 #     self.robot.set_base_angular_velocites(vels)
 
                 time.sleep(0.08)
-                #print(time.time()-start)
+                # print(time.time()-start)
             except KeyboardInterrupt:
                 break
 
@@ -319,7 +327,7 @@ class SpecificWorker(GenericWorker):
     # setSpeedBase
     #
     def OmniRobot_setSpeedBase(self, advx, advz, rot):
-        #self.omnirobot_queue.put([advz, advx, rot])
+        # self.omnirobot_queue.put([advz, advx, rot])
         pass
 
     #
