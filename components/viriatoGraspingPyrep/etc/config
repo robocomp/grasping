@@ -8,9 +8,13 @@ OmniRobot.Endpoints=tcp -p 10004
 JoystickAdapterTopic.Endpoints=tcp -p 13100
 
 
+# Proxies for required interfaces
+ObjectPoseEstimationProxy = objectposeestimation:tcp -h localhost -p 10117
+
 
 # This property is used by the clients to connect to IceStorm.
 TopicManager.Proxy=IceStorm/TopicManager:default -p 9999
+
 
 Ice.MessageSizeMax=20004800
 Ice.Warn.Connections=0
