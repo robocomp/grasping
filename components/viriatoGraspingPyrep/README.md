@@ -6,11 +6,11 @@ This component is an edited copy of `viriatoPyrep` to test pose estimation and g
 
 ## Installation
 
-- Download `autonomy-lab.ttt` scene file using `get_scene.sh`.
+-   Download `autonomy-lab.ttt` scene file using `get_scene.sh`.
 
-- Install [PyRep](https://github.com/stepjam/PyRep).
+-   Install [PyRep](https://github.com/stepjam/PyRep).
 
-- Copy the `viriato.py` file in this directory to Pyrep directory at : `/home/xxxyour-userxxx/.local/lib/python3.x/site-packages/pyrep/robots/mobiles/viriato.py`.
+-   Copy the `viriato.py` file in this directory to Pyrep directory at : `/home/xxxyour-userxxx/.local/lib/python3.x/site-packages/pyrep/robots/mobiles/viriato.py`.
 
 ## Configuration parameters
 
@@ -18,12 +18,18 @@ Like any other component, *objectPoseEstimation* needs a configuration file to s
 
 ## Starting the component
 
-- Make sure first that you have commented this two lines, in case you have them :
+-   Compile the component :
+```
+cmake .
+make
+```
+
+-   Make sure first that you have commented this two lines, in case you have them :
  ```
 export LD_LIBRARY_PATH=$COPPELIASIM_ROOT
 export QT_QPA_PLATFORM_PLUGIN_PATH=$COPPELIASIM_ROOT
 ```
 
-- Start the component copy the config file form etc to . and use the script `run.sh`. 
+-   Start the component copy the config file form etc to . and use the script `run.sh`. 
 
-- If you have a joystick, start `~/robocomp/components/robocomp-robolab/components/hardware/external_control/joystickpublish`. Check the config file to set the ranges of the axis.
+-   If you have a joystick, start `~/robocomp/components/robocomp-robolab/components/hardware/external_control/joystickpublish`. Check the config file to set the ranges of the axis.

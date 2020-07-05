@@ -34,6 +34,12 @@ To run `objectPoseEstimation` component, navigate to the component directory :
 cd <objectPoseEstimation's path> 
 ```
 
+Then compile the component :
+```bash
+cmake .
+make
+```
+
 After editing the config file, we can run the component :
 ```bash
 python3 src/objectPoseEstimation.py etc/config
