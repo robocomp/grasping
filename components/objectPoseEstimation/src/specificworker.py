@@ -143,7 +143,7 @@ class SpecificWorker(GenericWorker):
         # post-process network output
         ret_poses = self.process_poses(pred_poses)
         # publish predicted poses
-        return RoboCompObjectPoseEstimation.PoseType(self.final_poses)
+        return RoboCompObjectPoseEstimation.PoseType(ret_poses)
 
     # ===================================================================
     # ===================================================================
