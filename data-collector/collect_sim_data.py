@@ -77,7 +77,7 @@ def simulate(scene_dir, cls_indices):
             obj_colors = []
             for shape in shapes:
                 shape.set_pose([
-                        random.uniform(-1.5,1.5), random.uniform(-1.5,1.5), random.uniform(2,6),
+                        random.uniform(-0.25,0.25), random.uniform(-0.25,0.25), random.uniform(0.25,2),
                         random.uniform(-1,1), random.uniform(-1,1), random.uniform(-1,1),
                         random.uniform(-1,1)
                     ])
