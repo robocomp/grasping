@@ -95,12 +95,12 @@ class SpecificWorker(GenericWorker):
                                                                 "depth": np.ndarray(0) }
 
         self.grasping_objects = {}
-        self.grasping_objects["bowl"] = Shape("bowl")
-        self.grasping_objects["can"] = Shape("can")
-        self.grasping_objects["clamp"] = Shape("clamp")
-        self.grasping_objects["marker"] = Shape("marker")
-        self.grasping_objects["mug"] = Shape("mug")
-        self.grasping_objects["scissors"] = Shape("scissors")
+        self.grasping_objects["024_bowl"] = Shape("bowl")
+        self.grasping_objects["002_master_chef_can"] = Shape("can")
+        self.grasping_objects["052_extra_large_clamp"] = Shape("clamp")
+        self.grasping_objects["040_large_marker"] = Shape("marker")
+        self.grasping_objects["025_mug"] = Shape("mug")
+        self.grasping_objects["037_scissors"] = Shape("scissors")
         
         self.hokuyo_base_front_left = VisionSensor("hokuyo_base_front_left")
         self.hokuyo_base_front_right = VisionSensor("hokuyo_base_front_right")
