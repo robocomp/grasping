@@ -20,7 +20,7 @@
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-# \mainpage RoboComp::viriatoPyrep
+# \mainpage RoboComp::viriatoGraspingPyrep
 #
 # \section intro_sec Introduction
 #
@@ -48,7 +48,7 @@
 #
 # \subsection execution_ssec Execution
 #
-# Just: "${PATH_TO_BINARY}/viriatoPyrep --Ice.Config=${PATH_TO_CONFIG_FILE}"
+# Just: "${PATH_TO_BINARY}/viriatoGraspingPyrep --Ice.Config=${PATH_TO_CONFIG_FILE}"
 #
 # \subsection running_ssec Once running
 #
@@ -117,6 +117,22 @@ if __name__ == '__main__':
     except Ice.ConnectionRefusedException as e:
         print(colored('Cannot connect to rcnode! This must be running to use pub/sub.', 'red'))
         exit(1)
+
+    # Remote object connection for ObjectPoseEstimation
+    try:
+        proxyString = ic.getProperties().getProperty('ObjectPoseEstimationProxy')
+        try:
+            basePrx = ic.stringToProxy(proxyString)
+            objectposeestimation_proxy = RoboCompObjectPoseEstimation.ObjectPoseEstimationPrx.uncheckedCast(basePrx)
+            mprx["ObjectPoseEstimationProxy"] = objectposeestimation_proxy
+        except Ice.Exception:
+            print('Cannot connect to the remote object (ObjectPoseEstimation)', proxyString)
+            #traceback.print_exc()
+            status = 1
+    except Ice.Exception as e:
+        print(e)
+        print('Cannot get ObjectPoseEstimationProxy property.')
+        status = 1
 
     # Create a proxy to publish a CameraRGBDSimplePub topic
     topic = False

@@ -20,6 +20,7 @@ weights_file = models/ckpt_final.pth
 vertices_file = configs/Custom/custom_vertex.npy
 
 
+Ice.MessageSizeMax=20004800
 Ice.Warn.Connections=0
 Ice.Trace.Network=0
 Ice.Trace.Protocol=0

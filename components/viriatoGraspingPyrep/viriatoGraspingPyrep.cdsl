@@ -1,17 +1,18 @@
+import "ObjectPoseEstimation.idsl";
 import "CameraRGBDSimplePub.idsl";
 import "Laser.idsl";
 import "OmniRobot.idsl";
 import "JoystickAdapter.idsl";
 import "HumanToDSR.idsl";
 
-Component viriatoPyrep
+Component viriatoGraspingPyrep
 {
     Communications
     {
+        requires ObjectPoseEstimation;
         implements CameraRGBDSimple, Laser, OmniRobot;
         subscribesTo JoystickAdapter;
 	    publishes CameraRGBDSimplePub;
     };
     language Python;
 };
-

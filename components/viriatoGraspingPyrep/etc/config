@@ -16,6 +16,3 @@ Ice.MessageSizeMax=20004800
 Ice.Warn.Connections=0
 Ice.Trace.Network=0
 Ice.Trace.Protocol=0
-
-
-

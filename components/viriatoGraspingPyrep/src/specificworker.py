@@ -24,7 +24,6 @@ import os, time, queue
 from bisect import bisect_left
 from os.path import dirname, join, abspath
 from pyrep import PyRep
-#from pyrep.robots.mobiles.viriato import Viriato
 from pyrep.robots.mobiles.viriato import Viriato
 from pyrep.robots.mobiles.youbot import YouBot
 from pyrep.objects.vision_sensor import VisionSensor
@@ -332,19 +331,37 @@ class SpecificWorker(GenericWorker):
     # ===================================================================
     # ===================================================================
 
-   #self.hokuyo_base_front_left_semiangle = np.radians(self.hokuyo_base_front_left.get_perspective_angle()/2)
-        #self.hokuyo_base_front_left_semiwidth = self.hokuyo_base_front_left.get_resolution()[0]/2
-        #self.hokuyo_base_front_left_focal = self.hokuyo_base_front_left_semiwidth/np.tan(self.hokuyo_base_front_left_semiangle)
-     
-    # hokuyo_base_front_left_reading = self.hokuyo_base_front_left.capture_depth(in_meters=True)
-                # hokuyo_base_front_right_reading = self.hokuyo_base_front_right.capture_depth(in_meters=True)
-                # ldata = []
-                # for i,d in enumerate(hokuyo_base_front_left_reading.T):
-                #     angle = np.arctan2(i-(self.hokuyo_base_front_left_semiwidth), self.hokuyo_base_front_left_focal)
-                #     dist = (d[0]/np.abs(np.cos(angle)))*1000
-                #     ldata.append(RoboCompLaser.TData(angle-self.hokuyo_base_front_right_semiangle,dist))
-                # for i,d in enumerate(hokuyo_base_front_right_reading.T):
-                #     angle = np.arctan2(i-(self.hokuyo_base_front_right_semiwidth), self.hokuyo_base_front_right_focal)
-                #     dist = (d[0]/np.abs(np.cos(angle)))*1000
-                #     ldata.append(RoboCompLaser.TData(angle+self.hokuyo_base_front_right_semiangle,dist))
-             
+    ######################
+    # From the RoboCompObjectPoseEstimation you can call this methods:
+    # self.objectposeestimation_proxy.getObjectPose(...)
+
+    ######################
+    # From the RoboCompObjectPoseEstimation you can use this types:
+    # RoboCompObjectPoseEstimation.TImage
+    # RoboCompObjectPoseEstimation.ObjectPose
+
+    ######################
+    # From the RoboCompCameraRGBDSimplePub you can publish calling this methods:
+    # self.camerargbdsimplepub_proxy.pushRGBD(...)
+
+    ######################
+    # From the RoboCompCameraRGBDSimple you can use this types:
+    # RoboCompCameraRGBDSimple.TImage
+    # RoboCompCameraRGBDSimple.TDepth
+    # RoboCompCameraRGBDSimple.TRGBD
+
+    ######################
+    # From the RoboCompLaser you can use this types:
+    # RoboCompLaser.LaserConfData
+    # RoboCompLaser.TData
+
+    ######################
+    # From the RoboCompOmniRobot you can use this types:
+    # RoboCompOmniRobot.TMechParams
+
+    ######################
+    # From the RoboCompJoystickAdapter you can use this types:
+    # RoboCompJoystickAdapter.AxisParams
+    # RoboCompJoystickAdapter.ButtonParams
+    # RoboCompJoystickAdapter.TData
+
