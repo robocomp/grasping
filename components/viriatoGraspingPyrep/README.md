@@ -1,16 +1,16 @@
 # Python ViriatoPyrep For Grasping
 
-This component is an edited copy of `viriatoPyrep` to test pose estimation and grasping on `autonomy-lab.ttt` using PyRep API.
+This component is an edited copy of `viriatoPyrep` to test pose estimation and grasping with Viriato Gen3 arm using PyRep API.
 
 **Note :** The component is under development.
 
 ## Installation
 
--   Download `autonomy-lab.ttt` scene file using `get_scene.sh`.
+-   Download `gen3-grasp.ttt` scene file using `get_scene.sh`.
 
 -   Install [PyRep](https://github.com/stepjam/PyRep).
 
--   Copy the `viriato.py` file in this directory to Pyrep directory at : `/home/xxxyour-userxxx/.local/lib/python3.x/site-packages/pyrep/robots/mobiles/viriato.py`.
+-   Copy the `gen3.py` file in this directory to Pyrep directory at : `/home/xxxyour-userxxx/.local/lib/python3.x/site-packages/pyrep/robots/arms/gen3.py`.
 
 ## Configuration parameters
 

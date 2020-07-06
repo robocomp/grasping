@@ -17,7 +17,7 @@ TopicManager.Proxy=IceStorm/TopicManager:default -p 9999
 
 
 # directory of scene file
-scene_dir=scenes/autonomy-lab.ttt
+scene_dir=scenes/gen3-grasp.ttt
 
 
 Ice.MessageSizeMax=20004800

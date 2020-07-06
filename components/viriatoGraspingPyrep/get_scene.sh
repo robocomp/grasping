@@ -1,5 +1,5 @@
 #!/bin/bash
-# download autonomy-lab.ttt scene
+# download gen3-grasp.ttt scene
 
 mkdir scenes/
-wget "https://drive.google.com/file/d/12bQuVXAiGgibgVdzZVChz6_VhoY7x2Xp/view?usp=sharing" -O scenes/autonomy-lab.ttt
+wget "https://drive.google.com/file/d/1OLINbN0_q8bnwxytBeM5Bnfh9b9Nl8Ix/view?usp=sharing" -O scenes/gen3-grasp.ttt
