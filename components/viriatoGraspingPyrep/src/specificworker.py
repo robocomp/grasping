@@ -80,7 +80,9 @@ class SpecificWorker(GenericWorker):
                 depth = cam["handle"].capture_depth()
                 image = cv2.normalize(src=image_float, dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
                 cam["rgb"] = RoboCompObjectPoseEstimation.TImage(width=cam["width"], height=cam["height"], depth=3, focalx=cam["focal"], focaly=cam["focal"], image=image.tobytes())
-
+            except Ice.Exception as e:
+                print(e)
+        return True
 
 
     ######################

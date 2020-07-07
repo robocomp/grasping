@@ -1,6 +1,6 @@
 # Python ViriatoPyrep For Grasping
 
-This component is an modified copy of `viriatoPyrep` to test pose estimation and grasping with Viriato Gen3 arm using PyRep API.
+This component is an modified copy of `viriatoPyrep` to test pose estimation and grasping with Viriato Gen3 arm (found [here](https://drive.google.com/file/d/1LdIUQqYwtTQFxQGDMdpvBAWeBeTSJHTz/view?usp=sharing)) using PyRep API.
 
 **Note :** The component is under development.
 
@@ -30,4 +30,4 @@ export LD_LIBRARY_PATH=$COPPELIASIM_ROOT
 export QT_QPA_PLATFORM_PLUGIN_PATH=$COPPELIASIM_ROOT
 ```
 
--   Start the component copy the config file form etc to . and use the script `run.sh`. 
+-   Start the component using the script `run.sh`. 
