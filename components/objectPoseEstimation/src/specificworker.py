@@ -27,12 +27,6 @@ import numpy as np
 from scipy.spatial.transform import Rotation as R
 
 
-# If RoboComp was compiled with Python bindings you can use InnerModel in Python
-# sys.path.append('/opt/robocomp/lib')
-# import librobocomp_qmat
-# import librobocomp_osgviewer
-# import librobocomp_innermodel
-
 class SpecificWorker(GenericWorker):
     def __init__(self, proxy_map, startup_check=False):
         super(SpecificWorker, self).__init__(proxy_map)
@@ -67,11 +61,13 @@ class SpecificWorker(GenericWorker):
             self.final_poses = []
         except:
             print("Error reading config params")
+            return False
         return True
 
 
     @QtCore.Slot()
     def compute(self):
+        print('SpecificWorker.compute...')
         try:
             # get RGB image information
             img_buffer = self.camerargbdsimple_proxy.getImage(self.camera_name)
@@ -92,6 +88,7 @@ class SpecificWorker(GenericWorker):
             self.objectposeestimationpub_proxy.pushObjectPose(RoboCompObjectPoseEstimation.PoseType(self.final_poses))
         except Ice.Exception as e:
             print(e)
+            return False
         return True
 
     def startup_check(self):

@@ -24,7 +24,7 @@ As discussed, there are two components for pose estimation, which are `objectPos
 
 ### ObjectPoseEstimation Interface
 
-It's the interface for `objectPoseEstimation` component. It defines a single operation `getObjectPose`, that takes a `TImage` from `CameraRGBDSimple` in `ViriatoPyrep` component and returns `PoseType`, which is a sequence of `ObjectPose` type.
+It's the interface for `objectPoseEstimation` component. It defines a single operation `getObjectPose`, that takes an RGB image in `TImage` format and returns `PoseType`, which is a sequence of `ObjectPose` type.
 
 `ObjectPose` type contains :
 - String representing object name.
@@ -42,13 +42,11 @@ module RoboCompObjectPoseEstimation
 
     struct TImage
     {
-        int cameraID;
         int width;
         int height;
         int depth;
         int focalx;
         int focaly;
-        int alivetime;
         ImgType image;
     };
 
