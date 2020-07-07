@@ -1,19 +1,5 @@
-# Endpoints for implements interfaces
-CameraRGBDSimple.Endpoints=tcp -p 10096
-Laser.Endpoints=tcp -p 10003
-OmniRobot.Endpoints=tcp -p 10004
-
-
-# Endpoints for subscriptions interfaces
-JoystickAdapterTopic.Endpoints=tcp -p 13100
-
-
 # Proxies for required interfaces
 ObjectPoseEstimationProxy = objectposeestimation:tcp -h localhost -p 10117
-
-
-# This property is used by the clients to connect to IceStorm.
-TopicManager.Proxy=IceStorm/TopicManager:default -p 9999
 
 
 # directory of scene file

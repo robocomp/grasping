@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #
-#    Copyright (C) 2020 by YOUR NAME HERE
+#    Copyright (C) 2020 by Mohamed Shawky
 #
 #    This file is part of RoboComp
 #
@@ -55,13 +55,16 @@
 #
 #
 
-import sys, traceback, IceStorm, time, os, copy
+import sys
+import traceback
+import IceStorm
+import time
+import os
+import copy
+import argparse
 from termcolor import colored
-
 # Ctrl+c handling
 import signal
-
-#from PySide2 import QtCore
 
 from specificworker import *
 
@@ -91,32 +94,21 @@ class CommonBehaviorI(RoboCompCommonBehavior.CommonBehavior):
 
 #SIGNALS handler
 def sigint_handler(*args):
-    #QtCore.QCoreApplication.quit()
     pass
     
 if __name__ == '__main__':
-    #app = QtCore.QCoreApplication(sys.argv)
-    params = copy.deepcopy(sys.argv)
-    if len(params) > 1:
-        if not params[1].startswith('--Ice.Config='):
-            params[1] = '--Ice.Config=' + params[1]
-    elif len(params) == 1:
-        params.append('--Ice.Config=etc/config')
-    ic = Ice.initialize(params)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('iceconfigfile', nargs='?', type=str, default='etc/config')
+
+    args = parser.parse_args()
+
+    ic = Ice.initialize(args.iceconfigfile)
     status = 0
     mprx = {}
     parameters = {}
     for i in ic.getProperties():
         parameters[str(i)] = str(ic.getProperties().getProperty(i))
 
-    # Topic Manager
-    proxy = ic.getProperties().getProperty("TopicManager.Proxy")
-    obj = ic.stringToProxy(proxy)
-    try:
-        topicManager = IceStorm.TopicManagerPrx.checkedCast(obj)
-    except Ice.ConnectionRefusedException as e:
-        print(colored('Cannot connect to rcnode! This must be running to use pub/sub.', 'red'))
-        exit(1)
 
     # Remote object connection for ObjectPoseEstimation
     try:
@@ -134,79 +126,6 @@ if __name__ == '__main__':
         print('Cannot get ObjectPoseEstimationProxy property.')
         status = 1
 
-    # Create a proxy to publish a CameraRGBDSimplePub topic
-    topic = False
-    try:
-        topic = topicManager.retrieve("CameraRGBDSimplePub")
-    except:
-        pass
-    while not topic:
-        try:
-            topic = topicManager.retrieve("CameraRGBDSimplePub")
-        except IceStorm.NoSuchTopic:
-            try:
-                topic = topicManager.create("CameraRGBDSimplePub")
-            except:
-                print('Another client created the CameraRGBDSimplePub topic? ...')
-    pub = topic.getPublisher().ice_oneway()
-    camerargbdsimplepubTopic = RoboCompCameraRGBDSimplePub.CameraRGBDSimplePubPrx.uncheckedCast(pub)
-    mprx["CameraRGBDSimplePubPub"] = camerargbdsimplepubTopic
-
-    # Create a proxy to publish a LaserPub topic
-    topic = False
-    try:
-        topic = topicManager.retrieve("LaserPub")
-    except:
-        pass
-    while not topic:
-        try:
-            topic = topicManager.retrieve("LaserPub")
-        except IceStorm.NoSuchTopic:
-            try:
-                topic = topicManager.create("LaserPub")
-            except:
-                print('Another client created the LaserPub topic? ...')
-    pub = topic.getPublisher().ice_oneway()
-    laserpubTopic = RoboCompLaserPub.LaserPubPrx.uncheckedCast(pub)
-    mprx["LaserPubPub"] = laserpubTopic
-
-
-    # Create a proxy to publish a OmniRobotPub topic
-    topic = False
-    try:
-        topic = topicManager.retrieve("OmniRobotPub")
-    except:
-        pass
-    while not topic:
-        try:
-            topic = topicManager.retrieve("OmniRobotPub")
-        except IceStorm.NoSuchTopic:
-            try:
-                topic = topicManager.create("OmniRobotPub")
-            except:
-                print('Another client created the OmniRobotPub topic? ...')
-    pub = topic.getPublisher().ice_oneway()
-    omnirobotpubTopic = RoboCompOmniRobotPub.OmniRobotPubPrx.uncheckedCast(pub)
-    mprx["OmniRobotPubPub"] = omnirobotpubTopic
-
-    # Create a proxy to publish a LaserPub topic
-    topic = False
-    try:
-        topic = topicManager.retrieve("HumanToDSRPub")
-    except:
-        pass
-    while not topic:
-        try:
-            topic = topicManager.retrieve("HumanToDSRPub")
-        except IceStorm.NoSuchTopic:
-            try:
-                topic = topicManager.create("HumanToDSRPub")
-            except:
-                print('Another client created the HumanToDSRPub topic? ...')
-    pub = topic.getPublisher().ice_oneway()
-    humantodsrpubTopic = RoboCompHumanToDSRPub.HumanToDSRPubPrx.uncheckedCast(pub)
-    mprx["HumanToDSRPubPub"] = humantodsrpubTopic
-
     if status == 0:
         worker = SpecificWorker(mprx)
         worker.setParams(parameters)
@@ -214,43 +133,7 @@ if __name__ == '__main__':
         print("Error getting required connections, check config file")
         sys.exit(-1)
 
-    adapter = ic.createObjectAdapter('CameraRGBDSimple')
-    adapter.add(camerargbdsimpleI.CameraRGBDSimpleI(worker), ic.stringToIdentity('camerargbdsimple'))
-    adapter.activate()
-
-    adapter = ic.createObjectAdapter('Laser')
-    adapter.add(laserI.LaserI(worker), ic.stringToIdentity('laser'))
-    adapter.activate()
-
-    adapter = ic.createObjectAdapter('OmniRobot')
-    adapter.add(omnirobotI.OmniRobotI(worker), ic.stringToIdentity('omnirobot'))
-    adapter.activate()
-
-
-    JoystickAdapter_adapter = ic.createObjectAdapter("JoystickAdapterTopic")
-    joystickadapterI_ = joystickadapterI.JoystickAdapterI(worker)
-    joystickadapter_proxy = JoystickAdapter_adapter.addWithUUID(joystickadapterI_).ice_oneway()
-
-    subscribeDone = False
-    while not subscribeDone:
-        try:
-            joystickadapter_topic = topicManager.retrieve("JoystickAdapter")
-            subscribeDone = True
-        except Ice.Exception as e:
-            print("Error. Topic does not exist (creating)")
-            time.sleep(1)
-            try:
-                joystickadapter_topic = topicManager.create("JoystickAdapter")
-                subscribeDone = True
-            except:
-                print("Error. Topic could not be created. Exiting")
-                status = 0
-    qos = {}
-    joystickadapter_topic.subscribeAndGetPublisher(qos, joystickadapter_proxy)
-    JoystickAdapter_adapter.activate()
-
     signal.signal(signal.SIGINT, sigint_handler)
-    #app.exec_()
     worker.compute()
 
     if ic:
