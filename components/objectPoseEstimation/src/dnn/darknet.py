@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from utils import *
+from .utils import *
 
 class MaxPoolStride1(nn.Module):
     def __init__(self):

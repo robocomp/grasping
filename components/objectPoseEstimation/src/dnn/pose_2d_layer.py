@@ -1,5 +1,5 @@
 import torch.nn as nn
-from utils import *
+from .utils import *
 
 class Pose2DLayer(nn.Module):
     def __init__(self, options, is_train):

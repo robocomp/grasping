@@ -11,13 +11,13 @@ TopicManager.Proxy=IceStorm/TopicManager:default -p 9999
 
 
 # name of camera handler to stream RGB image from
-camera_name = Viriato_head_camera_front_sensor
+camera_name = Gen3_depth_sensor
 
 
 # DNN configuration
-config_file = configs/data-Custom.cfg
-weights_file = models/ckpt_final.pth
-vertices_file = configs/Custom/custom_vertex.npy
+config_file = src/configs/data-Custom.cfg
+weights_file = src/models/ckpt_final.pth
+vertices_file = src/configs/Custom/custom_vertex.npy
 
 
 Ice.MessageSizeMax=20004800

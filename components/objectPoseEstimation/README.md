@@ -4,8 +4,6 @@
 
 The `objectPoseEstimation` component continuously publishes the predicted poses into the shared graph in `ViriatoDSR` through `objectPoseEstimationPub`. However, it contains an interface method `getObjectPose`, which can be directly called to get the object poses of a certain RGB image.
 
-**Note :** The component is under development.
-
 ## Installation
 
 1)  Install dependencies :

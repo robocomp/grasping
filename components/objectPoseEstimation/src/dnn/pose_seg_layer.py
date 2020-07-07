@@ -1,6 +1,6 @@
 import torch.nn as nn
 import torch.nn.functional as F
-from utils import *
+from .utils import *
 
 class PoseSegLayer(nn.Module):
     def __init__(self, options, is_train):

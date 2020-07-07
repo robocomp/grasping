@@ -1,9 +1,9 @@
 import torch
 import torch.nn as nn
-from darknet import Darknet
-from pose_2d_layer import Pose2DLayer
-from pose_seg_layer import PoseSegLayer
-from utils import *
+from .darknet import Darknet
+from .pose_2d_layer import Pose2DLayer
+from .pose_seg_layer import PoseSegLayer
+from .utils import *
 
 class SegPoseNet(nn.Module):
     def __init__(self, data_options, is_train):
