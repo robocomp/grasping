@@ -88,7 +88,7 @@ class YCBDataset(torch.utils.data.Dataset):
         # generate weights
         combined_frequency = self.num_syn_images * syn_frequency + len(self.train_paths) * real_frequency
         median_frequency = np.median(combined_frequency)
-        weight = [median_frequency/x for x in combined_frequency]
+        weight = [median_frequency/(x+1e-9) for x in combined_frequency]
         # set CE classes weight to be used during training
         self.weight_cross_entropy =  torch.from_numpy(np.array(weight)).float()
 
@@ -208,6 +208,8 @@ class YCBDataset(torch.utils.data.Dataset):
         seg_img = cv2.resize(seg_img, (self.input_height, self.input_width), interpolation=cv2.INTER_NEAREST)
         mask_front = ma.getmaskarray(ma.masked_not_equal(seg_img, 0)).astype(int)
         mask_back = ma.getmaskarray(ma.masked_equal(seg_img, 0)).astype(int)
+        mask_front = np.stack([mask_front,mask_front,mask_front], axis=2)
+        mask_back = np.stack([mask_back,mask_back,mask_back], axis=2)
 
         # random erase some parts to make the network robust to occlusions
         random_erasing = RandomErasing(sl=0.01,sh=0.1)
@@ -228,8 +230,7 @@ class YCBDataset(torch.utils.data.Dataset):
         combined_img = np.array(combined_img)
 
         # get segmentation label
-        seg_label = seg_img[:, :, 0] # RGB channels are the same
-        seg_label = cv2.resize(seg_label, (self.target_h, self.target_w), interpolation=cv2.INTER_NEAREST)
+        seg_img = cv2.resize(seg_img, (self.target_h, self.target_w), interpolation=cv2.INTER_NEAREST)
 
         # generate kp gt map of (nH, nW, nV)
         kp_gt_map_x = np.zeros((self.target_h, self.target_w, self.n_kp))
@@ -242,7 +243,7 @@ class YCBDataset(torch.utils.data.Dataset):
         with open(in_pkl, 'rb') as f:
             bb8_2d = pickle.load(f)
         for i, cid in enumerate(class_ids):
-            class_mask = np.where(seg_label == cid[0])
+            class_mask = np.where(seg_img == cid[0])
             kp_gt_map_x[class_mask] = bb8_2d[:,:,0][i]
             kp_gt_map_y[class_mask] = bb8_2d[:,:,1][i]
 
@@ -253,7 +254,7 @@ class YCBDataset(torch.utils.data.Dataset):
         # input  : normalized RGB image
         # output : segmentation mask, x ground truth map, y ground truth map & mask front
         return (torch.from_numpy(combined_img.transpose(2, 0, 1)).float().div(255.0),
-                torch.from_numpy(seg_label).long(),
+                torch.from_numpy(seg_img).long(),
                 torch.from_numpy(kp_gt_map_x).float(), torch.from_numpy(kp_gt_map_y).float(),
                 torch.from_numpy(mask_front[:,:,0]).float())
 

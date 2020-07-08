@@ -254,6 +254,8 @@ if __name__ == '__main__':
     argparser.add_argument('-dsp', '--dataset_root', type=str, help='root directory of the chosen dataset')
     argparser.add_argument('-wp', '--weights_path', type=str, help='path to the pretrained weights file', default=None)
     argparser.add_argument('-bg', '--background_path', type=str, help='path to background images for synthetic data', default=None)
+    argparser.add_argument('-sn', '--syn_num', type=int, help='number of synthetic training data samples', default=50000)
+    argparser.add_argument('--use_real', action='store_true')
 
     args = argparser.parse_args()
 
@@ -274,6 +276,8 @@ if __name__ == '__main__':
         vertices = np.load('./configs/YCB-Video/YCB_vertex.npy')
         data_cfg = 'configs/data-YCB.cfg'
         pretrained_weights_path = args.weights_path
+        use_real_img = args.use_real
+        num_syn_img = args.syn_num
         bg_path = args.background_path
         train('./configs/data-YCB.cfg')
     elif args.dataset == 'custom':
@@ -286,6 +290,8 @@ if __name__ == '__main__':
         vertices = np.load('./configs/Custom/custom_vertex.npy')
         data_cfg = 'configs/data-Custom.cfg'
         pretrained_weights_path = args.weights_path
+        use_real_img = args.use_real
+        num_syn_img = args.syn_num
         bg_path = args.background_path
         train('./configs/data-Custom.cfg')
     else:
