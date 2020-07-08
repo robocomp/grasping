@@ -44,6 +44,8 @@ class SpecificWorker(GenericWorker):
 
     def __del__(self):
         print('SpecificWorker destructor')
+        self.pr.stop()
+        self.pr.shutdown()
 
     def setParams(self, params):
 
@@ -70,7 +72,8 @@ class SpecificWorker(GenericWorker):
                                             "depth": np.ndarray(0)}
 
         self.grasping_objects = {}
-        self.grasping_objects["002_master_chef_can"] = {"handler": Shape("can"),
+        can = Shape("can")
+        self.grasping_objects["002_master_chef_can"] = {"handler": can  ,
                                                         "sim_pose": None,
                                                         "pred_pose": None}
 
@@ -101,7 +104,30 @@ class SpecificWorker(GenericWorker):
                         obj_pose = self.process_pose(obj_trans, obj_rot)
                         self.grasping_objects[pose.objectname]["pred_pose"] = obj_pose
                 
-            except Ice.Exception as e:
+                # create a dummy for path planning
+                waypoint = Dummy.create()
+                waypoint.set_pose(self.grasping_objects["002_master_chef_can"]["sim_pose"]) # change to required object and pose type (simulator or predicted)
+
+                # perform path planning
+                path =  self.gen3_arm.get_path(position=waypoint.get_position(), quaternion=waypoint.get_quaternion())
+                path.visualize()
+
+                # execute path
+                done = False
+                while not done:
+                    done = path.step()
+                    pr.step()
+                path.clear_visualization()
+
+                # perform grasping
+                while not  self.mico_gripper.actuate(0.0, 0.4):
+                    pr.step()
+                self.mico_gripper.grasp(self.grasping_objects["002_master_chef_can"]["handler"])
+
+                # remove dummy from scene
+                waypoint.remove()
+                
+            except Exception as e:
                 print(e)
         return True
 
