@@ -132,13 +132,7 @@ Training the network is conducted in the following settings :
 
 -   [x] `exp-04` : Train the network with focal loss on YCB-Videos only([pretrained weights file](https://drive.google.com/file/d/1MUG7aqhGXlubtSJHlmY0xbFdLRrAOTX-/view?usp=sharing)).
 
--   [ ] `exp-05` : Train the network with focal loss on synthetic textured custom objects.
-
--   [ ] `exp-06` : Train the network with focal loss on YCB-Videos and synthetic textured custom objects.
-
--   [ ] `exp-07` : Add DNN stage instead of RANSAC-PnP, then train the network with focal loss.
-
--   [ ] `exp-08` : Try [DenseFusion](https://arxiv.org/abs/1901.04780) architecture.
+-   [ ] `exp-05` : Train the network with focal loss on synthetic and real YCB-Videos data.
 
 ## Visual Results
 
