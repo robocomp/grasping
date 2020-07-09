@@ -28,7 +28,7 @@ def configure_network(cfg_file='./configs/data-Custom.cfg', weights_file='./mode
     return model
 
 
-def get_pose(model, img, class_names, intrinsics, vertices, best_cnt=10, conf_thresh=0.6, 
+def get_pose(model, img, class_names, intrinsics, vertices, best_cnt=10, conf_thresh=0.3, 
             save_results=True, output_file = 'out', use_gpu=True):
     """
     API function to perform pose estimation.

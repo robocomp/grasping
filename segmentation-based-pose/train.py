@@ -50,7 +50,7 @@ modulating_factor = 1.0
 # validation options
 img_width = 640
 img_height = 480
-conf_thresh = 0.6
+conf_thresh = 0.3
 batch_idx = 0
 best_cnt = 10
 intrinsics = np.array([[1.06677800e+03, 0.00000000e+00, 3.12986900e+02],
@@ -111,7 +111,7 @@ def train(cfg_path):
     # loss configurations
     seg_loss = FocalLoss(alpha=1.0, gamma=2.0, weights=median_balancing_weight, reduce=True)
     pos_loss = nn.L1Loss()
-    pos_loss_factor = 2.0
+    pos_loss_factor = 1.5
     conf_loss = nn.L1Loss()
     conf_loss_factor = 1.0
 
@@ -254,7 +254,7 @@ if __name__ == '__main__':
     argparser.add_argument('-dsp', '--dataset_root', type=str, help='root directory of the chosen dataset')
     argparser.add_argument('-wp', '--weights_path', type=str, help='path to the pretrained weights file', default=None)
     argparser.add_argument('-bg', '--background_path', type=str, help='path to background images for synthetic data', default=None)
-    argparser.add_argument('-sn', '--syn_num', type=int, help='number of synthetic training data samples', default=50000)
+    argparser.add_argument('-sn', '--syn_num', type=int, help='number of synthetic training data samples', default=40000)
     argparser.add_argument('--use_real', action='store_true')
 
     args = argparser.parse_args()
