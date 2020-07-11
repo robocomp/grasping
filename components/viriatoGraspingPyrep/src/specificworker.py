@@ -109,7 +109,7 @@ class SpecificWorker(GenericWorker):
                 waypoint.set_pose(self.grasping_objects["002_master_chef_can"]["sim_pose"]) # change to required object and pose type (simulator or predicted)
 
                 # perform path planning
-                path =  self.gen3_arm.get_path(position=waypoint.get_position(), quaternion=waypoint.get_quaternion())
+                path =  self.gen3_arm.get_path(position=waypoint.get_position(), quaternion=waypoint.get_quaternion(), ignore_collisions=True)
                 path.visualize()
 
                 # execute path
