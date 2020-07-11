@@ -110,20 +110,20 @@ if __name__ == '__main__':
         parameters[str(i)] = str(ic.getProperties().getProperty(i))
 
 
-    # Remote object connection for ObjectPoseEstimation
+    # Remote object connection for ObjectPoseEstimationRGB
     try:
-        proxyString = ic.getProperties().getProperty('ObjectPoseEstimationProxy')
+        proxyString = ic.getProperties().getProperty('ObjectPoseEstimationRGBProxy')
         try:
             basePrx = ic.stringToProxy(proxyString)
-            objectposeestimation_proxy = RoboCompObjectPoseEstimation.ObjectPoseEstimationPrx.uncheckedCast(basePrx)
-            mprx["ObjectPoseEstimationProxy"] = objectposeestimation_proxy
+            objectposeestimationrgb_proxy = RoboCompObjectPoseEstimationRGB.ObjectPoseEstimationRGBPrx.uncheckedCast(basePrx)
+            mprx["ObjectPoseEstimationRGBProxy"] = objectposeestimationrgb_proxy
         except Ice.Exception:
-            print('Cannot connect to the remote object (ObjectPoseEstimation)', proxyString)
+            print('Cannot connect to the remote object (ObjectPoseEstimationRGB)', proxyString)
             #traceback.print_exc()
             status = 1
     except Ice.Exception as e:
         print(e)
-        print('Cannot get ObjectPoseEstimationProxy property.')
+        print('Cannot get ObjectPoseEstimationRGBProxy property.')
         status = 1
 
     if status == 0:

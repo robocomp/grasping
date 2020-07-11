@@ -89,14 +89,14 @@ class SpecificWorker(GenericWorker):
                 image_float = cam["handle"].capture_rgb()
                 depth = cam["handle"].capture_depth()
                 image = cv2.normalize(src=image_float, dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
-                cam["rgb"] = RoboCompObjectPoseEstimation.TImage(width=cam["width"], height=cam["height"], depth=3, focalx=cam["focal"], focaly=cam["focal"], image=image.tobytes())
+                cam["rgb"] = RoboCompObjectPoseEstimationRGB.TImage(width=cam["width"], height=cam["height"], depth=3, focalx=cam["focal"], focaly=cam["focal"], image=image.tobytes())
                 
                 # get objects's poses from simulator
                 for obj_name in self.grasping_objects.keys():
                     self.grasping_objects[obj_name]["sim_pose"] = self.grasping_objects[obj_name]["handler"].get_pose()
                 
                 # get objects' poses from RGB
-                pred_poses = self.objectposeestimation_proxy.getObjectPose(cam["rgb"])
+                pred_poses = self.objectposeestimationrgb_proxy.getObjectPose(cam["rgb"])
                 for pose in pred_poses:
                     if pose.objectname in self.grasping_objects.keys():
                         obj_trans = [pose.x, pose.y, pose.z]
@@ -142,11 +142,11 @@ class SpecificWorker(GenericWorker):
         return list(final_trans).extend(list(final_rot))
 
     ######################
-    # From the RoboCompObjectPoseEstimation you can call this methods:
-    # self.objectposeestimation_proxy.getObjectPose(...)
+    # From the RoboCompObjectPoseEstimationRGB you can call this methods:
+    # self.objectposeestimationrgb_proxy.getObjectPose(...)
 
     ######################
-    # From the RoboCompObjectPoseEstimation you can use this types:
-    # RoboCompObjectPoseEstimation.TImage
-    # RoboCompObjectPoseEstimation.ObjectPose
+    # From the RoboCompObjectPoseEstimationRGB you can use this types:
+    # RoboCompObjectPoseEstimationRGB.TImage
+    # RoboCompObjectPoseEstimationRGB.ObjectPose
 

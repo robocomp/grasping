@@ -30,8 +30,8 @@ except KeyError:
 Ice.loadSlice("-I ./src/ --all ./src/CommonBehavior.ice")
 import RoboCompCommonBehavior
 
-Ice.loadSlice("-I ./src/ --all ./src/ObjectPoseEstimation.ice")
-import RoboCompObjectPoseEstimation
+Ice.loadSlice("-I ./src/ --all ./src/ObjectPoseEstimationRGB.ice")
+import RoboCompObjectPoseEstimationRGB
 
 class ImgType(list):
     def __init__(self, iterable=list()):
@@ -50,31 +50,31 @@ class ImgType(list):
         assert isinstance(item, byte)
         super(ImgType, self).insert(index, item)
 
-setattr(RoboCompObjectPoseEstimation, "ImgType", ImgType)
+setattr(RoboCompObjectPoseEstimationRGB, "ImgType", ImgType)
 
 class PoseType(list):
     def __init__(self, iterable=list()):
         super(PoseType, self).__init__(iterable)
 
     def append(self, item):
-        assert isinstance(item, RoboCompObjectPoseEstimation.ObjectPose)
+        assert isinstance(item, RoboCompObjectPoseEstimationRGB.ObjectPose)
         super(PoseType, self).append(item)
 
     def extend(self, iterable):
         for item in iterable:
-            assert isinstance(item, RoboCompObjectPoseEstimation.ObjectPose)
+            assert isinstance(item, RoboCompObjectPoseEstimationRGB.ObjectPose)
         super(PoseType, self).extend(iterable)
 
     def insert(self, index, item):
-        assert isinstance(item, RoboCompObjectPoseEstimation.ObjectPose)
+        assert isinstance(item, RoboCompObjectPoseEstimationRGB.ObjectPose)
         super(PoseType, self).insert(index, item)
 
-setattr(RoboCompObjectPoseEstimation, "PoseType", PoseType)
+setattr(RoboCompObjectPoseEstimationRGB, "PoseType", PoseType)
 
 class GenericWorker():
 
     def __init__(self, mprx):
         super(GenericWorker, self).__init__()
 
-        self.objectposeestimation_proxy = mprx["ObjectPoseEstimationProxy"]
+        self.objectposeestimationrgb_proxy = mprx["ObjectPoseEstimationRGBProxy"]
 

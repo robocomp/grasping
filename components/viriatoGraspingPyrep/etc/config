@@ -1,5 +1,5 @@
 # Proxies for required interfaces
-ObjectPoseEstimationProxy = objectposeestimation:tcp -h localhost -p 10117
+ObjectPoseEstimationRGBProxy = ObjectPoseEstimationRGB:tcp -h localhost -p 10117
 
 
 # directory of scene file
