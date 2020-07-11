@@ -20,7 +20,7 @@
 #    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-# \mainpage RoboComp::objectPoseEstimation
+# \mainpage RoboComp::objectPoseEstimationRGB
 #
 # \section intro_sec Introduction
 #
@@ -48,7 +48,7 @@
 #
 # \subsection execution_ssec Execution
 #
-# Just: "${PATH_TO_BINARY}/objectPoseEstimation --Ice.Config=${PATH_TO_CONFIG_FILE}"
+# Just: "${PATH_TO_BINARY}/objectPoseEstimationRGB --Ice.Config=${PATH_TO_CONFIG_FILE}"
 #
 # \subsection running_ssec Once running
 #
@@ -164,8 +164,8 @@ if __name__ == '__main__':
         print("Error getting required connections, check config file")
         sys.exit(-1)
 
-    adapter = ic.createObjectAdapter('ObjectPoseEstimation')
-    adapter.add(objectposeestimationI.ObjectPoseEstimationI(worker), ic.stringToIdentity('objectposeestimation'))
+    adapter = ic.createObjectAdapter('ObjectPoseEstimationRGB')
+    adapter.add(objectposeestimationrgbI.ObjectPoseEstimationRGBI(worker), ic.stringToIdentity('objectposeestimationrgb'))
     adapter.activate()
 
     signal.signal(signal.SIGINT, sigint_handler)

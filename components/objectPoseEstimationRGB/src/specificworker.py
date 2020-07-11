@@ -86,7 +86,7 @@ class SpecificWorker(GenericWorker):
             self.final_poses = self.process_poses(pred_poses)
             # publish predicted poses
             self.objectposeestimationpub_proxy.pushObjectPose(RoboCompObjectPoseEstimation.PoseType(self.final_poses))
-        except Ice.Exception as e:
+        except Exception as e:
             print(e)
             return False
         return True
@@ -102,18 +102,19 @@ class SpecificWorker(GenericWorker):
             object_name = self.class_names[pose[0]]
             # get translation matrix
             trans_mat = pose[1][:3,3]
-            # get euler angles for rotation
+            # get quaternions for rotation
             rot_mat = pose[1][:3,0:3]
             rot = R.from_matrix(rot_mat)
-            rot_euler = rot.as_euler('xyz')
+            rot_quat = rot.as_quat()
             # build object pose type
             obj_pose = RoboCompObjectPoseEstimation.ObjectPose(objectname=object_name,
                                                                 x=trans_mat[0],
                                                                 y=trans_mat[1],
                                                                 z=trans_mat[2],
-                                                                rx=rot_euler[0],
-                                                                ry=rot_euler[1],
-                                                                rz=rot_euler[2])
+                                                                qx=rot_quat[0],
+                                                                qy=rot_quat[1],
+                                                                qz=rot_quat[2],
+                                                                qw=rot_quat[3])
             prc_poses.append(obj_pose)
         return prc_poses
 
@@ -122,9 +123,9 @@ class SpecificWorker(GenericWorker):
     # ===================================================================
 
     #
-    # IMPLEMENTATION of getObjectPose method from ObjectPoseEstimation interface
+    # IMPLEMENTATION of getObjectPose method from ObjectPoseEstimationRGB interface
     #
-    def ObjectPoseEstimation_getObjectPose(self, img):
+    def ObjectPoseEstimationRGB_getObjectPose(self, img):
         # extract RGB image
         image = np.frombuffer(img.image, np.uint8).reshape(img.height, img.width, img.depth)
         # get vision sensor intrinstic parameters
@@ -163,7 +164,7 @@ class SpecificWorker(GenericWorker):
     # self.objectposeestimationpub_proxy.pushObjectPose(...)
 
     ######################
-    # From the RoboCompObjectPoseEstimation you can use this types:
-    # RoboCompObjectPoseEstimation.TImage
-    # RoboCompObjectPoseEstimation.ObjectPose
+    # From the RoboCompObjectPoseEstimationRGB you can use this types:
+    # RoboCompObjectPoseEstimationRGB.TImage
+    # RoboCompObjectPoseEstimationRGB.ObjectPose
 

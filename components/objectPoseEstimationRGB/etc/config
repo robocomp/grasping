@@ -1,5 +1,5 @@
 # Endpoints for implements interfaces
-ObjectPoseEstimation.Endpoints=tcp -p 10117
+ObjectPoseEstimationRGB.Endpoints=tcp -p 10117
 
 
 # Proxies for required interfaces

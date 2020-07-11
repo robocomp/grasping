@@ -29,14 +29,14 @@ if len(ROBOCOMP)<1:
     raise RuntimeError('ROBOCOMP environment variable not set! Exiting.')
 
 
-Ice.loadSlice("-I ./src/ --all ./src/ObjectPoseEstimation.ice")
+Ice.loadSlice("-I ./src/ --all ./src/ObjectPoseEstimationRGB.ice")
 
-from RoboCompObjectPoseEstimation import *
+from RoboCompObjectPoseEstimationRGB import *
 
-class ObjectPoseEstimationI(ObjectPoseEstimation):
+class ObjectPoseEstimationRGBI(ObjectPoseEstimationRGB):
     def __init__(self, worker):
         self.worker = worker
 
 
     def getObjectPose(self, img, c):
-        return self.worker.ObjectPoseEstimation_getObjectPose(img)
+        return self.worker.ObjectPoseEstimationRGB_getObjectPose(img)

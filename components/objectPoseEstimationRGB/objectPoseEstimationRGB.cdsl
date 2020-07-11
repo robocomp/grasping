@@ -1,12 +1,12 @@
 import "CameraRGBDSimple.idsl";
-import "ObjectPoseEstimation.idsl";
+import "ObjectPoseEstimationRGB.idsl";
 import "ObjectPoseEstimationPub.idsl";
 
-Component objectPoseEstimation
+Component objectPoseEstimationRGB
 {
     Communications
     {
-        implements ObjectPoseEstimation;
+        implements ObjectPoseEstimationRGB;
         requires CameraRGBDSimple;
         publishes ObjectPoseEstimationPub;
     };

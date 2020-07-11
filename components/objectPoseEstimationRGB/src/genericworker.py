@@ -33,10 +33,10 @@ import RoboCompCommonBehavior
 
 Ice.loadSlice("-I ./src/ --all ./src/CameraRGBDSimple.ice")
 import RoboCompCameraRGBDSimple
-Ice.loadSlice("-I ./src/ --all ./src/ObjectPoseEstimation.ice")
-import RoboCompObjectPoseEstimation
 Ice.loadSlice("-I ./src/ --all ./src/ObjectPoseEstimationPub.ice")
 import RoboCompObjectPoseEstimationPub
+Ice.loadSlice("-I ./src/ --all ./src/ObjectPoseEstimationRGB.ice")
+import RoboCompObjectPoseEstimationRGB
 
 class ImgType(list):
     def __init__(self, iterable=list()):
@@ -93,29 +93,29 @@ class ImgType(list):
         assert isinstance(item, byte)
         super(ImgType, self).insert(index, item)
 
-setattr(RoboCompObjectPoseEstimation, "ImgType", ImgType)
+setattr(RoboCompObjectPoseEstimationRGB, "ImgType", ImgType)
 
 class PoseType(list):
     def __init__(self, iterable=list()):
         super(PoseType, self).__init__(iterable)
 
     def append(self, item):
-        assert isinstance(item, RoboCompObjectPoseEstimation.ObjectPose)
+        assert isinstance(item, RoboCompObjectPoseEstimationRGB.ObjectPose)
         super(PoseType, self).append(item)
 
     def extend(self, iterable):
         for item in iterable:
-            assert isinstance(item, RoboCompObjectPoseEstimation.ObjectPose)
+            assert isinstance(item, RoboCompObjectPoseEstimationRGB.ObjectPose)
         super(PoseType, self).extend(iterable)
 
     def insert(self, index, item):
-        assert isinstance(item, RoboCompObjectPoseEstimation.ObjectPose)
+        assert isinstance(item, RoboCompObjectPoseEstimationRGB.ObjectPose)
         super(PoseType, self).insert(index, item)
 
-setattr(RoboCompObjectPoseEstimation, "PoseType", PoseType)
+setattr(RoboCompObjectPoseEstimationRGB, "PoseType", PoseType)
 
 
-import objectposeestimationI
+import objectposeestimationrgbI
 
 
 
