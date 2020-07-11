@@ -17,9 +17,11 @@ Original implementation : https://github.com/cvlab-epfl/segmentation-driven-pose
 
 ## Network Description
 
-![](./assets/network.jpg)
+<div align=center><img width="60%" height="60%" src="./assets/network.jpg"/></div>
 
+<div align="center">
 Figure(1): Network diagram from original paper.
+</div><br>
 
 A brief description of network :
 
@@ -136,34 +138,50 @@ Training the network is conducted in the following settings :
 
 ## Visual Results
 
-![](./assets/out1.jpg)
+<div align=center><img width="60%" height="60%" src="./assets/out1.jpg"/></div>
 
-Figure(2): Results of pose estimation on YCB-Videos dataset based on `exp-04`.
+<div align="center">
+Figure(2): Results of pose estimation on YCB-Videos dataset based on exp-04.
+</div><br>
 
-![](./assets/out2.jpg)
+<div align=center><img width="60%" height="60%" src="./assets/out2.jpg"/></div>
 
-Figure(3): Results of pose estimation on YCB-Videos dataset based on `exp-04`.
+<div align="center">
+Figure(3): Results of pose estimation on YCB-Videos dataset based on exp-04.
+</div><br>
 
-![](./assets/out3.jpg)
+<div align=center><img width="60%" height="60%" src="./assets/out3.jpg"/></div>
 
-Figure(4): Results of pose estimation on YCB-Videos dataset based on `exp-04`.
+<div align="center">
+Figure(4): Results of pose estimation on YCB-Videos dataset based on exp-04.
+</div><br>
 
-![](./assets/out4.jpg)
+<div align=center><img width="60%" height="60%" src="./assets/out4.jpg"/></div>
 
-Figure(5): Results of pose estimation on YCB-Videos dataset based on `exp-04`.
+<div align="center">
+Figure(5): Results of pose estimation on YCB-Videos dataset based on exp-04.
+</div><br>
 
-![](./assets/out5.jpg)
+<div align=center><img width="60%" height="60%" src="./assets/out5.jpg"/></div>
 
-Figure(6): Results of pose estimation on YCB-Videos dataset based on `exp-04`.
+<div align="center">
+Figure(6): Results of pose estimation on YCB-Videos dataset based on exp-04.
+</div><br>
 
-![](./assets/out6.jpg)
+<div align=center><img width="60%" height="60%" src="./assets/out6.jpg"/></div>
 
-Figure(7): Results of pose estimation on YCB-Videos dataset based on `exp-04`.
+<div align="center">
+Figure(7): Results of pose estimation on YCB-Videos dataset based on exp-04.
+</div><br>
 
-![](./assets/out7.jpg)
+<div align=center><img width="60%" height="60%" src="./assets/out7.jpg"/></div>
 
-Figure(8): Results of pose estimation on YCB-Videos dataset based on `exp-04`.
+<div align="center">
+Figure(8): Results of pose estimation on YCB-Videos dataset based on exp-04.
+</div><br>
 
-![](./assets/out8.jpg)
+<div align=center><img width="60%" height="60%" src="./assets/out8.jpg"/></div>
 
-Figure(9): Results of pose estimation on YCB-Videos dataset based on `exp-04`.
+<div align="center">
+Figure(9): Results of pose estimation on YCB-Videos dataset based on exp-04.
+</div><br>

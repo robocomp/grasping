@@ -8,7 +8,7 @@ Here, we discuss the complete workflow of the components and elaborate the compo
 
 <div align="center">
 Figure(1) : Complete schema for grasping and pose estimation workflow.
-</div>
+</div><br>
 
 As shown in the figure, the components workflow goes as follows :
 

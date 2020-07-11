@@ -61,18 +61,26 @@ For each output sample :
 
 Here is a visual example of the data collector output :
 
-![](assets/collected_color.png)
+<div align=center><img width="60%" height="60%" src="assets/collected_color.png"/></div>
 
+<div align="center">
 Figure(1) : RGB output of the vision sensor.
+</div><br>
 
-![](assets/collected_depth.png)
+<div align=center><img width="60%" height="60%" src="assets/collected_depth.png"/></div>
 
+<div align="center">
 Figure(2) : Depth output of the vision sensor.
+</div><br>
 
-![](assets/collected_label.png)
+<div align=center><img width="60%" height="60%" src="assets/collected_label.png"/></div>
 
+<div align="center">
 Figure(3) : Segmentation mask of the RGB image.
+</div><br>
 
-![](assets/collected_viz.png)
+<div align=center><img width="60%" height="60%" src="assets/collected_viz.png"/></div>
 
+<div align="center">
 Figure(4) : Visualization of the collected poses on the RGB image.
+</div><br>
