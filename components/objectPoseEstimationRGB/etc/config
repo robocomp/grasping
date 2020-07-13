@@ -15,9 +15,9 @@ camera_name = Gen3_depth_sensor
 
 
 # DNN configuration
-config_file = src/configs/data-Custom.cfg
+config_file = src/configs/data-YCB.cfg
 weights_file = src/models/ckpt_final.pth
-vertices_file = src/configs/Custom/custom_vertex.npy
+vertices_file = src/configs/YCB-Video/YCB_vertex.npy
 
 
 Ice.MessageSizeMax=20004800
