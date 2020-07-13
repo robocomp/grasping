@@ -2,7 +2,7 @@ from utils import *
 from segpose_net import SegPoseNet
 from skimage.io import imsave
 
-def configure_network(cfg_file='./configs/data-Custom.cfg', weights_file='./models/ckpt_final.pth', use_gpu=True):
+def configure_network(cfg_file='./configs/data-YCB.cfg', weights_file='./models/ckpt_final.pth', use_gpu=True):
     """
     API function to configure the pose estimation network.
     Arguments:

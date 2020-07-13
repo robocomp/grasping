@@ -76,10 +76,10 @@ model = api.configure_network()
 predicted_pose = api.get_pose(model, img, class_names, intrinsics, vertices)
 ```
 
--   For API test :
+-   For API test (on YCB-Videos dataset):
 
 ```
-python api_test.py -ds dataset_name -img /path/to/test/image -wp /path/to/weights/file
+python api_test.py -img /path/to/test/image -wp /path/to/weights/file
 ```
 
 -   For network traced script (used in C++ deployment) :
@@ -93,7 +93,7 @@ python get_trace.py -cfg /path/to/config/file -wp /path/to/weights/file -op /pat
 Training the network is conducted in the following settings :
 
 -   Device : Nvidia Geforce RTX 2080 (VRAM = 8 GB).
--   Batch Size : 4 (6.5 GB).
+-   Batch Size : 4 (6.5 GB allocated VRAM).
 -   Elapsed Time : 5.5 ~ 6 hours/epoch (on complete YCB-Videos dataset).
 
 ## Progress
@@ -120,7 +120,7 @@ Training the network is conducted in the following settings :
 
 -   [x] Evaluate code validity and network performance.
 
--   [ ] Complete the listed training experiments.
+-   [x] Complete the listed training experiments.
 
 ## Experiments
 
@@ -132,56 +132,74 @@ Training the network is conducted in the following settings :
 
 -   [x] `exp-03` : Train the network with focal loss on YCB-Videos and textured custom objects ([pretrained weights file](https://drive.google.com/file/d/1N1WHYQdYQLK_GWWhlm_pbk0noyuWnpZv/view?usp=sharing)).
 
--   [x] `exp-04` : Train the network with focal loss on YCB-Videos only([pretrained weights file](https://drive.google.com/file/d/1MUG7aqhGXlubtSJHlmY0xbFdLRrAOTX-/view?usp=sharing)).
+-   [x] `exp-04` : Train the network with focal loss on YCB-Videos only ([pretrained weights file](https://drive.google.com/file/d/1MUG7aqhGXlubtSJHlmY0xbFdLRrAOTX-/view?usp=sharing)).
 
--   [ ] `exp-05` : Train the network with focal loss on synthetic and real YCB-Videos data.
+-   [x] `exp-05` : Train the network with focal loss on synthetic and real YCB-Videos data ([pretrained weights file](https://drive.google.com/file/d/1FheGfo7tiQPEpOq9xp3EE8iPAJxWloo2/view?usp=sharing)).
 
 ## Visual Results
 
 <div align=center><img width="60%" height="60%" src="./assets/out1.jpg"/></div>
 
 <div align="center">
-Figure(2): Results of pose estimation on YCB-Videos dataset based on exp-04.
+Figure(2): Results of pose estimation on YCB-Videos dataset.
 </div><br>
 
 <div align=center><img width="60%" height="60%" src="./assets/out2.jpg"/></div>
 
 <div align="center">
-Figure(3): Results of pose estimation on YCB-Videos dataset based on exp-04.
+Figure(3): Results of pose estimation on YCB-Videos dataset.
 </div><br>
 
 <div align=center><img width="60%" height="60%" src="./assets/out3.jpg"/></div>
 
 <div align="center">
-Figure(4): Results of pose estimation on YCB-Videos dataset based on exp-04.
+Figure(4): Results of pose estimation on YCB-Videos dataset.
 </div><br>
 
 <div align=center><img width="60%" height="60%" src="./assets/out4.jpg"/></div>
 
 <div align="center">
-Figure(5): Results of pose estimation on YCB-Videos dataset based on exp-04.
+Figure(5): Results of pose estimation on YCB-Videos dataset.
 </div><br>
 
 <div align=center><img width="60%" height="60%" src="./assets/out5.jpg"/></div>
 
 <div align="center">
-Figure(6): Results of pose estimation on YCB-Videos dataset based on exp-04.
+Figure(6): Results of pose estimation on YCB-Videos dataset.
 </div><br>
 
 <div align=center><img width="60%" height="60%" src="./assets/out6.jpg"/></div>
 
 <div align="center">
-Figure(7): Results of pose estimation on YCB-Videos dataset based on exp-04.
+Figure(7): Results of pose estimation on YCB-Videos dataset.
 </div><br>
 
 <div align=center><img width="60%" height="60%" src="./assets/out7.jpg"/></div>
 
 <div align="center">
-Figure(8): Results of pose estimation on YCB-Videos dataset based on exp-04.
+Figure(8): Results of pose estimation on YCB-Videos dataset.
 </div><br>
 
 <div align=center><img width="60%" height="60%" src="./assets/out8.jpg"/></div>
 
 <div align="center">
-Figure(9): Results of pose estimation on YCB-Videos dataset based on exp-04.
+Figure(9): Results of pose estimation on YCB-Videos dataset.
+</div><br>
+
+<div align=center><img width="60%" height="60%" src="./assets/out9.jpg"/></div>
+
+<div align="center">
+Figure(10): Results of pose estimation on YCB-Videos dataset.
+</div><br>
+
+<div align=center><img width="60%" height="60%" src="./assets/out10.jpg"/></div>
+
+<div align="center">
+Figure(11): Results of pose estimation on YCB-Videos dataset.
+</div><br>
+
+<div align=center><img width="60%" height="60%" src="./assets/out11.jpg"/></div>
+
+<div align="center">
+Figure(12): Results of pose estimation on YCB-Videos dataset.
 </div><br>

@@ -14,7 +14,7 @@ class YCBEvaluator:
     Main pose estimation Evaluation driver,
     Used to get stats on network performance and errors using output poses.
     """
-    def __init__(self, reload, ycb_root, model_npy = 'configs/Custom/custom_vertex.npy', 
+    def __init__(self, reload, ycb_root, model_npy = 'configs/YCB-Video/YCB_vertex.npy', 
                 pose_pkl = 'data/ycb_pose_gt.pkl'):
         self.root = ycb_root
         self.pose_pkl = pose_pkl
@@ -31,9 +31,7 @@ class YCBEvaluator:
                                     '010_potted_meat_can', '011_banana', '019_pitcher_base', '021_bleach_cleanser',
                                     '024_bowl', '025_mug', '035_power_drill', '036_wood_block',
                                     '037_scissors', '040_large_marker', '051_large_clamp', '052_extra_large_clamp',
-                                    '061_foam_brick', 'custom-can-01', 'custom-fork-01', 'custom-fork-02',
-                                    'custom-glass-01', 'custom-jar-01', 'custom-knife-01', 'custom-plate-01',
-                                    'custom-plate-02', 'custom-plate-03', 'custom-spoon-01']
+                                    '061_foam_brick']
         
         self.ycb_class_to_idx = {}
         for i, item in enumerate(self.object_names_ycbvideo):
