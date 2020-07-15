@@ -1,4 +1,4 @@
-# Segmentation-Based Pose Estimation
+# Segmentation-driven 6D Object Pose Estimation
 
 -   [Introduction](#Introduction)
 -   [Network Description](#Network-Description)
