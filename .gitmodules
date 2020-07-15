@@ -1,0 +1,3 @@
+[submodule "rgbd-based-pose-estimation/PVN3D"]
+	path = rgbd-based-pose-estimation/PVN3D
+	url = https://github.com/DarkGeekMS/PVN3D.git
