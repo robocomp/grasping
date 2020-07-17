@@ -1,19 +1,20 @@
 # Endpoints for implements interfaces
-ObjectPoseEstimationRGBD.Endpoints=tcp -p 0
+ObjectPoseEstimationRGBD.Endpoints=tcp -p 10119
 
 
 # Proxies for required interfaces
-CameraRGBDSimpleProxy = camerargbdsimple:tcp -h localhost -p 0
-
+CameraRGBDSimpleProxy = camerargbdsimple:tcp -h localhost -p 10096
 
 
 # This property is used by the clients to connect to IceStorm.
 TopicManager.Proxy=IceStorm/TopicManager:default -p 9999
 
 
+# name of camera handler to stream RGB image from
+camera_name = Gen3_depth_sensor
+
+
+Ice.MessageSizeMax=20004800
 Ice.Warn.Connections=0
 Ice.Trace.Network=0
 Ice.Trace.Protocol=0
-
-
-
