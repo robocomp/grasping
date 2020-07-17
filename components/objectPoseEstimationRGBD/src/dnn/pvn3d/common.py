@@ -85,55 +85,7 @@ class Config:
                 'dataset/test_val_data_pts{}.pkl'.format(self.n_sample_points),
             )
         else: # linemod
-            self.n_objects = 1 + 1
-            self.n_classes = 1 + 1
-            self.lm_cls_lst = [
-                1, 2, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15
-            ]
-            self.lm_sym_cls_ids = [10, 11]
-            self.lm_obj_dict={
-                'ape':1,
-                'benchvise':2,
-                'cam':4,
-                'can':5,
-                'cat':6,
-                'driller':8,
-                'duck':9,
-                'eggbox':10,
-                'glue':11,
-                'holepuncher':12,
-                'iron':13,
-                'lamp':14,
-                'phone':15,
-            }
-            self.lm_id2obj_dict = dict(
-                zip(self.lm_obj_dict.values(), self.lm_obj_dict.keys())
-            )
-            self.lm_root = os.path.abspath(
-                os.path.join(self.exp_dir, 'dataset/')
-            )
-            self.lm_kps_dir = os.path.abspath(
-                os.path.join(self.exp_dir, 'dataset/lm_obj_kps/')
-            )
-            self.lm_sym_cls_ids = [7, 8]
-            self.val_test_pkl_p = os.path.join(
-                self.exp_dir, 'dataset/test_val_data.pkl',
-            )
-            prep_fd = os.path.join(
-                self.lm_root, "preprocess_testset"
-            )
-            ensure_fd(prep_fd)
-            self.preprocessed_testset_ptn = os.path.abspath(
-                os.path.join(prep_fd, '{}_pp_vts.pkl')
-            )
-            self.preprocessed_testset_pth = self.preprocessed_testset_ptn.format(cls_type)
-            self.use_preprocess = False
-
-            lm_r_pth = os.path.join(self.lm_root, "dataset_config/models_info.yml")
-            lm_r_file = open(os.path.join(lm_r_pth), "r")
-            self.lm_r_lst = yaml.load(lm_r_file)
-
-            self.val_nid_ptn = "/data/6D_Pose_Data/datasets/LINEMOD/pose_nori_lists/{}_real_val.nori.list"
+            pass
 
         self.intrinsic_matrix = {
             'linemod': np.array([[572.4114, 0.,         325.2611],

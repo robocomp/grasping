@@ -12,7 +12,7 @@ import pickle as pkl
 from lib import PVN3D
 from common import Config
 from lib.utils.basic_utils import Basic_Utils
-from datasets.ycb.ycb_dataset import YCB_Dataset
+from dataset.ycb_dataset import YCB_Dataset
 from lib.utils.sync_batchnorm import convert_model
 from lib.utils.pvn3d_eval_utils import cal_frame_poses
 
