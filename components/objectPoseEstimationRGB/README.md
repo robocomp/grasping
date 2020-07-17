@@ -15,11 +15,9 @@ pip install opencv-contrib-python
 pip install skimage tqdm pyquaternion
 ```
 
-2)  Download pretrained weights :
-```bash
-chmod +x get_weights.sh
-./get_weights.sh
-```
+2)  Get the pretrained weights :
+    -   Download [here](https://drive.google.com/file/d/1N-qI5dqFVSNryZ0WwKlLn7npDkyVs_eh/view?usp=sharing).
+    -   Place it in `src/models`.
 
 ## Configuration parameters
 

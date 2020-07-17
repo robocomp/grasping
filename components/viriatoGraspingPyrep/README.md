@@ -6,7 +6,12 @@ This component is an modified copy of `viriatoPyrep` to test pose estimation and
 
 ## Installation
 
--   Download `gen3-grasp.ttt` scene file using `get_scene.sh`.
+-   Create `scenes` folder in root directory :
+```bash
+mkdir scenes
+```
+
+-   Download `gen3-grasp.ttt` scene file ([here](https://drive.google.com/file/d/10qgIADDDJ7Cn68vUVpKPZRPgor6TyV2b/view?usp=sharing)) and place it in `scenes` folder.
 
 -   Install [PyRep](https://github.com/stepjam/PyRep).
 
@@ -19,7 +24,7 @@ Like any other component, *viriatoGraspingPyrep* needs a configuration file to s
 ## Starting the component
 
 -   Compile the component :
-```
+```bash
 cmake .
 make
 ```
