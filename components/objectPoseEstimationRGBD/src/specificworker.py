@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 #
-#    Copyright (C) 2020 by YOUR NAME HERE
+#    Copyright (C) 2020 by Mohamed Shawky
 #
 #    This file is part of RoboComp
 #
