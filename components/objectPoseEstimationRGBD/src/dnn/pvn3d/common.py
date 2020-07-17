@@ -25,7 +25,7 @@ class Config:
         # log folder
         self.cls_type = cls_type
         self.log_dir = os.path.abspath(
-            os.path.join(self.exp_dir, 'train_log', dataset_name)
+            os.path.join(self.exp_dir, 'assets')
         )
         ensure_fd(self.log_dir)
         self.log_model_dir = os.path.join(self.log_dir, 'checkpoints', self.cls_type)
