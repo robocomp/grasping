@@ -83,7 +83,7 @@ class SpecificWorker(GenericWorker):
     # IMPLEMENTATION of getObjectPose method from ObjectPoseEstimationRGBD interface
     #
     def ObjectPoseEstimationRGBD_getObjectPose(self, image, depth):
-        ret = RoboCompObjectPoseEstimationRGBD.RoboCompObjectPoseEstimationRGB::PoseType()
+        ret = RoboCompObjectPoseEstimationRGBD.PoseType()
         #
         # write your CODE here
         #
@@ -110,5 +110,7 @@ class SpecificWorker(GenericWorker):
 
     ######################
     # From the RoboCompObjectPoseEstimationRGBD you can use this types:
+    # RoboCompObjectPoseEstimationRGBD.TImage
     # RoboCompObjectPoseEstimationRGBD.TDepth
+    # RoboCompObjectPoseEstimationRGBD.ObjectPose
 

@@ -79,16 +79,26 @@ module RoboCompObjectPoseEstimationRGB
 
 It's the interface for `objectPoseEstimationRGBD` component. It also defines a single operation `getObjectPose`, that takes an RGB image in `TImage` format and a depth image in `TDepth` format. Then it returns `PoseType`, which is a sequence of `ObjectPose` type.
 
-The format of `TImage`, `ObjectPose` and `PoseType` are taken from `ObjectPoseEstimationRGB` interface.
+The format of `TImage`, `ObjectPose` and `PoseType` are same as `ObjectPoseEstimationRGB` interface.
 
 Here is `ObjectPoseEstimationRGB` interface :
 
 ```
-import "ObjectPoseEstimationRGB.idsl";
-
 module RoboCompObjectPoseEstimationRGBD
 {
     exception HardwareFailedException { string what; };
+
+    sequence<byte> ImgType;
+
+    struct TImage
+    {
+        int width;
+        int height;
+        int depth;
+        int focalx;
+        int focaly;
+        ImgType image;
+    };
 
     sequence<byte> DepthType;
 
@@ -99,9 +109,23 @@ module RoboCompObjectPoseEstimationRGBD
         DepthType depth;
     };
 
+    struct ObjectPose
+    {
+        string objectname;
+        float x;
+        float y;
+        float z;
+        float qx;
+        float qy;
+        float qz;
+        float qw;
+    };
+
+    sequence<ObjectPose> PoseType;
+
     interface ObjectPoseEstimationRGBD
     {
-        RoboCompObjectPoseEstimationRGB::PoseType getObjectPose(RoboCompObjectPoseEstimationRGB::TImage image, TDepth depth) throws HardwareFailedException;
+        PoseType getObjectPose(TImage image, TDepth depth) throws HardwareFailedException;
     };
 };
 ```

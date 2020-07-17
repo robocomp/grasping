@@ -116,6 +116,25 @@ class PoseType(list):
 
 setattr(RoboCompObjectPoseEstimationRGB, "PoseType", PoseType)
 
+class ImgType(list):
+    def __init__(self, iterable=list()):
+        super(ImgType, self).__init__(iterable)
+
+    def append(self, item):
+        assert isinstance(item, byte)
+        super(ImgType, self).append(item)
+
+    def extend(self, iterable):
+        for item in iterable:
+            assert isinstance(item, byte)
+        super(ImgType, self).extend(iterable)
+
+    def insert(self, index, item):
+        assert isinstance(item, byte)
+        super(ImgType, self).insert(index, item)
+
+setattr(RoboCompObjectPoseEstimationRGBD, "ImgType", ImgType)
+
 class DepthType(list):
     def __init__(self, iterable=list()):
         super(DepthType, self).__init__(iterable)
@@ -134,6 +153,25 @@ class DepthType(list):
         super(DepthType, self).insert(index, item)
 
 setattr(RoboCompObjectPoseEstimationRGBD, "DepthType", DepthType)
+
+class PoseType(list):
+    def __init__(self, iterable=list()):
+        super(PoseType, self).__init__(iterable)
+
+    def append(self, item):
+        assert isinstance(item, RoboCompObjectPoseEstimationRGBD.ObjectPose)
+        super(PoseType, self).append(item)
+
+    def extend(self, iterable):
+        for item in iterable:
+            assert isinstance(item, RoboCompObjectPoseEstimationRGBD.ObjectPose)
+        super(PoseType, self).extend(iterable)
+
+    def insert(self, index, item):
+        assert isinstance(item, RoboCompObjectPoseEstimationRGBD.ObjectPose)
+        super(PoseType, self).insert(index, item)
+
+setattr(RoboCompObjectPoseEstimationRGBD, "PoseType", PoseType)
 
 
 import objectposeestimationrgbdI
