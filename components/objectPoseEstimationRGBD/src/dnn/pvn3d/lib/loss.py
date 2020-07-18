@@ -7,7 +7,7 @@ import numpy as np
 import torch.nn as nn
 import random
 import torch.backends.cudnn as cudnn
-from lib.utils.meanshift_pytorch import MeanShiftTorch
+from dnn.pvn3d.lib.utils.meanshift_pytorch import MeanShiftTorch
 
 
 class FocalLoss(_Loss):

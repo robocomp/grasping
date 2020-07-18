@@ -9,12 +9,12 @@ import numpy as np
 from PIL import Image
 import pickle as pkl
 
-from lib import PVN3D
-from common import Config
-from lib.utils.basic_utils import Basic_Utils
-from dataset.ycb_dataset import YCB_Dataset
-from lib.utils.sync_batchnorm import convert_model
-from lib.utils.pvn3d_eval_utils import cal_frame_poses
+from .lib import PVN3D
+from .common import Config
+from .lib.utils.basic_utils import Basic_Utils
+from .dataset.ycb_dataset import YCB_Dataset
+from .lib.utils.sync_batchnorm import convert_model
+from .lib.utils.pvn3d_eval_utils import cal_frame_poses
 
 
 class RGBDPoseAPI():
@@ -25,7 +25,7 @@ class RGBDPoseAPI():
     weights_path : str
         Path to weights file of the network
     """
-    def __init__(self, weights_path="dnn/pvn3d/assets/checkpoints/pvn3d_best.pth.tar"):
+    def __init__(self, weights_path="src/dnn/pvn3d/assets/checkpoints/pvn3d_best.pth.tar"):
         # initialize configs and model object
         self.config = Config(dataset_name='ycb')
         self.bs_utils = Basic_Utils(self.config)

@@ -4,8 +4,6 @@
 
 The `objectPoseEstimationRGBD` component continuously publishes the predicted poses into the shared graph in `ViriatoDSR` through `objectPoseEstimationPub`. However, it contains an interface method `getObjectPose`, which can be directly called to get the object poses of a certain RGBD image.
 
-**Note :** The component is under development.
-
 ## Installation
 
 1)  Install dependencies (refer to the original [README](https://github.com/DarkGeekMS/PVN3D/blob/master/README.md)).

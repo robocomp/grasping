@@ -14,8 +14,8 @@ from PIL import Image
 import numpy as np
 import pdb
 import torch.nn.functional as F
-from lib.pspnet import PSPNet
-from lib.pointnet import PointNetfeat
+from dnn.pvn3d.pspnet import PSPNet
+from dnn.pvn3d.pointnet import PointNetfeat
 
 psp_models = {
     'resnet18': lambda: PSPNet(sizes=(1, 2, 3, 6), psp_size=512, deep_features_size=256, backend='resnet18'),

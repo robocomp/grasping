@@ -10,9 +10,9 @@ from torch.autograd import Variable
 import concurrent.futures
 import numpy as np
 import pickle as pkl
-from common import Config
-from lib.utils.basic_utils import Basic_Utils
-from lib.utils.meanshift_pytorch import MeanShiftTorch
+from dnn.pvn3d.common import Config
+from dnn.pvn3d.lib.utils.basic_utils import Basic_Utils
+from dnn.pvn3d.lib.utils.meanshift_pytorch import MeanShiftTorch
 
 
 config = Config(dataset_name='ycb')

@@ -15,7 +15,7 @@ camera_name = Gen3_depth_sensor
 
 
 # DNN configuration
-weights_file = dnn/pvn3d/assets/checkpoints/pvn3d_best.pth.tar
+weights_file = src/dnn/pvn3d/assets/checkpoints/pvn3d_best.pth.tar
 
 
 Ice.MessageSizeMax=20004800

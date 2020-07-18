@@ -4,8 +4,8 @@ import scipy
 import sys
 sys.path.append('.')
 
-from lib.utils.config import cfg
-from lib.utils.data_utils import LineModModelDB, Projector, YCBModelDB
+from dnn.pvn3d.lib.utils.config import cfg
+from dnn.pvn3d.lib.utils.data_utils import LineModModelDB, Projector, YCBModelDB
 from plyfile import PlyData
 import numpy as np
 import cv2
