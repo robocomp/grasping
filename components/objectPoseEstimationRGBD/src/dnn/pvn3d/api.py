@@ -25,7 +25,7 @@ class RGBDPoseAPI():
     weights_path : str
         Path to weights file of the network
     """
-    def __init__(self, weights_path):
+    def __init__(self, weights_path="dnn/pvn3d/assets/checkpoints/pvn3d_best.pth.tar"):
         # initialize configs and model object
         self.config = Config(dataset_name='ycb')
         self.bs_utils = Basic_Utils(self.config)
