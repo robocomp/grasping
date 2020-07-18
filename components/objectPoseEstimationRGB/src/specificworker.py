@@ -85,7 +85,7 @@ class SpecificWorker(GenericWorker):
             # post-process network output
             self.final_poses = self.process_poses(pred_poses)
             # publish predicted poses
-            self.objectposeestimationpub_proxy.pushObjectPose(RoboCompObjectPoseEstimation.PoseType(self.final_poses))
+            self.objectposeestimationpub_proxy.pushObjectPose(RoboCompObjectPoseEstimationRGB.PoseType(self.final_poses))
         except Exception as e:
             print(e)
             return False
@@ -107,7 +107,7 @@ class SpecificWorker(GenericWorker):
             rot = R.from_matrix(rot_mat)
             rot_quat = rot.as_quat()
             # build object pose type
-            obj_pose = RoboCompObjectPoseEstimation.ObjectPose(objectname=object_name,
+            obj_pose = RoboCompObjectPoseEstimationRGB.ObjectPose(objectname=object_name,
                                                                 x=trans_mat[0],
                                                                 y=trans_mat[1],
                                                                 z=trans_mat[2],
@@ -141,7 +141,7 @@ class SpecificWorker(GenericWorker):
         # post-process network output
         ret_poses = self.process_poses(pred_poses)
         # publish predicted poses
-        return RoboCompObjectPoseEstimation.PoseType(ret_poses)
+        return RoboCompObjectPoseEstimationRGB.PoseType(ret_poses)
 
     # ===================================================================
     # ===================================================================
