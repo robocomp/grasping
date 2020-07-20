@@ -1,10 +1,11 @@
 import "ObjectPoseEstimationRGB.idsl";
+import "ObjectPoseEstimationRGBD.idsl";
 
 Component viriatoGraspingPyrep
 {
     Communications
     {
-        requires ObjectPoseEstimationRGB;
+        requires ObjectPoseEstimationRGB, ObjectPoseEstimationRGBD;
     };
     language Python;
 };

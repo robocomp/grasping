@@ -48,7 +48,6 @@ class SpecificWorker(GenericWorker):
         self.pr.shutdown()
 
     def setParams(self, params):
-
         SCENE_FILE = params["scene_dir"]
         self.pr = PyRep()
         self.pr.launch(SCENE_FILE, headless=False)
@@ -76,7 +75,6 @@ class SpecificWorker(GenericWorker):
         self.grasping_objects["002_master_chef_can"] = {"handler": can,
                                                         "sim_pose": None,
                                                         "pred_pose": None}
-
 
     def compute(self):
         print('SpecificWorker.compute...')
@@ -131,7 +129,6 @@ class SpecificWorker(GenericWorker):
                 print(e)
         return True
 
-
     def process_pose(self, obj_trans, obj_rot):
         # convert an object pose from camera frame to world frame
         final_trans = obj_trans + self.cameras["Gen3_depth_sensor"]["position"]
@@ -150,3 +147,12 @@ class SpecificWorker(GenericWorker):
     # RoboCompObjectPoseEstimationRGB.TImage
     # RoboCompObjectPoseEstimationRGB.ObjectPose
 
+    ######################
+    # From the RoboCompObjectPoseEstimationRGBD you can call this methods:
+    # self.objectposeestimationrgbd_proxy.getObjectPose(...)
+
+    ######################
+    # From the RoboCompObjectPoseEstimationRGBD you can use this types:
+    # RoboCompObjectPoseEstimationRGBD.TImage
+    # RoboCompObjectPoseEstimationRGBD.TDepth
+    # RoboCompObjectPoseEstimationRGBD.ObjectPose
