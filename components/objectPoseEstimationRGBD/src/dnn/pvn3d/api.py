@@ -35,6 +35,7 @@ class RGBDPoseAPI():
         self.cld_rgb_nrm = None
         self.choose = None
         self.cls_id_lst = None
+        self.intrinsic_matrix = None
 
     def load_checkpoint(self, model=None, optimizer=None, filename="checkpoint"):
         # load network checkpoint from weights file
@@ -87,10 +88,10 @@ class RGBDPoseAPI():
         n = n.to_array()
         return n
 
-    def preprocess_rgbd(self, image, depth, cam_scale=25.0):
+    def preprocess_rgbd(self, image, depth, intrinsic, cam_scale=75.0):
         # preprocess RGBD data to be passed to network
         # get camera intrinsics
-        K = self.config.intrinsic_matrix['ycb_K1']
+        K = self.intrinsic_matrix = intrinsic
         
         # fill missing points in depth map
         dpt = self.bs_utils.fill_missing(depth, cam_scale, 1)
@@ -175,7 +176,7 @@ class RGBDPoseAPI():
                     )
                     mesh_pts = self.bs_utils.get_pointxyz(obj_id, ds_type='ycb').copy()
                     mesh_pts = np.dot(mesh_pts, pose[:, :3].T) + pose[:, 3]
-                    K = self.config.intrinsic_matrix["ycb_K1"]
+                    K = self.intrinsic_matrix
                     mesh_p2ds = self.bs_utils.project_p3d(mesh_pts, 1.0, K)
                     color = self.bs_utils.get_label_color(obj_id, n_obj=22, mode=1)
                     np_rgb = self.bs_utils.draw_p2ds(np_rgb, mesh_p2ds, color=color)
@@ -202,7 +203,12 @@ if __name__ == '__main__':
     image = np.array(Image.open(args.image))
     depth = np.array(Image.open(args.depth))
 
+    # define camera intrinsics
+    intrinsics = np.array([[1066.778, 0., 312.9869],
+                        [0., 1067.487, 241.3109],
+                        [0., 0., 1.0]], np.float32)
+
     # call RGBD Pose API
     pose_estimator = RGBDPoseAPI(args.weights_path)
-    pose_estimator.preprocess_rgbd(image, depth)
+    pose_estimator.preprocess_rgbd(image, depth, intrinsics)
     pose_estimator.get_poses()
