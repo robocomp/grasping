@@ -94,7 +94,7 @@ class CommonBehaviorI(RoboCompCommonBehavior.CommonBehavior):
 
 #SIGNALS handler
 def sigint_handler(*args):
-    pass
+    exit(-1)
     
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

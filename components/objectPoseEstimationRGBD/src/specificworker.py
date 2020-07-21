@@ -72,7 +72,8 @@ class SpecificWorker(GenericWorker):
             img_buffer = rgbd_buffer.image
             depth_buffer = rgbd_buffer.depth
             image = np.frombuffer(img_buffer.image, np.uint8).reshape(img_buffer.height, img_buffer.width, img_buffer.depth)
-            depth = np.frombuffer(depth_buffer.depth, np.uint8).reshape(depth_buffer.height, depth_buffer.width)
+            depth = np.frombuffer(depth_buffer.depth, np.float32).reshape(depth_buffer.height, depth_buffer.width)
+            depth = np.uint8(depth * 255.0)
             # get vision sensor intrinstic parameters
             cam_res_x = img_buffer.width
             cam_res_y = img_buffer.height
@@ -84,7 +85,7 @@ class SpecificWorker(GenericWorker):
             # pre-process RGBD data
             self.pose_estimator.preprocess_rgbd(image, depth)
             # perform network inference
-            pred_cls, pred_poses = self.pose_estimator.get_poses()
+            pred_cls, pred_poses = self.pose_estimator.get_poses(save_results=False)
             # post-process network output
             self.final_poses = self.process_poses(pred_cls, pred_poses)
             # publish predicted poses
@@ -133,7 +134,8 @@ class SpecificWorker(GenericWorker):
     def ObjectPoseEstimationRGBD_getObjectPose(self, image, depth):
         # extract RGB image
         img = np.frombuffer(image.image, np.uint8).reshape(image.height, image.width, image.depth)
-        dep = np.frombuffer(depth.depth, np.uint8).reshape(depth.height, depth.width)
+        dep = np.frombuffer(depth.depth, np.float32).reshape(depth.height, depth.width)
+        dep = np.uint8(dep * 255.0)
         # get vision sensor intrinstic parameters
         cam_res_x = image.width
         cam_res_y = image.height
@@ -145,7 +147,7 @@ class SpecificWorker(GenericWorker):
         # pre-process RGBD data
         self.pose_estimator.preprocess_rgbd(img, dep)
         # perform network inference
-        pred_cls, pred_poses = self.pose_estimator.get_poses()
+        pred_cls, pred_poses = self.pose_estimator.get_poses(save_results=False)
         # post-process network output
         ret_poses = self.process_poses(pred_cls, pred_poses)
         # return predicted poses

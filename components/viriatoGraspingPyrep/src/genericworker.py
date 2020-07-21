@@ -131,7 +131,7 @@ class PoseType(list):
 setattr(RoboCompObjectPoseEstimationRGBD, "PoseType", PoseType)
 
 
-class GenericWorker(QtCore.QObject):
+class GenericWorker():
 
     def __init__(self, mprx):
         super(GenericWorker, self).__init__()

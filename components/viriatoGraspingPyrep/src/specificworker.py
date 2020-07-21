@@ -31,10 +31,10 @@ from pyrep.objects.dummy import Dummy
 from pyrep.objects.shape import Shape
 
 import numpy as np
-import numpy_indexed as npi
-from itertools import zip_longest
+from random import randint
 import cv2
 import queue
+import pickle
 from scipy.spatial.transform import Rotation as R
 
 
@@ -67,14 +67,23 @@ class SpecificWorker(GenericWorker):
                                             "focal": cam.get_resolution()[0]/np.tan(np.radians(cam.get_perspective_angle())), 
                                             "position": cam.get_position(), 
                                             "rotation": cam.get_quaternion(), 
-                                            "rgb": np.array(0), 
+                                            "image_rgb": np.array(0),
+                                            "image_rgbd": np.array(0),
                                             "depth": np.ndarray(0)}
 
         self.grasping_objects = {}
         can = Shape("can")
         self.grasping_objects["002_master_chef_can"] = {"handler": can,
                                                         "sim_pose": None,
-                                                        "pred_pose": None}
+                                                        "pred_pose_rgb": None,
+                                                        "pred_pose_rgbd": None}
+
+        with (open("objects_pcl.p", "rb")) as file:
+            self.object_pcl = pickle.load(file)
+
+        self.intrinsics = np.array([[self.cameras["Gen3_depth_sensor"]["focal"], 0.00000000e+00, self.cameras["Gen3_depth_sensor"]["width"]/2.0],
+                                [0.00000000e+00, self.cameras["Gen3_depth_sensor"]["focal"], self.cameras["Gen3_depth_sensor"]["height"]/2.0],
+                                [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
 
     def compute(self):
         print('SpecificWorker.compute...')
@@ -87,43 +96,35 @@ class SpecificWorker(GenericWorker):
                 image_float = cam["handle"].capture_rgb()
                 depth = cam["handle"].capture_depth()
                 image = cv2.normalize(src=image_float, dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
-                cam["rgb"] = RoboCompObjectPoseEstimationRGB.TImage(width=cam["width"], height=cam["height"], depth=3, focalx=cam["focal"], focaly=cam["focal"], image=image.tobytes())
-                
+                cam["image_rgb"] = RoboCompObjectPoseEstimationRGB.TImage(width=cam["width"], height=cam["height"], depth=3, 
+                                                                    focalx=cam["focal"], focaly=cam["focal"], image=image.tobytes())
+                cam["image_rgbd"] = RoboCompObjectPoseEstimationRGBD.TImage(width=cam["width"], height=cam["height"], depth=3, 
+                                                                    focalx=cam["focal"], focaly=cam["focal"], image=image.tobytes())
+                cam["depth"] = RoboCompObjectPoseEstimationRGBD.TDepth(width=cam["width"], height=cam["height"], depth=depth.tobytes())
+
                 # get objects's poses from simulator
                 for obj_name in self.grasping_objects.keys():
                     self.grasping_objects[obj_name]["sim_pose"] = self.grasping_objects[obj_name]["handler"].get_pose()
                 
                 # get objects' poses from RGB
-                pred_poses = self.objectposeestimationrgb_proxy.getObjectPose(cam["rgb"])
+                pred_poses = self.objectposeestimationrgb_proxy.getObjectPose(cam["image_rgb"])
+                self.visualize_poses(image_float, pred_poses, "rgb_pose.png")
                 for pose in pred_poses:
                     if pose.objectname in self.grasping_objects.keys():
                         obj_trans = [pose.x, pose.y, pose.z]
                         obj_quat = [pose.qx, pose.qy, pose.qz, pose.qw]
                         obj_pose = self.process_pose(obj_trans, obj_quat)
-                        self.grasping_objects[pose.objectname]["pred_pose"] = obj_pose
-                
-                # create a dummy for path planning
-                waypoint = Dummy.create()
-                waypoint.set_pose(self.grasping_objects["002_master_chef_can"]["sim_pose"]) # change to required object and pose type (simulator or predicted)
+                        self.grasping_objects[pose.objectname]["pred_pose_rgb"] = obj_pose
 
-                # perform path planning
-                path =  self.gen3_arm.get_path(position=waypoint.get_position(), quaternion=waypoint.get_quaternion(), ignore_collisions=True)
-                path.visualize()
-
-                # execute path
-                done = False
-                while not done:
-                    done = path.step()
-                    pr.step()
-                path.clear_visualization()
-
-                # perform grasping
-                while not  self.mico_gripper.actuate(0.0, 0.4):
-                    pr.step()
-                self.mico_gripper.grasp(self.grasping_objects["002_master_chef_can"]["handler"])
-
-                # remove dummy from scene
-                waypoint.remove()
+                # get objects' poses from RGBD
+                pred_poses = self.objectposeestimationrgbd_proxy.getObjectPose(cam["image_rgbd"], cam["depth"])
+                self.visualize_poses(image_float, pred_poses, "rgbd_pose.png")
+                for pose in pred_poses:
+                    if pose.objectname in self.grasping_objects.keys():
+                        obj_trans = [pose.x, pose.y, pose.z]
+                        obj_quat = [pose.qx, pose.qy, pose.qz, pose.qw]
+                        obj_pose = self.process_pose(obj_trans, obj_quat)
+                        self.grasping_objects[pose.objectname]["pred_pose_rgbd"] = obj_pose
                 
             except Exception as e:
                 print(e)
@@ -137,6 +138,30 @@ class SpecificWorker(GenericWorker):
         final_rot_mat = np.matmul(obj_rot_mat, cam_rot_mat)
         final_rot = R.from_matrix(final_rot_mat).as_quat()
         return list(final_trans).extend(list(final_rot))
+
+    def visualize_poses(self, image, poses, img_name):
+        image = np.uint8(image*255.0)
+        for pose in poses:
+            obj_pcl = self.object_pcl[pose.objectname]
+            obj_trans = np.array([pose.x, pose.y, pose.z])
+            obj_rot = R.from_quat([pose.qx, pose.qy, pose.qz, pose.qw]).as_matrix()
+            proj_pcl = self.vertices_reprojection(obj_pcl, obj_rot, obj_trans, self.intrinsics)
+            image = self.draw_pcl(image, proj_pcl, r=1, color=(randint(0,255), randint(0,255), randint(0,255)))
+        cv2.imwrite(img_name, image)
+
+    def vertices_reprojection(self, vertices, r, t, k):
+        p = np.matmul(k, np.matmul(r, vertices.T) + t.reshape(-1,1))
+        p[0] = p[0] / (p[2] + 1e-5)
+        p[1] = p[1] / (p[2] + 1e-5)
+        return p[:2].T
+
+    def draw_pcl(self, img, p2ds, r=1, color=(255, 0, 0)):
+        h, w = img.shape[0], img.shape[1]
+        for pt_2d in p2ds:
+            pt_2d[0] = np.clip(pt_2d[0], 0, w)
+            pt_2d[1] = np.clip(pt_2d[1], 0, h)
+            img = cv2.circle(img, (int(pt_2d[0]), int(pt_2d[1])), r, color, -1)
+        return img
 
     ######################
     # From the RoboCompObjectPoseEstimationRGB you can call this methods:
