@@ -78,7 +78,7 @@ class SpecificWorker(GenericWorker):
                                                         "pred_pose_rgb": None,
                                                         "pred_pose_rgbd": None}
 
-        with (open("objects_pcl.p", "rb")) as file:
+        with (open("objects_pcl.pickle", "rb")) as file:
             self.object_pcl = pickle.load(file)
 
         self.intrinsics = np.array([[self.cameras["Gen3_depth_sensor"]["focal"], 0.00000000e+00, self.cameras["Gen3_depth_sensor"]["width"]/2.0],
