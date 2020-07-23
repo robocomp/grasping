@@ -55,9 +55,6 @@ class SpecificWorker(GenericWorker):
         self.pr.launch(SCENE_FILE, headless=False)
         self.pr.start()
 
-        self.gen3_arm = Gen3()
-        self.mico_gripper = MicoGripper(0)
-
         self.cameras = {}
         cam = VisionSensor("Camera_Arm")
         self.cameras["Camera_Arm"] = {"handle": cam, 
@@ -142,10 +139,13 @@ class SpecificWorker(GenericWorker):
                 approach_dummy.set_pose(self.grasping_objects["002_master_chef_can"]["sim_pose"]) # NOTE : choose simulator or predicted pose
 
                 # initialize approach dummy in embedded lua scripts
-                call_ret = pr.script_call("initDummy@gen3", vrepConst.sim_scripttype_childscript, strings=['approach_dummy'])
+                call_ret = self.pr.script_call("initDummy@gen3", vrepConst.sim_scripttype_childscript)
 
                 # move gen3 arm to the object
                 self.move_arm(approach_dummy, self.arm_ops["MoveToObj"])
+
+                # remove the created approach dummy
+                approach_dummy.remove()
                 
             except Exception as e:
                 print(e)
@@ -205,12 +205,12 @@ class SpecificWorker(GenericWorker):
         # loop until the arm reached the object
         while True:
             # step the simulation
-            pr.step()
+            self.pr.step()
             # set function index to the desired operation
             if call_function:
                 try:
                     # call thearded child lua scripts via PyRep
-                    call_ret = pr.script_call("setFunction@gen3", vrepConst.sim_scripttype_childscript, ints=[func_number])
+                    call_ret = self.pr.script_call("setFunction@gen3", vrepConst.sim_scripttype_childscript, ints=[func_number])
                 except Exception as e:
                     print(e)
             # get current poses to compare
