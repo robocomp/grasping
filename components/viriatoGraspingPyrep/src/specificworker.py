@@ -88,7 +88,7 @@ class SpecificWorker(GenericWorker):
                                 [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
 
         self.arm_ops = {"MoveToHome" : 1, 
-                        "MoveToCan" : 2, 
+                        "MoveToObj" : 2, 
                         "CloseGripper" : 3, 
                         "OpenGripper" : 4}
 
@@ -135,6 +135,17 @@ class SpecificWorker(GenericWorker):
                         obj_quat = [pose.qx, pose.qy, pose.qz, pose.qw]
                         obj_pose = self.process_pose(obj_trans, obj_quat)
                         self.grasping_objects[pose.objectname]["pred_pose_rgbd"] = obj_pose
+
+                # create a dummy for arm path planning
+                approach_dummy = Dummy.create()
+                approach_dummy.set_name("approach_dummy")
+                approach_dummy.set_pose(self.grasping_objects["002_master_chef_can"]["sim_pose"]) # NOTE : choose simulator or predicted pose
+
+                # initialize approach dummy in embedded lua scripts
+                call_ret = pr.script_call("initDummy@gen3", vrepConst.sim_scripttype_childscript, strings=['approach_dummy'])
+
+                # move gen3 arm to the object
+                self.move_arm(approach_dummy, self.arm_ops["MoveToObj"])
                 
             except Exception as e:
                 print(e)
@@ -199,7 +210,7 @@ class SpecificWorker(GenericWorker):
             if call_function:
                 try:
                     # call thearded child lua scripts via PyRep
-                    ret = pr.script_call("setFunction@gen3", vrepConst.sim_scripttype_childscript, ints=[func_number])
+                    call_ret = pr.script_call("setFunction@gen3", vrepConst.sim_scripttype_childscript, ints=[func_number])
                 except Exception as e:
                     print(e)
             # get current poses to compare
