@@ -37,6 +37,8 @@ import queue
 import pickle
 from scipy.spatial.transform import Rotation as R
 
+import vrepConst
+
 
 class SpecificWorker(GenericWorker):
     def __init__(self, proxy_map):
@@ -84,6 +86,14 @@ class SpecificWorker(GenericWorker):
         self.intrinsics = np.array([[self.cameras["Gen3_depth_sensor"]["focal"], 0.00000000e+00, self.cameras["Gen3_depth_sensor"]["width"]/2.0],
                                 [0.00000000e+00, self.cameras["Gen3_depth_sensor"]["focal"], self.cameras["Gen3_depth_sensor"]["height"]/2.0],
                                 [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
+
+        self.arm_ops = {"MoveToHome" : 1, 
+                        "MoveToCan" : 2, 
+                        "CloseGripper" : 3, 
+                        "OpenGripper" : 4}
+
+        self.arm_base = Shape("gen3")
+        self.arm_target = Dummy("target")
 
     def compute(self):
         print('SpecificWorker.compute...')
@@ -146,8 +156,10 @@ class SpecificWorker(GenericWorker):
         return final_pose
 
     def visualize_poses(self, image, poses, img_name):
+        # visualize the predicted poses on RGB image
         image = np.uint8(image*255.0)
         for pose in poses:
+            # visualize only defined objects
             if pose.objectname not in self.grasping_objects.keys():
                 continue
             obj_pcl = self.object_pcl[pose.objectname]
@@ -158,18 +170,49 @@ class SpecificWorker(GenericWorker):
         cv2.imwrite(img_name, image)
 
     def vertices_reprojection(self, vertices, r, t, k):
+        # re-project vertices in pixel space
         p = np.matmul(k, np.matmul(r, vertices.T) + t.reshape(-1,1))
         p[0] = p[0] / (p[2] + 1e-5)
         p[1] = p[1] / (p[2] + 1e-5)
         return p[:2].T
 
     def draw_pcl(self, img, p2ds, r=1, color=(255, 0, 0)):
+        # draw object point cloud on RGB image
         h, w = img.shape[0], img.shape[1]
         for pt_2d in p2ds:
             pt_2d[0] = np.clip(pt_2d[0], 0, w)
             pt_2d[1] = np.clip(pt_2d[1], 0, h)
             img = cv2.circle(img, (int(pt_2d[0]), int(pt_2d[1])), r, color, -1)
         return img
+
+    def move_arm(self, dummy_dest, func_number):
+        # move arm to destination
+        # NOTE : this function is using remote lua scripts embedded in the arm
+        # for better path planning, so make sure to use the correct arm model
+        call_function = True
+        init_pose = np.array(self.arm_target.get_pose(relative_to=self.arm_base))
+        # loop until the arm reached the object
+        while True:
+            # step the simulation
+            pr.step()
+            # set function index to the desired operation
+            if call_function:
+                try:
+                    # call thearded child lua scripts via PyRep
+                    ret = pr.script_call("setFunction@gen3", vrepConst.sim_scripttype_childscript, ints=[func_number])
+                except Exception as e:
+                    print(e)
+            # get current poses to compare
+            actual_pose = self.arm_target.get_pose(relative_to=self.arm_base)
+            object_pose = dummy_dest.get_pose(relative_to=self.arm_base)
+            # compare poses to check for operation end
+            pose_diff = np.abs(np.array(actual_pose) - np.array(init_pose))
+            if(call_function and pose_diff[0] > 0.01 or pose_diff[1] > 0.01 or pose_diff[2] > 0.01):
+                call_function = False
+            # check whether the arm reached the target
+            dest_pose_diff = np.abs(np.array(actual_pose) - np.array(object_pose))
+            if(dest_pose_diff[0] < 0.015 and dest_pose_diff[1] < 0.015 and dest_pose_diff[2] < 0.015):
+                break
 
     ######################
     # From the RoboCompObjectPoseEstimationRGB you can call this methods:
