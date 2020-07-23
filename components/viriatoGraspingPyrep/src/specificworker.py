@@ -137,11 +137,15 @@ class SpecificWorker(GenericWorker):
         obj_rot_mat = R.from_quat(obj_rot).as_matrix()
         final_rot_mat = np.matmul(obj_rot_mat, cam_rot_mat)
         final_rot = R.from_matrix(final_rot_mat).as_quat()
-        return list(final_trans).extend(list(final_rot))
+        final_pose = list(final_trans)
+        final_pose.extend(list(final_rot))
+        return final_pose
 
     def visualize_poses(self, image, poses, img_name):
         image = np.uint8(image*255.0)
         for pose in poses:
+            if pose.objectname not in self.grasping_objects.keys():
+                continue
             obj_pcl = self.object_pcl[pose.objectname]
             obj_trans = np.array([pose.x, pose.y, pose.z])
             obj_rot = R.from_quat([pose.qx, pose.qy, pose.qz, pose.qw]).as_matrix()

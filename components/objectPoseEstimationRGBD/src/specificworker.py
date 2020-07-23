@@ -83,7 +83,7 @@ class SpecificWorker(GenericWorker):
                                     [0.00000000e+00, cam_focal_y, float(cam_res_y/2.0)],
                                     [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
             # pre-process RGBD data
-            self.pose_estimator.preprocess_rgbd(image, depth, intrinsics)
+            self.pose_estimator.preprocess_rgbd(image, depth, intrinsics, cam_scale=75.0)
             # perform network inference
             pred_cls, pred_poses = self.pose_estimator.get_poses(save_results=False)
             # post-process network output
@@ -145,7 +145,7 @@ class SpecificWorker(GenericWorker):
                                 [0.00000000e+00, cam_focal_y, float(cam_res_y/2.0)],
                                 [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
         # pre-process RGBD data
-        self.pose_estimator.preprocess_rgbd(img, dep, intrinsics)
+        self.pose_estimator.preprocess_rgbd(img, dep, intrinsics, cam_scale=75.0)
         # perform network inference
         pred_cls, pred_poses = self.pose_estimator.get_poses(save_results=False)
         # post-process network output
