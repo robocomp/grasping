@@ -59,23 +59,23 @@ class SpecificWorker(GenericWorker):
         self.mico_gripper = MicoGripper(0)
 
         self.cameras = {}
-        cam = VisionSensor("Gen3_depth_sensor")
-        self.cameras["Gen3_depth_sensor"] = {"handle": cam, 
-                                            "id": 1,
-                                            "angle": np.radians(cam.get_perspective_angle()), 
-                                            "width": cam.get_resolution()[0],
-                                            "height": cam.get_resolution()[1],
-                                            "depth": 3,
-                                            "focal": cam.get_resolution()[0]/np.tan(np.radians(cam.get_perspective_angle())), 
-                                            "position": cam.get_position(), 
-                                            "rotation": cam.get_quaternion(), 
-                                            "image_rgb": np.array(0),
-                                            "image_rgbd": np.array(0),
-                                            "depth": np.ndarray(0)}
+        cam = VisionSensor("Camera_Arm")
+        self.cameras["Camera_Arm"] = {"handle": cam, 
+                                    "id": 1,
+                                    "angle": np.radians(cam.get_perspective_angle()), 
+                                    "width": cam.get_resolution()[0],
+                                    "height": cam.get_resolution()[1],
+                                    "depth": 3,
+                                    "focal": cam.get_resolution()[0]/np.tan(np.radians(cam.get_perspective_angle())), 
+                                    "position": cam.get_position(), 
+                                    "rotation": cam.get_quaternion(), 
+                                    "image_rgb": np.array(0),
+                                    "image_rgbd": np.array(0),
+                                    "depth": np.ndarray(0)}
 
         self.grasping_objects = {}
         can = Shape("can")
-        self.grasping_objects["002_master_chef_can"] = {"handler": can,
+        self.grasping_objects["002_master_chef_can"] = {"handle": can,
                                                         "sim_pose": None,
                                                         "pred_pose_rgb": None,
                                                         "pred_pose_rgbd": None}
@@ -83,8 +83,8 @@ class SpecificWorker(GenericWorker):
         with (open("objects_pcl.pickle", "rb")) as file:
             self.object_pcl = pickle.load(file)
 
-        self.intrinsics = np.array([[self.cameras["Gen3_depth_sensor"]["focal"], 0.00000000e+00, self.cameras["Gen3_depth_sensor"]["width"]/2.0],
-                                [0.00000000e+00, self.cameras["Gen3_depth_sensor"]["focal"], self.cameras["Gen3_depth_sensor"]["height"]/2.0],
+        self.intrinsics = np.array([[self.cameras["Camera_Arm"]["focal"], 0.00000000e+00, self.cameras["Camera_Arm"]["width"]/2.0],
+                                [0.00000000e+00, self.cameras["Camera_Arm"]["focal"], self.cameras["Camera_Arm"]["height"]/2.0],
                                 [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
 
         self.arm_ops = {"MoveToHome" : 1, 
@@ -102,7 +102,7 @@ class SpecificWorker(GenericWorker):
                 self.pr.step()
 
                 # read arm camera RGB signal
-                cam = self.cameras["Gen3_depth_sensor"]
+                cam = self.cameras["Camera_Arm"]
                 image_float = cam["handle"].capture_rgb()
                 depth = cam["handle"].capture_depth()
                 image = cv2.normalize(src=image_float, dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
@@ -114,7 +114,7 @@ class SpecificWorker(GenericWorker):
 
                 # get objects's poses from simulator
                 for obj_name in self.grasping_objects.keys():
-                    self.grasping_objects[obj_name]["sim_pose"] = self.grasping_objects[obj_name]["handler"].get_pose()
+                    self.grasping_objects[obj_name]["sim_pose"] = self.grasping_objects[obj_name]["handle"].get_pose()
                 
                 # get objects' poses from RGB
                 pred_poses = self.objectposeestimationrgb_proxy.getObjectPose(cam["image_rgb"])
