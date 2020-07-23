@@ -132,10 +132,14 @@ class SpecificWorker(GenericWorker):
 
     def process_pose(self, obj_trans, obj_rot):
         # convert an object pose from camera frame to world frame
-        final_trans = obj_trans + self.cameras["Gen3_depth_sensor"]["position"]
-        cam_rot_mat = R.from_quat(self.cameras["Gen3_depth_sensor"]["rotation"]).as_matrix()
+        cam_trans = self.cameras["cam"]["position"]
+        cam_rot_mat = R.from_quat(self.cameras["cam"]["rotation"]).as_matrix()
+        z_flip = np.array([[-1,0,0],[0,-1,0],[0,0,1]])
+        obj_trans = np.dot(cam_rot_mat, np.dot(z_flip, np.array(obj_trans).reshape(-1,1)))
+        obj_trans = np.array(list(np.squeeze(obj_trans)))
+        final_trans = obj_trans + cam_trans
         obj_rot_mat = R.from_quat(obj_rot).as_matrix()
-        final_rot_mat = np.matmul(obj_rot_mat, cam_rot_mat)
+        final_rot_mat = np.matmul(obj_rot_mat, np.matmul(z_flip, cam_rot_mat.T).T)
         final_rot = R.from_matrix(final_rot_mat).as_quat()
         final_pose = list(final_trans)
         final_pose.extend(list(final_rot))
