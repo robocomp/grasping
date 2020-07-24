@@ -56,8 +56,8 @@ class SpecificWorker(GenericWorker):
         self.pr.start()
 
         self.cameras = {}
-        cam = VisionSensor("Camera_Arm")
-        self.cameras["Camera_Arm"] = {"handle": cam, 
+        cam = VisionSensor("Camera_Shoulder")
+        self.cameras["Camera_Shoulder"] = {"handle": cam, 
                                     "id": 1,
                                     "angle": np.radians(cam.get_perspective_angle()), 
                                     "width": cam.get_resolution()[0],
@@ -80,8 +80,8 @@ class SpecificWorker(GenericWorker):
         with (open("objects_pcl.pickle", "rb")) as file:
             self.object_pcl = pickle.load(file)
 
-        self.intrinsics = np.array([[self.cameras["Camera_Arm"]["focal"], 0.00000000e+00, self.cameras["Camera_Arm"]["width"]/2.0],
-                                [0.00000000e+00, self.cameras["Camera_Arm"]["focal"], self.cameras["Camera_Arm"]["height"]/2.0],
+        self.intrinsics = np.array([[self.cameras["Camera_Shoulder"]["focal"], 0.00000000e+00, self.cameras["Camera_Shoulder"]["width"]/2.0],
+                                [0.00000000e+00, self.cameras["Camera_Shoulder"]["focal"], self.cameras["Camera_Shoulder"]["height"]/2.0],
                                 [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
 
         self.arm_ops = {"MoveToHome" : 1, 
@@ -94,67 +94,66 @@ class SpecificWorker(GenericWorker):
 
     def compute(self):
         print('SpecificWorker.compute...')
-        while True:
-            try:
-                self.pr.step()
+        try:
+            self.pr.step()
 
-                # read arm camera RGB signal
-                cam = self.cameras["Camera_Arm"]
-                image_float = cam["handle"].capture_rgb()
-                depth = cam["handle"].capture_depth()
-                image = cv2.normalize(src=image_float, dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
-                cam["image_rgb"] = RoboCompObjectPoseEstimationRGB.TImage(width=cam["width"], height=cam["height"], depth=3, 
-                                                                    focalx=cam["focal"], focaly=cam["focal"], image=image.tobytes())
-                cam["image_rgbd"] = RoboCompObjectPoseEstimationRGBD.TImage(width=cam["width"], height=cam["height"], depth=3, 
-                                                                    focalx=cam["focal"], focaly=cam["focal"], image=image.tobytes())
-                cam["depth"] = RoboCompObjectPoseEstimationRGBD.TDepth(width=cam["width"], height=cam["height"], depth=depth.tobytes())
+            # read arm camera RGB signal
+            cam = self.cameras["Camera_Shoulder"]
+            image_float = cam["handle"].capture_rgb()
+            depth = cam["handle"].capture_depth()
+            image = cv2.normalize(src=image_float, dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+            cam["image_rgb"] = RoboCompObjectPoseEstimationRGB.TImage(width=cam["width"], height=cam["height"], depth=3, 
+                                                                focalx=cam["focal"], focaly=cam["focal"], image=image.tobytes())
+            cam["image_rgbd"] = RoboCompObjectPoseEstimationRGBD.TImage(width=cam["width"], height=cam["height"], depth=3, 
+                                                                focalx=cam["focal"], focaly=cam["focal"], image=image.tobytes())
+            cam["depth"] = RoboCompObjectPoseEstimationRGBD.TDepth(width=cam["width"], height=cam["height"], depth=depth.tobytes())
 
-                # get objects's poses from simulator
-                for obj_name in self.grasping_objects.keys():
-                    self.grasping_objects[obj_name]["sim_pose"] = self.grasping_objects[obj_name]["handle"].get_pose()
-                
-                # get objects' poses from RGB
-                pred_poses = self.objectposeestimationrgb_proxy.getObjectPose(cam["image_rgb"])
-                self.visualize_poses(image_float, pred_poses, "rgb_pose.png")
-                for pose in pred_poses:
-                    if pose.objectname in self.grasping_objects.keys():
-                        obj_trans = [pose.x, pose.y, pose.z]
-                        obj_quat = [pose.qx, pose.qy, pose.qz, pose.qw]
-                        obj_pose = self.process_pose(obj_trans, obj_quat)
-                        self.grasping_objects[pose.objectname]["pred_pose_rgb"] = obj_pose
+            # get objects's poses from simulator
+            for obj_name in self.grasping_objects.keys():
+                self.grasping_objects[obj_name]["sim_pose"] = self.grasping_objects[obj_name]["handle"].get_pose()
+            
+            # get objects' poses from RGB
+            pred_poses = self.objectposeestimationrgb_proxy.getObjectPose(cam["image_rgb"])
+            self.visualize_poses(image_float, pred_poses, "rgb_pose.png")
+            for pose in pred_poses:
+                if pose.objectname in self.grasping_objects.keys():
+                    obj_trans = [pose.x, pose.y, pose.z]
+                    obj_quat = [pose.qx, pose.qy, pose.qz, pose.qw]
+                    obj_pose = self.process_pose(obj_trans, obj_quat)
+                    self.grasping_objects[pose.objectname]["pred_pose_rgb"] = obj_pose
 
-                # get objects' poses from RGBD
-                pred_poses = self.objectposeestimationrgbd_proxy.getObjectPose(cam["image_rgbd"], cam["depth"])
-                self.visualize_poses(image_float, pred_poses, "rgbd_pose.png")
-                for pose in pred_poses:
-                    if pose.objectname in self.grasping_objects.keys():
-                        obj_trans = [pose.x, pose.y, pose.z]
-                        obj_quat = [pose.qx, pose.qy, pose.qz, pose.qw]
-                        obj_pose = self.process_pose(obj_trans, obj_quat)
-                        self.grasping_objects[pose.objectname]["pred_pose_rgbd"] = obj_pose
+            # get objects' poses from RGBD
+            pred_poses = self.objectposeestimationrgbd_proxy.getObjectPose(cam["image_rgbd"], cam["depth"])
+            self.visualize_poses(image_float, pred_poses, "rgbd_pose.png")
+            for pose in pred_poses:
+                if pose.objectname in self.grasping_objects.keys():
+                    obj_trans = [pose.x, pose.y, pose.z]
+                    obj_quat = [pose.qx, pose.qy, pose.qz, pose.qw]
+                    obj_pose = self.process_pose(obj_trans, obj_quat)
+                    self.grasping_objects[pose.objectname]["pred_pose_rgbd"] = obj_pose
 
-                # create a dummy for arm path planning
-                approach_dummy = Dummy.create()
-                approach_dummy.set_name("approach_dummy")
-                approach_dummy.set_pose(self.grasping_objects["002_master_chef_can"]["sim_pose"]) # NOTE : choose simulator or predicted pose
+            # create a dummy for arm path planning
+            approach_dummy = Dummy.create()
+            approach_dummy.set_name("approach_dummy")
+            approach_dummy.set_pose(self.grasping_objects["002_master_chef_can"]["sim_pose"]) # NOTE : choose simulator or predicted pose
 
-                # initialize approach dummy in embedded lua scripts
-                call_ret = self.pr.script_call("initDummy@gen3", vrepConst.sim_scripttype_childscript)
+            # initialize approach dummy in embedded lua scripts
+            call_ret = self.pr.script_call("initDummy@gen3", vrepConst.sim_scripttype_childscript)
 
-                # move gen3 arm to the object
-                self.move_arm(approach_dummy, self.arm_ops["MoveToObj"])
+            # move gen3 arm to the object
+            self.move_arm(approach_dummy, self.arm_ops["MoveToObj"])
 
-                # remove the created approach dummy
-                approach_dummy.remove()
-                
-            except Exception as e:
-                print(e)
+            # remove the created approach dummy
+            approach_dummy.remove()
+            
+        except Exception as e:
+            print(e)
         return True
 
     def process_pose(self, obj_trans, obj_rot):
         # convert an object pose from camera frame to world frame
-        cam_trans = self.cameras["cam"]["position"]
-        cam_rot_mat = R.from_quat(self.cameras["cam"]["rotation"]).as_matrix()
+        cam_trans = self.cameras["Camera_Shoulder"]["position"]
+        cam_rot_mat = R.from_quat(self.cameras["Camera_Shoulder"]["rotation"]).as_matrix()
         z_flip = np.array([[-1,0,0],[0,-1,0],[0,0,1]])
         obj_trans = np.dot(cam_rot_mat, np.dot(z_flip, np.array(obj_trans).reshape(-1,1)))
         obj_trans = np.array(list(np.squeeze(obj_trans)))
