@@ -135,7 +135,7 @@ class SpecificWorker(GenericWorker):
             # create a dummy for arm path planning
             approach_dummy = Dummy.create()
             approach_dummy.set_name("approach_dummy")
-            approach_dummy.set_pose(self.grasping_objects["002_master_chef_can"]["image_rgbd"]) # NOTE : choose simulator or predicted pose
+            approach_dummy.set_pose(self.grasping_objects["002_master_chef_can"]["pred_pose_rgbd"]) # NOTE : choose simulator or predicted pose
 
             # initialize approach dummy in embedded lua scripts
             call_ret = self.pr.script_call("initDummy@gen3", vrepConst.sim_scripttype_childscript)

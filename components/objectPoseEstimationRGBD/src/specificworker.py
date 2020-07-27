@@ -72,7 +72,6 @@ class SpecificWorker(GenericWorker):
             depth_buffer = rgbd_buffer.depth
             image = np.frombuffer(img_buffer.image, np.uint8).reshape(img_buffer.height, img_buffer.width, img_buffer.depth)
             depth = np.frombuffer(depth_buffer.depth, np.float32).reshape(depth_buffer.height, depth_buffer.width)
-            depth = np.uint8(depth * 255.0)
             # get vision sensor intrinstic parameters
             cam_res_x = img_buffer.width
             cam_res_y = img_buffer.height
@@ -132,7 +131,6 @@ class SpecificWorker(GenericWorker):
         # extract RGB image
         img = np.frombuffer(image.image, np.uint8).reshape(image.height, image.width, image.depth)
         dep = np.frombuffer(depth.depth, np.float32).reshape(depth.height, depth.width)
-        dep = np.uint8(dep * 255.0)
         # get vision sensor intrinstic parameters
         cam_res_x = image.width
         cam_res_y = image.height
