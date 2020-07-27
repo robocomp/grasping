@@ -1,6 +1,6 @@
 # Python ViriatoPyrep For Grasping
 
-This component is an modified copy of `viriatoPyrep` to test pose estimation and grasping with Viriato Gen3 arm (found [here](https://drive.google.com/file/d/1z7TZP6zbNzlrMwSWsogVPlnGv_FaBwRb/view?usp=sharing)) using PyRep API.
+This component is an modified copy of `viriatoPyrep` to test pose estimation and grasping with Viriato Gen3 arm (found [here](https://drive.google.com/file/d/1xcmN0KhPeRa4pRaAOfZrDxP2IEozzAGO/view?usp=sharing)) using PyRep API.
 
 ## Installation
 
@@ -9,7 +9,7 @@ This component is an modified copy of `viriatoPyrep` to test pose estimation and
 mkdir scenes
 ```
 
--   Download `gen3-grasp.ttt` scene file ([here](https://drive.google.com/file/d/1l5Me91K3dxAR4IpKySIRMKxOtKQmNAhH/view?usp=sharing)) and place it in `scenes` folder.
+-   Download `gen3-grasp.ttt` scene file ([here](https://drive.google.com/file/d/1-U2pyKdZ-IfK8SAV-_h0u5YISan0F1Im/view?usp=sharing)) and place it in `scenes` folder.
 
 -   Install [PyRep](https://github.com/stepjam/PyRep).
 
@@ -27,10 +27,16 @@ cmake .
 make
 ```
 
+-   Open 3 separate terminals.
+
+-   In the first terminal, run `objectPoseEstimationRGB` component.
+
+-   In the second terminal, run `objectPoseEstimationRGBD` component.
+
 -   Make sure first that you have commented this two lines, in case you have them :
  ```
 export LD_LIBRARY_PATH=$COPPELIASIM_ROOT
 export QT_QPA_PLATFORM_PLUGIN_PATH=$COPPELIASIM_ROOT
 ```
 
--   Start the component using the script `run.sh`. 
+-   Start the component, using the script `run.sh`, in the third terminal.
