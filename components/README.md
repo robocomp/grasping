@@ -106,6 +106,7 @@ module RoboCompObjectPoseEstimationRGBD
     {
         int width;
         int height;
+        float depthFactor;
         DepthType depth;
     };
 

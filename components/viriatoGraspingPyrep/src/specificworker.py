@@ -106,7 +106,7 @@ class SpecificWorker(GenericWorker):
                                                                 focalx=cam["focal"], focaly=cam["focal"], image=image.tobytes())
             cam["image_rgbd"] = RoboCompObjectPoseEstimationRGBD.TImage(width=cam["width"], height=cam["height"], depth=3, 
                                                                 focalx=cam["focal"], focaly=cam["focal"], image=image.tobytes())
-            cam["depth"] = RoboCompObjectPoseEstimationRGBD.TDepth(width=cam["width"], height=cam["height"], depth=depth.tobytes())
+            cam["depth"] = RoboCompObjectPoseEstimationRGBD.TDepth(width=cam["width"], height=cam["height"], depthFactor=1.0, depth=depth.tobytes())
 
             # get objects's poses from simulator
             for obj_name in self.grasping_objects.keys():
@@ -135,7 +135,7 @@ class SpecificWorker(GenericWorker):
             # create a dummy for arm path planning
             approach_dummy = Dummy.create()
             approach_dummy.set_name("approach_dummy")
-            approach_dummy.set_pose(self.grasping_objects["002_master_chef_can"]["sim_pose"]) # NOTE : choose simulator or predicted pose
+            approach_dummy.set_pose(self.grasping_objects["002_master_chef_can"]["image_rgbd"]) # NOTE : choose simulator or predicted pose
 
             # initialize approach dummy in embedded lua scripts
             call_ret = self.pr.script_call("initDummy@gen3", vrepConst.sim_scripttype_childscript)
