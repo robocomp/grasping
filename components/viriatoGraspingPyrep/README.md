@@ -2,8 +2,6 @@
 
 This component is an modified copy of `viriatoPyrep` to test pose estimation and grasping with Viriato Gen3 arm (found [here](https://drive.google.com/file/d/1z7TZP6zbNzlrMwSWsogVPlnGv_FaBwRb/view?usp=sharing)) using PyRep API.
 
-**Note :** The component is under development.
-
 ## Installation
 
 -   Create `scenes` folder in root directory :

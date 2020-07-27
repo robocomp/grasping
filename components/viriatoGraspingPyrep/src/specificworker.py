@@ -100,7 +100,7 @@ class SpecificWorker(GenericWorker):
             # read arm camera RGB signal
             cam = self.cameras["Camera_Shoulder"]
             image_float = cam["handle"].capture_rgb()
-            depth = cam["handle"].capture_depth()
+            depth = cam["handle"].capture_depth(in_meters=False)
             image = cv2.normalize(src=image_float, dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
             cam["image_rgb"] = RoboCompObjectPoseEstimationRGB.TImage(width=cam["width"], height=cam["height"], depth=3, 
                                                                 focalx=cam["focal"], focaly=cam["focal"], image=image.tobytes())
@@ -117,7 +117,7 @@ class SpecificWorker(GenericWorker):
             self.visualize_poses(image_float, pred_poses, "rgb_pose.png")
             for pose in pred_poses:
                 if pose.objectname in self.grasping_objects.keys():
-                    obj_trans = [pose.x, pose.y, pose.z]
+                    obj_trans = [pose.x, pose.y, pose.z + 0.2]
                     obj_quat = [pose.qx, pose.qy, pose.qz, pose.qw]
                     obj_pose = self.process_pose(obj_trans, obj_quat)
                     self.grasping_objects[pose.objectname]["pred_pose_rgb"] = obj_pose
