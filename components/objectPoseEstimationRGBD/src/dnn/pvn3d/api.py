@@ -88,7 +88,7 @@ class RGBDPoseAPI():
         n = n.to_array()
         return n
 
-    def preprocess_rgbd(self, image, depth, intrinsic, cam_scale=75.0):
+    def preprocess_rgbd(self, image, depth, intrinsic, cam_scale=1.0):
         # preprocess RGBD data to be passed to network
         # get camera intrinsics
         K = self.intrinsic_matrix = intrinsic
@@ -210,5 +210,5 @@ if __name__ == '__main__':
 
     # call RGBD Pose API
     pose_estimator = RGBDPoseAPI(args.weights_path)
-    pose_estimator.preprocess_rgbd(image, depth, intrinsics)
+    pose_estimator.preprocess_rgbd(image, depth, intrinsics, cam_scale=75.0)
     pose_estimator.get_poses()
