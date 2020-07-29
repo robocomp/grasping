@@ -152,15 +152,18 @@ class SpecificWorker(GenericWorker):
 
     def process_pose(self, obj_trans, obj_rot):
         # convert an object pose from camera frame to world frame
+        # define camera pose and z-axis flip matrix
         cam_trans = self.cameras["Camera_Shoulder"]["position"]
-        cam_rot_mat = R.from_quat(self.cameras["Camera_Shoulder"]["rotation"]).as_matrix()
-        z_flip = np.array([[-1,0,0],[0,-1,0],[0,0,1]])
-        obj_trans = np.dot(cam_rot_mat, np.dot(z_flip, np.array(obj_trans).reshape(-1,1)))
-        obj_trans = np.array(list(np.squeeze(obj_trans)))
+        cam_rot_mat = R.from_quat(self.cameras["Camera_Shoulder"]["rotation"])
+        z_flip = R.from_matrix(np.array([[-1,0,0],[0,-1,0],[0,0,1]]))
+        # get object position in world coordinates
+        obj_trans = np.dot(cam_rot_mat.as_matrix(), np.dot(z_flip.as_matrix(), np.array(obj_trans).reshape(-1,)))
         final_trans = obj_trans + cam_trans
-        obj_rot_mat = R.from_quat(obj_rot).as_matrix()
-        final_rot_mat = np.matmul(obj_rot_mat, np.matmul(z_flip, cam_rot_mat.T).T)
-        final_rot = R.from_matrix(final_rot_mat).as_quat()
+        # get object orientation in world coordinates
+        obj_rot_mat = R.from_quat(obj_rot)
+        final_rot_mat = obj_rot_mat * z_flip * cam_rot_mat
+        final_rot = final_rot_mat.as_quat()
+        # return final object pose in world coordinates
         final_pose = list(final_trans)
         final_pose.extend(list(final_rot))
         return final_pose
