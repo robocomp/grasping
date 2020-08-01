@@ -139,18 +139,20 @@ class SpecificWorker(GenericWorker):
                     obj_pose = self.process_pose(obj_trans, obj_quat)
                     self.grasping_objects[pose.objectname]["pred_pose_rgbd"] = obj_pose
 
+            # create a dummy for arm path planning
+            approach_dummy = Dummy.create()
+            approach_dummy.set_name("approach_dummy")
+
+            # initialize approach dummy in embedded lua scripts
+            call_ret = self.pr.script_call("initDummy@gen3", vrepConst.sim_scripttype_childscript)
+
             # set object pose for the arm to follow
             # NOTE : choose simulator or predicted pose
             dest_pose = self.grasping_objects["002_master_chef_can"]["pred_pose_rgbd"]
             dest_pose[2] += 0.04 # add a small offset along z-axis to grasp the object top
 
-            # create a dummy for arm path planning
-            approach_dummy = Dummy.create()
-            approach_dummy.set_name("approach_dummy")
+            # set dummy pose with the pose of object to be grasped
             approach_dummy.set_pose(dest_pose)
-
-            # initialize approach dummy in embedded lua scripts
-            call_ret = self.pr.script_call("initDummy@gen3", vrepConst.sim_scripttype_childscript)
 
             # move gen3 arm to the object
             self.move_arm(approach_dummy, self.arm_ops["MoveToObj"])
@@ -159,7 +161,7 @@ class SpecificWorker(GenericWorker):
             self.move_gripper(self.arm_ops["CloseGripper"])
 
             # change approach dummy pose to the final destination pose
-            dest_pose[2] += 0.2
+            dest_pose[2] += 0.4
             approach_dummy.set_pose(dest_pose)
 
             # move gen3 arm to the final destination
