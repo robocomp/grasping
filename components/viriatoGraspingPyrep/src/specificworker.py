@@ -98,6 +98,9 @@ class SpecificWorker(GenericWorker):
         try:
             self.pr.step()
 
+            # open the arm gripper
+            self.move_gripper(self.arm_ops["OpenGripper"])
+
             # read arm camera RGB signal
             cam = self.cameras["Camera_Shoulder"]
             image_float = cam["handle"].capture_rgb()
@@ -133,15 +136,29 @@ class SpecificWorker(GenericWorker):
                     obj_pose = self.process_pose(obj_trans, obj_quat)
                     self.grasping_objects[pose.objectname]["pred_pose_rgbd"] = obj_pose
 
+            # set object pose for the arm to follow
+            # NOTE : choose simulator or predicted pose
+            dest_pose = self.grasping_objects["002_master_chef_can"]["pred_pose_rgbd"]
+
             # create a dummy for arm path planning
             approach_dummy = Dummy.create()
             approach_dummy.set_name("approach_dummy")
-            approach_dummy.set_pose(self.grasping_objects["002_master_chef_can"]["pred_pose_rgbd"]) # NOTE : choose simulator or predicted pose
+            approach_dummy.set_pose(dest_pose)
 
             # initialize approach dummy in embedded lua scripts
             call_ret = self.pr.script_call("initDummy@gen3", vrepConst.sim_scripttype_childscript)
 
             # move gen3 arm to the object
+            self.move_arm(approach_dummy, self.arm_ops["MoveToObj"])
+
+            # close the arm gripper
+            self.move_gripper(self.arm_ops["CloseGripper"])
+
+            # change approach dummy pose to the final destination pose
+            dest_pose[2] += 0.2
+            approach_dummy.set_pose(dest_pose)
+
+            # move gen3 arm to the final destination
             self.move_arm(approach_dummy, self.arm_ops["MoveToObj"])
 
             # remove the created approach dummy
