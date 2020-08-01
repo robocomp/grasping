@@ -91,6 +91,7 @@ class SpecificWorker(GenericWorker):
 
         self.arm_base = Shape("gen3")
         self.arm_target = Dummy("target")
+        self.gripper = Shape("RG2_openCloseJoint")
 
     def compute(self):
         print('SpecificWorker.compute...')
@@ -220,12 +221,38 @@ class SpecificWorker(GenericWorker):
             object_pose = dummy_dest.get_pose(relative_to=self.arm_base)
             # compare poses to check for operation end
             pose_diff = np.abs(np.array(actual_pose) - np.array(init_pose))
-            if(call_function and pose_diff[0] > 0.01 or pose_diff[1] > 0.01 or pose_diff[2] > 0.01):
+            if call_function and pose_diff[0] > 0.01 or pose_diff[1] > 0.01 or pose_diff[2] > 0.01:
                 call_function = False
             # check whether the arm reached the target
             dest_pose_diff = np.abs(np.array(actual_pose) - np.array(object_pose))
-            if(dest_pose_diff[0] < 0.015 and dest_pose_diff[1] < 0.015 and dest_pose_diff[2] < 0.015):
+            if dest_pose_diff[0] < 0.015 and dest_pose_diff[1] < 0.015 and dest_pose_diff[2] < 0.015:
                 break
+
+    def move_gripper(self, func_number):
+        # open or close the arm gripper
+        # NOTE : this function is using remote lua scripts embedded in the arm
+        # for better path planning, so make sure to use the correct arm model
+        call_function = True
+        open_percentage = init_position = self.gripper.get_position()
+        # loop until the gripper is completely open (or closed)
+        while True:
+            # step the simulation
+            self.pr.step()
+            # set function index to the desired operation
+            if call_function:
+				try:
+                    # call thearded child lua scripts via PyRep
+					call_ret = self.pr.script_call("setFunction@gen3", vrepConst.sim_scripttype_childscript, ints=[func_number])
+				except Exception as e:
+					print(e)
+                # compare the gripper position to determine whether the gripper moved
+				if abs(self.gripper.get_position() - init_position) > 0.005:
+					call_function = False
+			# compare the gripper position to determine whether the gripper closed or opened
+            if not call_function and abs(open_percentage - self.gripper.get_position()) < 0.003:
+                break
+			#actualizamos el porcentaje de apertura
+            open_percentage = self.gripper.get_position()
 
     ######################
     # From the RoboCompObjectPoseEstimationRGB you can call this methods:
