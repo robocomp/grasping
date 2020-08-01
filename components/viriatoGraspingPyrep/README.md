@@ -9,7 +9,7 @@ This component is an modified copy of `viriatoPyrep` to test pose estimation and
 mkdir scenes
 ```
 
--   Download `gen3-grasp.ttt` scene file ([here](https://drive.google.com/file/d/1-U2pyKdZ-IfK8SAV-_h0u5YISan0F1Im/view?usp=sharing)) and place it in `scenes` folder.
+-   Download `gen3-grasp.ttt` scene file ([here](https://drive.google.com/file/d/1l1toq6XcohdON_o0sQX1O4jl6NNE_93m/view?usp=sharing)) and place it in `scenes` folder.
 
 -   Install [PyRep](https://github.com/stepjam/PyRep).
 

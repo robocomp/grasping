@@ -90,6 +90,8 @@ class SpecificWorker(GenericWorker):
                         "CloseGripper" : 3, 
                         "OpenGripper" : 4}
 
+        self.grasping_iter = 10
+
         self.arm_base = Shape("gen3")
         self.arm_target = Dummy("target")
         self.gripper = Joint("RG2_openCloseJoint")
@@ -140,6 +142,7 @@ class SpecificWorker(GenericWorker):
             # set object pose for the arm to follow
             # NOTE : choose simulator or predicted pose
             dest_pose = self.grasping_objects["002_master_chef_can"]["pred_pose_rgbd"]
+            dest_pose[2] += 0.04 # add a small offset along z-axis to grasp the object top
 
             # create a dummy for arm path planning
             approach_dummy = Dummy.create()
@@ -253,7 +256,7 @@ class SpecificWorker(GenericWorker):
         call_function = True
         open_percentage = init_position = self.gripper.get_joint_position()
         # loop until the gripper is completely open (or closed)
-        while True:
+        for iter in range(self.grasping_iter):
             # step the simulation
             self.pr.step()
             # set function index to the desired operation
