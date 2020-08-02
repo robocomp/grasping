@@ -38,5 +38,5 @@ class ObjectPoseEstimationRGBI(ObjectPoseEstimationRGB):
         self.worker = worker
 
 
-    def getObjectPose(self, img, c):
-        return self.worker.ObjectPoseEstimationRGB_getObjectPose(img)
+    def getObjectPose(self, image, c):
+        return self.worker.ObjectPoseEstimationRGB_getObjectPose(image)

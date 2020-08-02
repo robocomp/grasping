@@ -2,18 +2,6 @@
 ObjectPoseEstimationRGB.Endpoints=tcp -p 10117
 
 
-# Proxies for required interfaces
-CameraRGBDSimpleProxy = camerargbdsimple:tcp -h localhost -p 10096
-
-
-# This property is used by the clients to connect to IceStorm.
-TopicManager.Proxy=IceStorm/TopicManager:default -p 9999
-
-
-# name of camera handler to stream RGB image from
-camera_name = Gen3_depth_sensor
-
-
 # DNN configuration
 config_file = src/configs/data-YCB.cfg
 weights_file = src/models/ckpt_final.pth

@@ -42,8 +42,6 @@ class SpecificWorker(GenericWorker):
 
     def setParams(self, params):
         try:
-            # define camera handler to stream from
-            self.camera_name = params["camera_name"]
             # define classes names
             self.class_names = ['002_master_chef_can', '003_cracker_box', '004_sugar_box', '005_tomato_soup_can',
                                 '006_mustard_bottle', '007_tuna_fish_can', '008_pudding_box', '009_gelatin_box',
@@ -59,36 +57,15 @@ class SpecificWorker(GenericWorker):
             self.model = configure_network(cfg_file=params["config_file"], weights_file=params["weights_file"])
             # initialize predicted poses
             self.final_poses = []
-        except:
+        except Exception as e:
             print("Error reading config params")
+            print(e)
             return False
         return True
-
 
     @QtCore.Slot()
     def compute(self):
         print('SpecificWorker.compute...')
-        try:
-            # get RGB image information
-            img_buffer = self.camerargbdsimple_proxy.getImage(self.camera_name)
-            image = np.frombuffer(img_buffer.image, np.uint8).reshape(img_buffer.height, img_buffer.width, img_buffer.depth)
-            # get vision sensor intrinstic parameters
-            cam_res_x = img_buffer.width
-            cam_res_y = img_buffer.height
-            cam_focal_x = img_buffer.focalx
-            cam_focal_y = img_buffer.focaly
-            intrinsics = np.array([[cam_focal_x, 0.00000000e+00, float(cam_res_x/2.0)],
-                                    [0.00000000e+00, cam_focal_y, float(cam_res_y/2.0)],
-                                    [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
-            # perform network inference
-            pred_poses = get_pose(self.model, image, self.class_names, intrinsics, self.vertices, save_results=False)
-            # post-process network output
-            self.final_poses = self.process_poses(pred_poses)
-            # publish predicted poses
-            self.objectposeestimationpub_proxy.pushObjectPose(RoboCompObjectPoseEstimationRGB.PoseType(self.final_poses))
-        except Exception as e:
-            print(e)
-            return False
         return True
 
     def startup_check(self):
@@ -125,14 +102,14 @@ class SpecificWorker(GenericWorker):
     #
     # IMPLEMENTATION of getObjectPose method from ObjectPoseEstimationRGB interface
     #
-    def ObjectPoseEstimationRGB_getObjectPose(self, img):
+    def ObjectPoseEstimationRGB_getObjectPose(self, image):
         # extract RGB image
-        image = np.frombuffer(img.image, np.uint8).reshape(img.height, img.width, img.depth)
+        image = np.frombuffer(image.image, np.uint8).reshape(image.height, image.width, image.depth)
         # get vision sensor intrinstic parameters
-        cam_res_x = img.width
-        cam_res_y = img.height
-        cam_focal_x = img.focalx
-        cam_focal_y = img.focaly
+        cam_res_x = image.width
+        cam_res_y = image.height
+        cam_focal_x = image.focalx
+        cam_focal_y = image.focaly
         intrinsics = np.array([[cam_focal_x, 0.00000000e+00, float(cam_res_x/2.0)],
                                 [0.00000000e+00, cam_focal_y, float(cam_res_y/2.0)],
                                 [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
@@ -146,25 +123,6 @@ class SpecificWorker(GenericWorker):
     # ===================================================================
     # ===================================================================
 
-
-    ######################
-    # From the RoboCompCameraRGBDSimple you can call this methods:
-    # self.camerargbdsimple_proxy.getAll(...)
-    # self.camerargbdsimple_proxy.getDepth(...)
-    # self.camerargbdsimple_proxy.getImage(...)
-
-    ######################
-    # From the RoboCompCameraRGBDSimple you can use this types:
-    # RoboCompCameraRGBDSimple.TImage
-    # RoboCompCameraRGBDSimple.TDepth
-    # RoboCompCameraRGBDSimple.TRGBD
-
-    ######################
-    # From the RoboCompObjectPoseEstimationPub you can publish calling this methods:
-    # self.objectposeestimationpub_proxy.pushObjectPose(...)
-
     ######################
     # From the RoboCompObjectPoseEstimationRGB you can use this types:
-    # RoboCompObjectPoseEstimationRGB.TImage
     # RoboCompObjectPoseEstimationRGB.ObjectPose
-

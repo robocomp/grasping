@@ -1,15 +1,10 @@
-import "CameraRGBDSimple.idsl";
 import "ObjectPoseEstimationRGB.idsl";
-import "ObjectPoseEstimationPub.idsl";
 
 Component objectPoseEstimationRGB
 {
     Communications
     {
         implements ObjectPoseEstimationRGB;
-        requires CameraRGBDSimple;
-        publishes ObjectPoseEstimationPub;
     };
     language Python;
 };
-
