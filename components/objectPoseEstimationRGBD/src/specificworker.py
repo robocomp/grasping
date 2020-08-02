@@ -42,8 +42,6 @@ class SpecificWorker(GenericWorker):
 
     def setParams(self, params):
         try:
-            # define camera handler to stream from
-            self.camera_name = params["camera_name"]
             # define classes names
             self.class_names = ['002_master_chef_can', '003_cracker_box', '004_sugar_box', '005_tomato_soup_can',
                                 '006_mustard_bottle', '007_tuna_fish_can', '008_pudding_box', '009_gelatin_box',
@@ -57,40 +55,15 @@ class SpecificWorker(GenericWorker):
             self.pose_estimator = RGBDPoseAPI(weights_path=params["weights_file"])
             # initialize predicted poses
             self.final_poses = []
-        except:
+        except Exception as e:
             print("Error reading config params")
+            print(e)
             return False
         return True
 
     @QtCore.Slot()
     def compute(self):
         print('SpecificWorker.compute...')
-        try:
-            # get RGBD image information
-            rgbd_buffer = self.camerargbdsimple_proxy.getAll(self.camera_name)
-            img_buffer = rgbd_buffer.image
-            depth_buffer = rgbd_buffer.depth
-            image = np.frombuffer(img_buffer.image, np.uint8).reshape(img_buffer.height, img_buffer.width, img_buffer.depth)
-            depth = np.frombuffer(depth_buffer.depth, np.float32).reshape(depth_buffer.height, depth_buffer.width)
-            # get vision sensor intrinstic parameters
-            cam_res_x = img_buffer.width
-            cam_res_y = img_buffer.height
-            cam_focal_x = img_buffer.focalx
-            cam_focal_y = img_buffer.focaly
-            intrinsics = np.array([[cam_focal_x, 0.00000000e+00, float(cam_res_x/2.0)],
-                                    [0.00000000e+00, cam_focal_y, float(cam_res_y/2.0)],
-                                    [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
-            # pre-process RGBD data
-            self.pose_estimator.preprocess_rgbd(image, depth, intrinsics, cam_scale=depth_buffer.depthFactor)
-            # perform network inference
-            pred_cls, pred_poses = self.pose_estimator.get_poses(save_results=False)
-            # post-process network output
-            self.final_poses = self.process_poses(pred_cls, pred_poses)
-            # publish predicted poses
-            self.objectposeestimationpub_proxy.pushObjectPose(RoboCompObjectPoseEstimationRGBD.PoseType(self.final_poses))
-        except Exception as e:
-            print(e)
-            return False
         return True
 
     def startup_check(self):
@@ -151,26 +124,6 @@ class SpecificWorker(GenericWorker):
     # ===================================================================
     # ===================================================================
 
-
-    ######################
-    # From the RoboCompCameraRGBDSimple you can call this methods:
-    # self.camerargbdsimple_proxy.getAll(...)
-    # self.camerargbdsimple_proxy.getDepth(...)
-    # self.camerargbdsimple_proxy.getImage(...)
-
-    ######################
-    # From the RoboCompCameraRGBDSimple you can use this types:
-    # RoboCompCameraRGBDSimple.TImage
-    # RoboCompCameraRGBDSimple.TDepth
-    # RoboCompCameraRGBDSimple.TRGBD
-
-    ######################
-    # From the RoboCompObjectPoseEstimationPub you can publish calling this methods:
-    # self.objectposeestimationpub_proxy.pushObjectPose(...)
-
     ######################
     # From the RoboCompObjectPoseEstimationRGBD you can use this types:
-    # RoboCompObjectPoseEstimationRGBD.TImage
-    # RoboCompObjectPoseEstimationRGBD.TDepth
     # RoboCompObjectPoseEstimationRGBD.ObjectPose
-

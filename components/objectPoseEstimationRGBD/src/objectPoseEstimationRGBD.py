@@ -113,50 +113,6 @@ if __name__ == '__main__':
     for i in ic.getProperties():
         parameters[str(i)] = str(ic.getProperties().getProperty(i))
 
-    # Topic Manager
-    proxy = ic.getProperties().getProperty("TopicManager.Proxy")
-    obj = ic.stringToProxy(proxy)
-    try:
-        topicManager = IceStorm.TopicManagerPrx.checkedCast(obj)
-    except Ice.ConnectionRefusedException as e:
-        print(colored('Cannot connect to rcnode! This must be running to use pub/sub.', 'red'))
-        exit(1)
-
-    # Remote object connection for CameraRGBDSimple
-    try:
-        proxyString = ic.getProperties().getProperty('CameraRGBDSimpleProxy')
-        try:
-            basePrx = ic.stringToProxy(proxyString)
-            camerargbdsimple_proxy = RoboCompCameraRGBDSimple.CameraRGBDSimplePrx.uncheckedCast(basePrx)
-            mprx["CameraRGBDSimpleProxy"] = camerargbdsimple_proxy
-        except Ice.Exception:
-            print('Cannot connect to the remote object (CameraRGBDSimple)', proxyString)
-            #traceback.print_exc()
-            status = 1
-    except Ice.Exception as e:
-        print(e)
-        print('Cannot get CameraRGBDSimpleProxy property.')
-        status = 1
-
-
-    # Create a proxy to publish a ObjectPoseEstimationPub topic
-    topic = False
-    try:
-        topic = topicManager.retrieve("ObjectPoseEstimationPub")
-    except:
-        pass
-    while not topic:
-        try:
-            topic = topicManager.retrieve("ObjectPoseEstimationPub")
-        except IceStorm.NoSuchTopic:
-            try:
-                topic = topicManager.create("ObjectPoseEstimationPub")
-            except:
-                print('Another client created the ObjectPoseEstimationPub topic? ...')
-    pub = topic.getPublisher().ice_oneway()
-    objectposeestimationpubTopic = RoboCompObjectPoseEstimationPub.ObjectPoseEstimationPubPrx.uncheckedCast(pub)
-    mprx["ObjectPoseEstimationPubPub"] = objectposeestimationpubTopic
-
     if status == 0:
         worker = SpecificWorker(mprx, args.startup_check)
         worker.setParams(parameters)
