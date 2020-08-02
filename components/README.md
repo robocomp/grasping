@@ -1,32 +1,16 @@
 # Grasping and Pose Estimation Components
 
-Here, we discuss the complete workflow of the components and elaborate the components interface and structure.
+There are three components for pose estimation, which are :
 
-## Workflow Diagram
+-  `objectPoseEstimationRGB` : Python component that uses `Segmentation-driven 6D Object Pose Estimation` neural network to estimate objects' poses from RGB image.
 
-<div align=center><img width="60%" height="60%" src="assets/components_structure.png"/></div>
+-   `objectPoseEstimationRGBD` : Python component that uses `PVN3D` neural network to estimate objects' poses from RGBD image.
 
-<div align="center">
-Figure(1) : Complete schema for grasping and pose estimation workflow.
-</div><br>
+-   `objectPoseEstimation` : Python component that combines both RGB and RGBD pose estimation (used in integration with DSR).
 
-As shown in the figure, the components workflow goes as follows :
+Moreover, there is one more component named `viriatoGraspingPyrep` that contains the grasping logic and the whole system integration without shared graph.
 
-- `ViriatoPyrep` component streams the RGBD signal from CoppelaSim simulator using PyRep API.
-
-- `objectPoseEstimation` component mainly consists of two components :
-  - `objectPoseEstimationRGB` : receives RGB signal and performs pose estimation using `Segmentation-driven 6D Object Pose Estimation` DNN.
-  - `objectPoseEstimationRGBD` : receives RGBD signal and performs pose estimation using `PVN3D` DNN.
-
-- `objectPoseEstimation` component, then, passes the output poses to `objectPoseEstimationPub` component, which publishes the poses to the shared memory in `ViriatoDSR`.
-
-- `Grasping` component streams the poses from the shared memory and uses it to plan a grasp on the object.
-
-## Pose Estimation Interfaces
-
-As discussed, there are three components for pose estimation, which are `objectPoseEstimationRGB` (Python), `objectPoseEstimationRGBD` (Python) and `objectPoseEstimationPub` (C++).
-
-### ObjectPoseEstimationRGB Interface
+## ObjectPoseEstimationRGB Interface
 
 It's the interface for `objectPoseEstimationRGB` component. It defines a single operation `getObjectPose`, that takes an RGB image in `TImage` format and returns `PoseType`, which is a sequence of `ObjectPose` type.
 
@@ -38,22 +22,9 @@ It's the interface for `objectPoseEstimationRGB` component. It defines a single 
 Here is `ObjectPoseEstimationRGB` interface :
 
 ```
+import "CameraRGBDSimple.idsl";
 module RoboCompObjectPoseEstimationRGB
 {
-    exception HardwareFailedException { string what; };
-
-    sequence<byte> ImgType;
-
-    struct TImage
-    {
-        int width;
-        int height;
-        int depth;
-        int focalx;
-        int focaly;
-        ImgType image;
-    };
-
     struct ObjectPose
     {
         string objectname;
@@ -70,46 +41,23 @@ module RoboCompObjectPoseEstimationRGB
 
     interface ObjectPoseEstimationRGB
     {
-        PoseType getObjectPose(TImage img) throws HardwareFailedException;
+        PoseType getObjectPose(RoboCompCameraRGBDSimple::TImage image);
     };
 };
 ```
 
-### ObjectPoseEstimationRGBD Interface
+## ObjectPoseEstimationRGBD Interface
 
-It's the interface for `objectPoseEstimationRGBD` component. It also defines a single operation `getObjectPose`, that takes an RGB image in `TImage` format and a depth image in `TDepth` format. Then it returns `PoseType`, which is a sequence of `ObjectPose` type.
+It's the interface for `objectPoseEstimationRGBD` and `objectPoseEstimation` components. It also defines a single operation `getObjectPose`, that takes an RGB image in `TImage` format and a depth image in `TDepth` format. Then it returns `PoseType`, which is a sequence of `ObjectPose` type.
 
 The format of `TImage`, `ObjectPose` and `PoseType` are same as `ObjectPoseEstimationRGB` interface.
 
-Here is `ObjectPoseEstimationRGB` interface :
+Here is `ObjectPoseEstimationRGBD` interface :
 
 ```
+import "CameraRGBDSimple.idsl";
 module RoboCompObjectPoseEstimationRGBD
 {
-    exception HardwareFailedException { string what; };
-
-    sequence<byte> ImgType;
-
-    struct TImage
-    {
-        int width;
-        int height;
-        int depth;
-        int focalx;
-        int focaly;
-        ImgType image;
-    };
-
-    sequence<byte> DepthType;
-
-    struct TDepth
-    {
-        int width;
-        int height;
-        float depthFactor;
-        DepthType depth;
-    };
-
     struct ObjectPose
     {
         string objectname;
@@ -126,25 +74,7 @@ module RoboCompObjectPoseEstimationRGBD
 
     interface ObjectPoseEstimationRGBD
     {
-        PoseType getObjectPose(TImage image, TDepth depth) throws HardwareFailedException;
+        PoseType getObjectPose(RoboCompCameraRGBDSimple::TImage image, RoboCompCameraRGBDSimple::TDepth depth);
     };
-};
-```
-
-### ObjectPoseEstimationPub Interface
-
-It's the interface for `objectPoseEstimationPub` component. It defines a single operation `pushObjectPose`, which simply pushes the obtained object poses into the shared memory. 
-
-Here is `ObjectPoseEstimationPub` interface :
-
-```
-import "ObjectPoseEstimationRGB.idsl";
-
-module RoboCompObjectPoseEstimationPub
-{
-  interface ObjectPoseEstimationPub
-  {
-    idempotent void pushObjectPose(RoboCompObjectPoseEstimationRGB::PoseType poses);
-  };
 };
 ```

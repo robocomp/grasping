@@ -23,6 +23,28 @@ git clone --recurse-submodules https://github.com/robocomp/grasping.git
 
 -   `rgbd-based-pose-estimation` : contains the code for [PVN3D](https://arxiv.org/abs/1911.04231) neural network as a git submodule.
 
+## System Overview
+
+<div align=center><img width="60%" height="60%" src="assets/components_structure.png"/></div>
+
+<div align="center">
+Figure(1) : Complete schema for grasping and pose estimation workflow.
+</div><br>
+
+As shown in the figure, the components workflow goes as follows :
+
+- `viriatoPyrep` component streams the RGBD signal from CoppelaSim simulator using PyRep API and publishes it to the shared graph.
+
+- `graspDSR` component reads the RGBD signal from shared graph and passes it `objectPoseEstimation` component.
+
+- `objectPoseEstimation` component, then, performs pose estimation using DNN and returns the estimated poses.
+
+- `graspDSR` component injects the estimated poses into the shared graph.
+
+- `viriatoDSR` component, then reads the estimated poses from the shared graph and passes it to `viriatoPyrep` component.
+
+- Finally, `viriatoPyrep` component uses the estimated poses to plan a successful grasp on the object.
+
 ## System Demos
 
 ### System Overview
@@ -38,13 +60,13 @@ This demo verifies the arm's path planning using DNN-estimated poses.
 </div>
 
 <div align="center">
-Figure(1): Video of grasping first demo.
+Figure(2): Video of grasping first demo.
 </div><br>
 
 <div align=center><img width="60%" height="60%" src="assets/demo1_poses.png"/></div>
 
 <div align="center">
-Figure(2): Visualization of the DNN-estimated pose in first demo.
+Figure(3): Visualization of the DNN-estimated pose in first demo.
 </div><br>
 
 ### Second Demo (Grasping and Manipulation)
@@ -56,11 +78,11 @@ This demo shows the ability of the arm to grasp and manipulate a certain object 
 </div>
 
 <div align="center">
-Figure(3): Video of grasping second demo.
+Figure(4): Video of grasping second demo.
 </div><br>
 
 <div align=center><img width="60%" height="60%" src="assets/demo2_poses.png"/></div>
 
 <div align="center">
-Figure(4): Visualization of the DNN-estimated pose in second demo.
+Figure(5): Visualization of the DNN-estimated pose in second demo.
 </div><br>
