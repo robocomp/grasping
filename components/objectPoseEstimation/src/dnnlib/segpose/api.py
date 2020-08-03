@@ -55,5 +55,12 @@ def get_pose(model, img, class_names, intrinsics, vertices, best_cnt=10, conf_th
         vis_img = visualize_predictions(pred_pose, img, vertices, intrinsics) # visualize images
         imsave('output/' + str(output_file) + '.jpg', vis_img) # save output images
 
+    # process estimated poses
+    pred_cls_ids = []
+    pred_pose_lst = []
+    for pose in pred_pose:
+        pred_cls_ids.append(pose[0])
+        pred_pose_lst.append(pose[1])
+
     # return predicted poses
-    return pred_pose
+    return pred_cls_ids, pred_pose_lst
