@@ -1,0 +1,10 @@
+import "ObjectPoseEstimationRGBD.idsl";
+
+Component objectPoseEstimation
+{
+    Communications
+    {
+        implements ObjectPoseEstimationRGBD;
+    };
+    language Python;
+};

@@ -1,0 +1,25 @@
+# Endpoints for implements interfaces
+ObjectPoseEstimationRGBD.Endpoints=tcp -p 10121
+
+
+# RGB DNN configuration
+rgb_config_file = src/configs/data-YCB.cfg
+rgb_weights_file = src/models/ckpt_final.pth
+rgb_vertices_file = src/configs/YCB-Video/YCB_vertex.npy
+
+
+# RGBD DNN configuration
+rgbd_weights_file = src/dnn/pvn3d/assets/checkpoints/pvn3d_best.pth.tar
+
+
+# Inference mode
+## 0 => RGB
+## 1 => RGBD
+## 2 => Ensemble
+inference_mode = 1
+
+
+Ice.MessageSizeMax=20004800
+Ice.Warn.Connections=0
+Ice.Trace.Network=0
+Ice.Trace.Protocol=0
