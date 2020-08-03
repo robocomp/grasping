@@ -58,7 +58,7 @@ class SpecificWorker(GenericWorker):
             self.segpose = configure_network(cfg_file=params["rgb_config_file"], weights_file=params["rgb_weights_file"])
             self.pvn3d = RGBDPoseAPI(weights_path=params["rgbd_weights_file"])
             # define inference mode
-            self.inference_mode = params["inference_mode"]
+            self.inference_mode = int(params["inference_mode"])
             # initialize predicted poses
             self.final_poses = []
         except Exception as e:
@@ -103,6 +103,8 @@ class SpecificWorker(GenericWorker):
     def perform_ensemble(self, rgb_cls, rgb_poses, rgbd_cls, rgbd_poses):
         # perform ensemble on RGB and RGBD estimated poses
         # NOTE : the current ensemble method is arithmetic mean
+        rgb_cls = list(rgb_cls)
+        rgbd_cls = list(rgbd_cls)
         final_cls = []
         final_poses = []
         # loop over each class index
@@ -114,7 +116,7 @@ class SpecificWorker(GenericWorker):
             except:
                 continue
             # get arithmetic mean of two estimated poses
-            final_pose = np.mean([rgb_poses[rgb_idx], rgbd_poses[rgbd_idx]])
+            final_pose = np.mean([rgb_poses[rgb_idx], rgbd_poses[rgbd_idx]], axis=0)
             # append the final poses to results lists
             final_cls.append(idx)
             final_poses.append(final_pose)
@@ -144,17 +146,17 @@ class SpecificWorker(GenericWorker):
         # pre-process RGBD data
         self.pvn3d.preprocess_rgbd(img, dep, intrinsics, cam_scale=depth_factor)
         # check for inference mode
-        if self.inference == 0:
+        if self.inference_mode == 0:
             # perform segpose inference
-            pred_cls, pred_poses = get_pose(self.model, img, self.class_names, intrinsics, self.vertices, save_results=False)
-        elif self.inference == 1:
+            pred_cls, pred_poses = get_pose(self.segpose, img, self.class_names, intrinsics, self.vertices, save_results=False)
+        elif self.inference_mode == 1:
             # perform pvn3d inference
             pred_cls, pred_poses = self.pvn3d.get_poses(save_results=False)
         else:
             # perform pvn3d inference
             rgbd_pred_cls, rgbd_pred_poses = self.pvn3d.get_poses(save_results=False)
             # perform segpose inference
-            rgb_pred_cls, rgb_pred_poses = get_pose(self.model, img, self.class_names, intrinsics, self.vertices, save_results=False)
+            rgb_pred_cls, rgb_pred_poses = get_pose(self.segpose, img, self.class_names, intrinsics, self.vertices, save_results=False)
             # perform results ensemble
             pred_cls, pred_poses = self.perform_ensemble(rgb_pred_cls, rgb_pred_poses, rgbd_pred_cls, rgbd_pred_poses)
         # post-process network output
@@ -169,4 +171,3 @@ class SpecificWorker(GenericWorker):
     ######################
     # From the RoboCompObjectPoseEstimationRGBD you can use this types:
     # RoboCompObjectPoseEstimationRGBD.ObjectPose
-

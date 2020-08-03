@@ -59,7 +59,7 @@ def get_pose(model, img, class_names, intrinsics, vertices, best_cnt=10, conf_th
     pred_cls_ids = []
     pred_pose_lst = []
     for pose in pred_pose:
-        pred_cls_ids.append(pose[0])
+        pred_cls_ids.append(pose[0] + 1)
         pred_pose_lst.append(pose[1])
 
     # return predicted poses
