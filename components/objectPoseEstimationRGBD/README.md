@@ -1,6 +1,6 @@
 # Python RGBD Pose Estimation Component
 
-`objectPoseEstimationRGBD` component is a Python component that performs object pose estimation on household objects for precise grasping and manipulation. This components contains an interface method `getObjectPose`, which can be directly called to get the object poses of a certain RGBD image.
+`objectPoseEstimationRGBD` component is a Python component that performs object pose estimation on household objects for precise grasping and manipulation. This component contains an interface method `getObjectPose`, which can be directly called to get the object poses of a certain RGBD image.
 
 ## Installation
 
