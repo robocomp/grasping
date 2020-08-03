@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.utils.model_zoo as model_zoo
-from dnn.pvn3d.common import Config
+from dnnlib.pvn3d.pvn3d.common import Config
 
 config = Config()
 

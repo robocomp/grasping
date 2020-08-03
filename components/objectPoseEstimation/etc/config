@@ -3,13 +3,13 @@ ObjectPoseEstimationRGBD.Endpoints=tcp -p 10121
 
 
 # RGB DNN configuration
-rgb_config_file = src/configs/data-YCB.cfg
-rgb_weights_file = src/models/ckpt_final.pth
-rgb_vertices_file = src/configs/YCB-Video/YCB_vertex.npy
+rgb_config_file = src/dnnlib/segpose/configs/data-YCB.cfg
+rgb_weights_file = src/dnnlib/segpose/models/ckpt_final.pth
+rgb_vertices_file = src/dnnlib/segpose/configs/YCB-Video/YCB_vertex.npy
 
 
 # RGBD DNN configuration
-rgbd_weights_file = src/dnn/pvn3d/assets/checkpoints/pvn3d_best.pth.tar
+rgbd_weights_file = src/dnnlib/pvn3d/pvn3d/assets/checkpoints/pvn3d_best.pth.tar
 
 
 # Inference mode

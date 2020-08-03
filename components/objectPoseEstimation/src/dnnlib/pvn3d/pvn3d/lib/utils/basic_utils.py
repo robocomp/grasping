@@ -2,8 +2,8 @@
 import os
 import numpy as np
 import cv2
-from dnn.pvn3d.lib.utils.ip_basic.ip_basic import depth_map_utils_ycb as depth_map_utils
-from dnn.pvn3d.lib.utils.ip_basic.ip_basic import vis_utils
+from dnnlib.pvn3d.pvn3d.lib.utils.ip_basic.ip_basic import depth_map_utils_ycb as depth_map_utils
+from dnnlib.pvn3d.pvn3d.lib.utils.ip_basic.ip_basic import vis_utils
 from plyfile import PlyData
 import random
 import torch

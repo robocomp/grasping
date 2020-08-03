@@ -8,7 +8,7 @@ from __future__ import (
 import torch
 from torch.autograd import Function
 import torch.nn as nn
-from dnn.pvn3d.lib.utils import etw_pytorch_utils as pt_utils
+from dnnlib.pvn3d.pvn3d.lib.utils import etw_pytorch_utils as pt_utils
 import sys
 
 try:
@@ -16,7 +16,7 @@ try:
 except:
     import __builtin__ as builtins
 
-from dnn.pvn3d.lib.pointnet2_utils import _ext
+from dnnlib.pvn3d.pvn3d.lib.pointnet2_utils import _ext
 
 if False:
     # Workaround for type hints without depending on the `typing` module

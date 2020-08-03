@@ -8,9 +8,9 @@ from __future__ import (
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from dnn.pvn3d.lib.utils import etw_pytorch_utils as pt_utils
+from dnnlib.pvn3d.pvn3d.lib.utils import etw_pytorch_utils as pt_utils
 
-from dnn.pvn3d.lib.pointnet2_utils import pointnet2_utils
+from dnnlib.pvn3d.pvn3d.lib.pointnet2_utils import pointnet2_utils
 
 if False:
     # Workaround for type hints without depending on the `typing` module

@@ -7,9 +7,9 @@ import os.path
 import numpy as np
 import torchvision.transforms as transforms
 from PIL import Image
-from dnn.pvn3d.common import Config
+from dnnlib.pvn3d.pvn3d.common import Config
 import pickle as pkl
-from dnn.pvn3d.lib.utils.basic_utils import Basic_Utils
+from dnnlib.pvn3d.pvn3d.lib.utils.basic_utils import Basic_Utils
 import scipy.io as scio
 import scipy.misc
 from cv2 import imshow, waitKey

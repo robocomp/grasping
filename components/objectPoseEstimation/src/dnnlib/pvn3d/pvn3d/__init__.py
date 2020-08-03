@@ -14,4 +14,4 @@ except NameError:
     __PVN3D_SETUP__ = False
 
 if not __PVN3D_SETUP__:
-    from dnn.pvn3d.lib import pointnet2_utils
+    from dnnlib.pvn3d.pvn3d.lib import pointnet2_utils
