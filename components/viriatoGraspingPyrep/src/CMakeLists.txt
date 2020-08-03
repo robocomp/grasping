@@ -3,4 +3,4 @@ PROJECT(  viriatoGraspingPyrep )
 
 INCLUDE( /opt/robocomp/cmake/robocomp.cmake )
 
-ROBOCOMP_IDSL_TO_ICE( CommonBehavior ObjectPoseEstimationRGB ObjectPoseEstimationRGBD )
+ROBOCOMP_IDSL_TO_ICE( CommonBehavior CameraRGBDSimple ObjectPoseEstimationRGB ObjectPoseEstimationRGBD )

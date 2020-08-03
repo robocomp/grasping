@@ -109,11 +109,11 @@ class SpecificWorker(GenericWorker):
             image_float = cam["handle"].capture_rgb()
             depth = cam["handle"].capture_depth(in_meters=False)
             image = cv2.normalize(src=image_float, dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
-            cam["image_rgb"] = RoboCompObjectPoseEstimationRGB.TImage(width=cam["width"], height=cam["height"], depth=3, 
-                                                                focalx=cam["focal"], focaly=cam["focal"], image=image.tobytes())
-            cam["image_rgbd"] = RoboCompObjectPoseEstimationRGBD.TImage(width=cam["width"], height=cam["height"], depth=3, 
-                                                                focalx=cam["focal"], focaly=cam["focal"], image=image.tobytes())
-            cam["depth"] = RoboCompObjectPoseEstimationRGBD.TDepth(width=cam["width"], height=cam["height"], depthFactor=1.0, depth=depth.tobytes())
+            cam["image_rgb"] = RoboCompCameraRGBDSimple.TImage(width=cam["width"], height=cam["height"], depth=3, 
+                                                            focalx=cam["focal"], focaly=cam["focal"], image=image.tobytes())
+            cam["image_rgbd"] = RoboCompCameraRGBDSimple.TImage(width=cam["width"], height=cam["height"], depth=3, 
+                                                            focalx=cam["focal"], focaly=cam["focal"], image=image.tobytes())
+            cam["depth"] = RoboCompCameraRGBDSimple.TDepth(width=cam["width"], height=cam["height"], depthFactor=1.0, depth=depth.tobytes())
 
             # get objects's poses from simulator
             for obj_name in self.grasping_objects.keys():
@@ -283,7 +283,6 @@ class SpecificWorker(GenericWorker):
 
     ######################
     # From the RoboCompObjectPoseEstimationRGB you can use this types:
-    # RoboCompObjectPoseEstimationRGB.TImage
     # RoboCompObjectPoseEstimationRGB.ObjectPose
 
     ######################
@@ -292,6 +291,4 @@ class SpecificWorker(GenericWorker):
 
     ######################
     # From the RoboCompObjectPoseEstimationRGBD you can use this types:
-    # RoboCompObjectPoseEstimationRGBD.TImage
-    # RoboCompObjectPoseEstimationRGBD.TDepth
     # RoboCompObjectPoseEstimationRGBD.ObjectPose

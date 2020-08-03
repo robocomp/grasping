@@ -104,7 +104,7 @@ class SpecificWorker(GenericWorker):
     #
     def ObjectPoseEstimationRGB_getObjectPose(self, image):
         # extract RGB image
-        image = np.frombuffer(image.image, np.uint8).reshape(image.height, image.width, image.depth)
+        img = np.frombuffer(image.image, np.uint8).reshape(image.height, image.width, image.depth)
         # get vision sensor intrinstic parameters
         cam_res_x = image.width
         cam_res_y = image.height
@@ -114,7 +114,7 @@ class SpecificWorker(GenericWorker):
                                 [0.00000000e+00, cam_focal_y, float(cam_res_y/2.0)],
                                 [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
         # perform network inference
-        pred_poses = get_pose(self.model, image, self.class_names, intrinsics, self.vertices, save_results=False)
+        pred_poses = get_pose(self.model, img, self.class_names, intrinsics, self.vertices, save_results=False)
         # post-process network output
         ret_poses = self.process_poses(pred_poses)
         # publish predicted poses
