@@ -25,7 +25,7 @@ git clone --recurse-submodules https://github.com/robocomp/grasping.git
 
 ## System Overview
 
-<div align=center><img width="60%" height="60%" src="assets/components_structure.png"/></div>
+<div align=center><img width="60%" height="60%" src="assets/components_structure_refined.png"/></div>
 
 <div align="center">
 Figure(1) : Complete schema for grasping and pose estimation workflow with DSR.
