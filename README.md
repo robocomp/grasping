@@ -28,22 +28,22 @@ git clone --recurse-submodules https://github.com/robocomp/grasping.git
 <div align=center><img width="60%" height="60%" src="assets/components_structure.png"/></div>
 
 <div align="center">
-Figure(1) : Complete schema for grasping and pose estimation workflow.
+Figure(1) : Complete schema for grasping and pose estimation workflow with DSR.
 </div><br>
 
 As shown in the figure, the components workflow goes as follows :
 
--   `viriatoPyrep` component streams the RGBD signal from CoppeliaSim simulator using PyRep API and publishes it to the shared graph.
+-   `viriatoPyrep` component streams the RGBD signal from CoppeliaSim simulator using PyRep API and publishes it to the shared graph through `viriatoDSR` component.
 
 -   `graspDSR` component reads the RGBD signal from shared graph and passes it `objectPoseEstimation` component.
 
 -   `objectPoseEstimation` component, then, performs pose estimation using DNN and returns the estimated poses.
 
--   `graspDSR` component injects the estimated poses into the shared graph.
+-   `graspDSR` component injects the estimated poses into the shared graph and progressively plans dummy targets for the arm to reach the target object.
 
--   `viriatoDSR` component, then, reads the estimated poses from the shared graph and passes it to `viriatoPyrep` component.
+-   `viriatoDSR` component, then, reads the dummy target poses from the shared graph and passes it to `viriatoPyrep` component.
 
--   Finally, `viriatoPyrep` component uses the estimated poses to plan a successful grasp on the object.
+-   Finally, `viriatoPyrep` component uses the generated poses by `graspDSR` to progressively plan a successful grasp on the object.
 
 ## System Demos
 
