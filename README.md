@@ -45,6 +45,8 @@ As shown in the figure, the components workflow goes as follows :
 
 -   Finally, `viriatoPyrep` component uses the generated poses by `graspDSR` to progressively plan a successful grasp on the object.
 
+For more information on DSR system integration and usage, refer to [DSR-INTEGRATION.md](DSR-INTEGRATION.md).
+
 ## System Demos
 
 ### System Overview
