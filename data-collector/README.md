@@ -20,7 +20,7 @@ This is the code for data collection and preparation from V-REP simulator for tr
 
 -   [free3d.com](https://free3d.com/) contains a wide collection of meshes that can be used for data augmentation.
 
--   Add new classes indices to json file with similar format to that in `meshes/new_classes.json` .
+-   Add new classes indices to json file with similar format to that in `meshes/custom/new_classes.json` .
 
 2)  Run `get_mesh_info.py` that generates bounding boxes and vertices files in `mesh_data` folder.
 

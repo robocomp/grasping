@@ -26,8 +26,8 @@ def augment_gt_data(bbox_npy, vertex_npy, cls_indices):
         print(f'Getting information of {filename} ...')
 
         print(f'Loading mesh ...')
-        tm_mesh = trimesh.load('meshes/'+filename+'/'+filename+'.obj')
-        o3d_mesh = o3d.io.read_triangle_mesh('meshes/'+filename+'/'+filename+'.obj')
+        tm_mesh = trimesh.load('meshes/custom/'+filename+'/'+filename+'.obj')
+        o3d_mesh = o3d.io.read_triangle_mesh('meshes/custom/'+filename+'/'+filename+'.obj')
 
         print(f'Saving bounding box vertices of size (8,3) ...')
         obj_bbox = tm_mesh.bounding_box.vertices.reshape((1, 8, 3))
@@ -54,7 +54,7 @@ if __name__ == '__main__':
     argparser.add_argument('-vp', '--vertices_path', type=str, help='path to original dataset point cloud vertices', 
                         default='../segmentation-based-pose/configs/YCB-Video/YCB_vertex.npy')
     argparser.add_argument('-cl', '--classes_json', type=str, help='json file indices for new classes',
-                        default='meshes/new_classes.json')
+                        default='meshes/custom/new_classes.json')
 
     args = argparser.parse_args()
 
