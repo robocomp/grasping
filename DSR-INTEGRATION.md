@@ -28,6 +28,14 @@ The process of integrating pose estimation and grasping with DSR goes as follows
 
 -   Doing so, `viriatoDSR` component passes the dummy targets to `viriatoPyrep` component, which moves the arm, using these targets, by calling the embedded Lua scripts in the arm, until the arm reaches the final target object.
 
+-   Also, we need many DNN Python components that acts like services to the C++ agents interacting with DSR. Consequently, we created a new Github repository named [DNN-Services](https://github.com/robocomp/DNN-Services), which contains all the DNN components that serve DSR agents, including object detection and pose estimation.
+
+-   __In conclusion,__ our DSR system consists of :
+    -   An interface component that interacts with the external environment, which is real or simulated environment.
+    -   The shared memory (G), which holds the deep state representation (DSR) of the environment.
+    -   Agents, which are C++ components that interact with the graph through RTPS.
+    -   DNN services, which are Python components that perform learning tasks, like perception and others.
+
 -   I started developing `graspDSR` with the connection to `objectPoseEstimation`, where `graspDSR` reads all RGBD data from the shared graph and then calls `objectPoseEstimation` to get the estimated poses of the objects in the scene.
 
 _... To be continued_
