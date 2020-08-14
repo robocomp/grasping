@@ -38,6 +38,8 @@ The process of integrating pose estimation and grasping with DSR goes as follows
 
 -   I started developing `graspDSR` with the connection to `objectPoseEstimation`, where `graspDSR` reads all RGBD data from the shared graph and then calls `objectPoseEstimation` to get the estimated poses of the objects in the scene.
 
+-   At the same time, I had to try the arm grasping in DSR system on simulator poses and a simple setting, in order to check the validity of the embedded Lua scripts in DSR settings.
+
 _... To be continued_
 
 ## Integration Problems
@@ -65,4 +67,15 @@ Refer to [dsr-graph issues](https://github.com/robocomp/dsr-graph/issues?q=is%3A
         ```bash
         sudo update-alternatives --config gcc
         sudo update-alternatives --config g++
+        ```
+
+2)  __"NotImplementedError: Must be overridden" exception in pyrep/objects/object.py, when running viriatoPyrep :__
+    -   Comment out the following lines in `/home/xxxyour-userxxx/.local/lib/python3.6/site-packages/pyrep/objects/object.py` :
+        ```python
+        assert_type = self._get_requested_type()
+        actual = ObjectType(sim.simGetObjectType(self._handle))
+        if actual != assert_type:
+            raise WrongObjectTypeError(
+                'You requested object of type %s, but the actual type was '
+                '%s' % (assert_type.name, actual.name))
         ```
