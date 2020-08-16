@@ -124,7 +124,7 @@ class SpecificWorker(GenericWorker):
             self.visualize_poses(image_float, pred_poses, "rgb_pose.png")
             for pose in pred_poses:
                 if pose.objectname in self.grasping_objects.keys():
-                    obj_trans = [pose.x, pose.y, pose.z + 0.2]
+                    obj_trans = [pose.x, pose.y, pose.z]
                     obj_quat = [pose.qx, pose.qy, pose.qz, pose.qw]
                     obj_pose = self.process_pose(obj_trans, obj_quat)
                     self.grasping_objects[pose.objectname]["pred_pose_rgb"] = obj_pose

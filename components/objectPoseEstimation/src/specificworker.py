@@ -59,6 +59,8 @@ class SpecificWorker(GenericWorker):
             self.pvn3d = RGBDPoseAPI(weights_path=params["rgbd_weights_file"])
             # define inference mode
             self.inference_mode = int(params["inference_mode"])
+            # define calibartion offset along camera z-axis
+            self.z_offset = float(params["rgb_cam_z_offset"])
             # initialize predicted poses
             self.final_poses = []
         except Exception as e:
@@ -84,6 +86,11 @@ class SpecificWorker(GenericWorker):
             object_name = self.class_names[cls-1]
             # get translation matrix
             trans_mat = pose[:3,3]
+            # add calibration offset along camera z-axis
+            if self.inference_mode == 0:
+                trans_mat[2] += self.z_offset
+            elif self.inference_mode == 2:
+                trans_mat[2] += self.z_offset / 2.0
             # get quaternions for rotation
             rot_mat = pose[:3,0:3]
             rot = R.from_matrix(rot_mat)

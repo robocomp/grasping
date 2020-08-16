@@ -12,6 +12,10 @@ rgb_vertices_file = src/dnnlib/segpose/configs/YCB-Video/YCB_vertex.npy
 rgbd_weights_file = src/dnnlib/pvn3d/pvn3d/assets/checkpoints/pvn3d_best.pth.tar
 
 
+# Calibration parameters
+rgb_cam_z_offset = 0.2
+
+
 # Inference mode
 ## 0 => RGB
 ## 1 => RGBD

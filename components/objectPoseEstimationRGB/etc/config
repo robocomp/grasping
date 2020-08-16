@@ -8,6 +8,10 @@ weights_file = src/models/ckpt_final.pth
 vertices_file = src/configs/YCB-Video/YCB_vertex.npy
 
 
+# Calibration parameters
+cam_z_offset = 0.2
+
+
 Ice.MessageSizeMax=20004800
 Ice.Warn.Connections=0
 Ice.Trace.Network=0

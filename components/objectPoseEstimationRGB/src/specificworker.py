@@ -55,6 +55,8 @@ class SpecificWorker(GenericWorker):
             self.vertices = np.load(params["vertices_file"])
             # configure network
             self.model = configure_network(cfg_file=params["config_file"], weights_file=params["weights_file"])
+            # define calibartion offset along camera z-axis
+            self.z_offset = float(params["cam_z_offset"])
             # initialize predicted poses
             self.final_poses = []
         except Exception as e:
@@ -79,6 +81,8 @@ class SpecificWorker(GenericWorker):
             object_name = self.class_names[pose[0]]
             # get translation matrix
             trans_mat = pose[1][:3,3]
+            # add calibration offset along camera z-axis
+            trans_mat[2] += self.z_offset
             # get quaternions for rotation
             rot_mat = pose[1][:3,0:3]
             rot = R.from_matrix(rot_mat)
