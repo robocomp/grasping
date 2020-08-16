@@ -19,6 +19,13 @@ mkdir scenes
 
 Like any other component, *viriatoGraspingPyrep* needs a configuration file to start. In `etc/config`, you can change the ports and other parameters in the configuration file, according to your setting.
 
+### Parameters list
+
+-   `ObjectPoseEstimationRGBProxy` : TCP port number of `objectPoseEstimationRGB` component.
+-   `ObjectPoseEstimationRGBDProxy` : TCP port number of `objectPoseEstimationRGBD` component.
+-   `scene_dir` : path to _.ttt_ file of the scene.
+-   Ice parameters.
+
 ## Starting the component
 
 -   Compile the component :

@@ -35,6 +35,17 @@ Also, this component has three modes of operation :
 
 Like any other component, *objectPoseEstimation* needs a configuration file to start. In `etc/config`, you can change the ports and other parameters in the configuration file, according to your setting.
 
+### Parameters list
+
+-   `ObjectPoseEstimationRGBD.Endpoints` : TCP port number to run `objectPoseEstimation` endpoints.
+-   `rgb_config_file` : path to `Segmentation-driven 6D Object Pose Estimation` config file.
+-   `rgb_weights_file` : path to `Segmentation-driven 6D Object Pose Estimation` pretrained weights file.
+-   `rgb_vertices_file` : path to models vertices file.
+-   `rgbd_weights_file` : path to PVN3D pretrained weights file.
+-   `rgb_cam_z_offset` : calibration offset, added along camera z-axis to compensate for lost depth information in case of RGB pose estimation (can be adjusted according to each camera setting).
+-   `inference_mode` : an integer that defines inference mode of pose estimation, whether it's _RGB(0)_, _RGBD(1)_ or _Ensemble(2)_.
+-   Ice parameters.
+
 ## Starting the component
 
 To run `objectPoseEstimation` component, navigate to the component directory :

@@ -21,6 +21,15 @@ pip install skimage tqdm pyquaternion
 
 Like any other component, *objectPoseEstimationRGB* needs a configuration file to start. In `etc/config`, you can change the ports and other parameters in the configuration file, according to your setting.
 
+### Parameters list
+
+-   `ObjectPoseEstimationRGB.Endpoints` : TCP port number to run `objectPoseEstimationRGB` endpoints.
+-   `config_file` : path to DNN config file.
+-   `weights_file` : path to DNN pretrained weights file.
+-   `vertices_file` : path to models vertices file.
+-   `cam_z_offset` : calibration offset, added along camera z-axis to compensate for lost depth information (can be adjusted according to each camera setting).
+-   Ice parameters.
+
 ## Starting the component
 
 To run `objectPoseEstimationRGB` component, navigate to the component directory :

@@ -20,6 +20,12 @@
 
 Like any other component, *objectPoseEstimationRGBD* needs a configuration file to start. In `etc/config`, you can change the ports and other parameters in the configuration file, according to your setting.
 
+### Parameters list
+
+-   `ObjectPoseEstimationRGBD.Endpoints` : TCP port number to run `objectPoseEstimationRGBD` endpoints.
+-   `weights_file` : path to PVN3D pretrained weights file.
+-   Ice parameters.
+
 ## Starting the component
 
 To run `objectPoseEstimationRGBD` component, navigate to the component directory :
