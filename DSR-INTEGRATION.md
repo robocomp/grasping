@@ -36,9 +36,19 @@ The process of integrating pose estimation and grasping with DSR goes as follows
     -   Agents, which are C++ components that interact with the graph through RTPS.
     -   DNN services, which are Python components that perform learning tasks, like perception and others.
 
--   I started developing `graspDSR` with the connection to `objectPoseEstimation`, where `graspDSR` reads all RGBD data from the shared graph and then calls `objectPoseEstimation` to get the estimated poses of the objects in the scene.
+-   Next, I tried the arm grasping in DSR system on simulator poses and a simple setting, in order to check the validity of the embedded Lua scripts in DSR settings. Here is a quick example :
 
--   At the same time, I had to try the arm grasping in DSR system on simulator poses and a simple setting, in order to check the validity of the embedded Lua scripts in DSR settings.
+<div align="center">
+<a href="https://www.youtube.com/watch?v=83SGiT_gWkU"><img src="https://img.youtube.com/vi/83SGiT_gWkU/0.jpg" alt="IMAGE ALT TEXT"></a>
+</div>
+
+<div align="center">
+Figure(1): Video of first grasping demo with DSR using simulator poses.
+</div><br>
+
+-   At the same time, I started developing `graspDSR` through the following steps :
+    -   Connect `graspDSR` to `objectPoseEstimation`, where `graspDSR` reads all RGBD data from the shared graph and then calls `objectPoseEstimation` to get the estimated poses of the objects in the scene.
+    -   Convert quaternions into euler angles and project the estimated poses from camera coordinates to world coordinates using `Innermodel sub-API`.
 
 _... To be continued_
 
