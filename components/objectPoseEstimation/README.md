@@ -122,7 +122,9 @@ __Note :__
         return final_pose
     ```
 
-## Object Names Mapping
+## Objects Names Mapping
+
+`YCB-Videos dataset` objects can be found [here](https://github.com/robocomp/grasping/tree/master/data-collector/meshes/ycb). The following table shows the mapping between `objectPoseEstimation` return names and `YCB-Videos dataset` objects names.
 
 | Return Name        |      YCB Model        |
 |--------------------|-----------------------|
