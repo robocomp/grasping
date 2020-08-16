@@ -36,9 +36,9 @@ A brief description of network :
 
 -   Install `python3` and `python3-pip`.
 -   Run :
-```
-pip3 install -r requirements.txt
-```
+    ```bash
+    pip3 install -r requirements.txt
+    ```
 
 ## Usage
 
@@ -48,45 +48,45 @@ pip3 install -r requirements.txt
 
 -   For training :
 
-```
-python train.py -ds dataset_name -dsp /path/to/dataset/root/dir -wp /path/to/weights/file -bg /path/to/background/images/dir -sn num_of_syn_samples --use_real 
-```
+    ```bash
+    python train.py -ds dataset_name -dsp /path/to/dataset/root/dir -wp /path/to/weights/file -bg /path/to/background/images/dir -sn num_of_syn_samples --use_real 
+    ```
 
 -   For visual inference (outputs to `./output` directory):
 
-```
-python test.py -gpu True|False -ds dataset_name -dsp /path/to/dataset/root/dir -wp /path/to/weights/file
-```
+    ```bash
+    python test.py -gpu True|False -ds dataset_name -dsp /path/to/dataset/root/dir -wp /path/to/weights/file
+    ```
 
 -   For metric evaluation :
 
-```
-python eval.py -dsp /path/to/dataset/root/dir -op /path/to/output/poses
-```
+    ```bash
+    python eval.py -dsp /path/to/dataset/root/dir -op /path/to/output/poses
+    ```
 
 -   For API functions :
 
-`api.py` contains two functions, `configure_network` and `get_pose`, for dealing with external calls (through a component, for example). 
+    `api.py` contains two functions, `configure_network` and `get_pose`, for dealing with external calls (through a component, for example). 
 
-```python
-import api
+    ```python
+    import api
 
-model = api.configure_network()
+    model = api.configure_network()
 
-predicted_pose = api.get_pose(model, img, class_names, intrinsics, vertices)
-```
+    predicted_pose = api.get_pose(model, img, class_names, intrinsics, vertices)
+    ```
 
 -   For API test (on YCB-Videos dataset):
 
-```
-python api_test.py -img /path/to/test/image -wp /path/to/weights/file
-```
+    ```bash
+    python api_test.py -img /path/to/test/image -wp /path/to/weights/file
+    ```
 
 -   For network traced script (used in C++ deployment) :
 
-```
-python get_trace.py -cfg /path/to/config/file -wp /path/to/weights/file -op /path/to/output/file
-```
+    ```bash
+    python get_trace.py -cfg /path/to/config/file -wp /path/to/weights/file -op /path/to/output/file
+    ```
 
 ## Training Info
 

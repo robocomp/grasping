@@ -24,15 +24,15 @@ This is the code for data collection and preparation from V-REP simulator for tr
 
 2)  Run `get_mesh_info.py` that generates bounding boxes and vertices files in `mesh_data` folder.
 
-```bash
-python get_mesh_info.py -bbp /path/to/original/bbox/file -vp /path/to/original/vertex/file -cl /path/to/classes/indices/json
-```
+    ```bash
+    python get_mesh_info.py -bbp /path/to/original/bbox/file -vp /path/to/original/vertex/file -cl /path/to/classes/indices/json
+    ```
 
 3)  Run `collect_sim_data.py` that collects 5000 data samples from each scene in the provided directory and saves them to `sim_data` folder.
 
-```bash
-python collect_sim_data.py -sd /path/to/scenes/directory -cl /path/to/scenes/classes/json
-```
+    ```bash
+    python collect_sim_data.py -sd /path/to/scenes/directory -cl /path/to/scenes/classes/json
+    ```
 
 Inputs :
 -   scenes directory.

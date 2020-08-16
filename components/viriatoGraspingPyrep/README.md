@@ -5,9 +5,9 @@ This component is an modified copy of `viriatoPyrep` to test pose estimation and
 ## Installation
 
 -   Create `scenes` folder in root directory :
-```bash
-mkdir scenes
-```
+    ```bash
+    mkdir scenes
+    ```
 
 -   Download `gen3-grasp.ttt` scene file ([here](https://drive.google.com/file/d/1l1toq6XcohdON_o0sQX1O4jl6NNE_93m/view?usp=sharing)) and place it in `scenes` folder.
 
@@ -29,10 +29,10 @@ Like any other component, *viriatoGraspingPyrep* needs a configuration file to s
 ## Starting the component
 
 -   Compile the component :
-```bash
-cmake .
-make
-```
+    ```bash
+    cmake .
+    make
+    ```
 
 -   Open 3 separate terminals.
 
@@ -41,9 +41,9 @@ make
 -   In the second terminal, run `objectPoseEstimationRGBD` component.
 
 -   Make sure first that you have commented this two lines, in case you have them :
- ```
-export LD_LIBRARY_PATH=$COPPELIASIM_ROOT
-export QT_QPA_PLATFORM_PLUGIN_PATH=$COPPELIASIM_ROOT
-```
+    ```
+    export LD_LIBRARY_PATH=$COPPELIASIM_ROOT
+    export QT_QPA_PLATFORM_PLUGIN_PATH=$COPPELIASIM_ROOT
+    ```
 
 -   Start the component, using the script `run.sh`, in the third terminal.

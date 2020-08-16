@@ -7,9 +7,9 @@ __Project Title:__ DNN’s for precise manipulation of household objects.
 ## Usage
 
 -   Clone the repository recursively :
-```bash
-git clone --recurse-submodules https://github.com/robocomp/grasping.git
-```
+    ```bash
+    git clone --recurse-submodules https://github.com/robocomp/grasping.git
+    ```
 
 -   Follow READMEs in each sub-folder for installation and usage instructions.
 
