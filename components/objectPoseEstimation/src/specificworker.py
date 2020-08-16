@@ -44,14 +44,9 @@ class SpecificWorker(GenericWorker):
     def setParams(self, params):
         try:
             # define classes names
-            self.class_names = ['002_master_chef_can', '003_cracker_box', '004_sugar_box', '005_tomato_soup_can',
-                                '006_mustard_bottle', '007_tuna_fish_can', '008_pudding_box', '009_gelatin_box',
-                                '010_potted_meat_can', '011_banana', '019_pitcher_base', '021_bleach_cleanser',
-                                '024_bowl', '025_mug', '035_power_drill', '036_wood_block',
-                                '037_scissors', '040_large_marker', '051_large_clamp', '052_extra_large_clamp',
-                                '061_foam_brick', 'custom-can-01', 'custom-fork-01', 'custom-fork-02',
-                                'custom-glass-01', 'custom-jar-01', 'custom-knife-01', 'custom-plate-01',
-                                'custom-plate-02', 'custom-plate-03', 'custom-spoon-01']
+            self.class_names = ['can_1', 'box_1', 'box_2', 'can_2', 'bottle_1', 'can_3', 'box_3', 'box_4', 'can_4', 'banana_1', 
+                                'pitcher_base_1', 'bleach_cleanser_1', 'bowl_1', 'mug_1', 'power_drill_1', 'wood_block_1', 
+                                'scissors_1', 'marker_1', 'large_clamp_1', 'large_clamp_2', 'foam_brick_1']
             # define point cloud vertices of used models
             self.vertices = np.load(params["rgb_vertices_file"])
             # configure networks
