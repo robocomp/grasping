@@ -54,7 +54,7 @@ _... To be continued_
 
 ## Integration Problems
 
-Refer to [dsr-graph issues](https://github.com/robocomp/dsr-graph/issues?q=is%3Aissue+author%3ADarkGeekMS) for problems during integration.
+Refer to [robocomp/dsr-graph issues](https://github.com/robocomp/dsr-graph/issues?q=is%3Aissue+author%3ADarkGeekMS) and [robocomp/robocomp issues](https://github.com/robocomp/robocomp/issues/created_by/DarkGeekMS) for problems during integration.
 
 ## Common Issues
 
