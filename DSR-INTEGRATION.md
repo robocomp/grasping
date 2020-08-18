@@ -12,7 +12,24 @@ Refer to [dsr-graph](https://github.com/robocomp/dsr-graph/#Basic-use-case) for 
 
 ## Pose Estimation and Grasping Usage
 
-_Still under development!_
+In order to perform grasping on a specific object in `autonomy_lab.ttt` scene :
+
+1)  Add the required object to the scene. Objects can be found [here](https://github.com/robocomp/grasping/tree/master/data-collector/meshes/ycb).
+
+2)  Update `grasp_object` parameter in graspDSR config file with the required object name. Objects names can be found [here](https://github.com/robocomp/grasping/tree/master/components/objectPoseEstimation/#Objects-Names-Mapping).
+
+3)  Run `rcnode` in a separate terminal.
+
+4)  The following components must be running on separate terminals :
+    -   [idserver](https://github.com/robocomp/dsr-graph/tree/development/components/idserver) : responsible for initalizing G and providing nodes ids.
+    -   [viriatoDSR](https://github.com/robocomp/dsr-graph/tree/development/components/viriatoDSR) : an interface between G and environment adapter.
+    -   [viriatoPyrep](https://github.com/robocomp/dsr-graph/tree/development/components/viriatoPyrep) : environment adapter, interacts with CoppeliaSim simulator.
+    -   [graspDSR](https://github.com/robocomp/dsr-graph/tree/development/components/graspDSR) : an interface between G and `objectPoseEstimation` component.
+    -   [objectPoseEstimation](https://github.com/robocomp/grasping/tree/master/components/objectPoseEstimation) : a component that performs DNN pose estimation using RGBD images.
+
+5)  In certain cases, where the robot isn't near the objects to be grasped, the following components are needed for robot navigation :
+    -   [social_navigation](https://github.com/robocomp/dsr-graph/tree/development/components/social_navigation) : responsible for robot navigation through the scene.
+    -   [yolo-tracker](https://github.com/robocomp/dsr-graph/tree/development/components/yolo-tracker) : a component that performs object detection and tracking using YOLO DNN.
 
 ## Integration Process
 
@@ -49,6 +66,7 @@ Figure(1): Video of first grasping demo with DSR using simulator poses.
 -   At the same time, I started developing `graspDSR` through the following steps :
     -   Connect `graspDSR` to `objectPoseEstimation`, where `graspDSR` reads all RGBD data from the shared graph and then calls `objectPoseEstimation` to get the estimated poses of the objects in the scene.
     -   Convert quaternions into euler angles and project the estimated poses from camera coordinates to world coordinates using `Innermodel sub-API`.
+    -   Insert a graph node of the required object to be grasped and inject its DNN-estimated poses with respect to the world.
 
 _... To be continued_
 
