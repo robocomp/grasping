@@ -67,8 +67,13 @@ Figure(1): Video of first grasping demo with DSR using simulator poses.
     -   Connect `graspDSR` to `objectPoseEstimation`, where `graspDSR` reads all RGBD data from the shared graph and then calls `objectPoseEstimation` to get the estimated poses of the objects in the scene.
     -   Convert quaternions into euler angles and project the estimated poses from camera coordinates to world coordinates using `Innermodel sub-API`.
     -   Insert a graph node of the required object to be grasped and inject its DNN-estimated poses with respect to the world.
+    -   Read the arm target graph node and check whether the required object is within the arm's reach.
+    -   If so, plan a dummy target to get the arm closer to the object and insert that dummy target pose as the arm target pose in the graph.
+    -   Repeat the previous steps, until the arm reaches the required target.
 
-_... To be continued_
+-   Finally, `viriatoDSR` reads the arm target poses and passes them to `viriatoPyrep`, which uses these poses to move the robot arm, progressively, towards the required object.
+
+-   Thus, the pose estimation and grasping pipeline is completely integrated with DSR.
 
 ## Integration Problems
 
