@@ -2,6 +2,8 @@
 
 This component is an modified copy of `viriatoPyrep` to test pose estimation and grasping with Viriato Gen3 arm (found [here](https://drive.google.com/file/d/1xcmN0KhPeRa4pRaAOfZrDxP2IEozzAGO/view?usp=sharing)) using PyRep API.
 
+__Note :__ The object to be grasped can be changed from `setParams` method in `specificworker.py`.
+
 ## Installation
 
 -   Create `scenes` folder in root directory :
@@ -9,7 +11,7 @@ This component is an modified copy of `viriatoPyrep` to test pose estimation and
     mkdir scenes
     ```
 
--   Download `gen3-grasp.ttt` scene file ([here](https://drive.google.com/file/d/1l1toq6XcohdON_o0sQX1O4jl6NNE_93m/view?usp=sharing)) and place it in `scenes` folder.
+-   Download `gen3-grasp.ttt` scene file ([here](https://drive.google.com/file/d/1gFHsyBqky7cCBgXoe9hK59SblADZyP20/view?usp=sharing)) and place it in `scenes` folder.
 
 -   Install [PyRep](https://github.com/stepjam/PyRep).
 
