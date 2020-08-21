@@ -25,7 +25,7 @@ class RGBDPoseAPI():
     weights_path : str
         Path to weights file of the network
     """
-    def __init__(self, weights_path="src/dnn/pvn3d/assets/checkpoints/pvn3d_best.pth.tar"):
+    def __init__(self, weights_path="src/dnn/pvn3d/models/pvn3d_best.pth.tar"):
         # initialize configs and model object
         self.config = Config(dataset_name='ycb')
         self.bs_utils = Basic_Utils(self.config)
@@ -181,10 +181,10 @@ class RGBDPoseAPI():
                     color = self.bs_utils.get_label_color(obj_id, n_obj=22, mode=1)
                     np_rgb = self.bs_utils.draw_p2ds(np_rgb, mesh_p2ds, color=color)
                 # save output visualization
-                vis_dir = os.path.join(self.config.log_eval_dir, "pose_vis")
-                if not os.path.exists(vis_dir):
-                    os.system('mkdir -p {}'.format(vis_dir))
-                f_pth = os.path.join(vis_dir, "out.jpg")
+                vis_dir = 'output/'
+                if not os.path.isdir(vis_dir):
+                    os.mkdir(vis_dir)
+                f_pth = os.path.join(vis_dir, "rgbd_out.jpg")
                 cv2.imwrite(f_pth, np_rgb)
         # return prediction
         return pred_cls_ids, pred_pose_lst

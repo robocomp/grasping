@@ -44,6 +44,8 @@ Then run the component :
 python3 src/objectPoseEstimationRGBD.py etc/config
 ```
 
+__Note :__ Visualizations of the DNN-estimated poses will be saved to `./src/dnn/pvn3d/assets/eval_results/` directory.
+
 ## Pose Return Description
 
 The estimated poses are returned as a sequence of type `ObjectPose`, named `PoseType`. The data type definition goes as follows :

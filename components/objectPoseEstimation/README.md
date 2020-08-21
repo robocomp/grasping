@@ -64,6 +64,8 @@ Then run the component :
 python3 src/objectPoseEstimation.py etc/config
 ```
 
+__Note :__ Visualizations of the estimated poses for both DNNs will be saved to `./output/` directory.
+
 ## Pose Return Description
 
 The estimated poses are returned as a sequence of type `ObjectPose`, named `PoseType`. The data type definition goes as follows :
