@@ -201,10 +201,12 @@ class SpecificWorker(GenericWorker):
                 continue
             obj_pcl = self.object_pcl[pose.objectname]
             obj_trans = np.array([pose.x, pose.y, pose.z])
+            if img_name == "rgb_pose.png":
+                obj_trans[2] -= 0.2
             obj_rot = R.from_quat([pose.qx, pose.qy, pose.qz, pose.qw]).as_matrix()
             proj_pcl = self.vertices_reprojection(obj_pcl, obj_rot, obj_trans, self.intrinsics)
             image = self.draw_pcl(image, proj_pcl, r=1, color=(randint(0,255), randint(0,255), randint(0,255)))
-        cv2.imwrite(img_name, image)
+        cv2.imwrite(os.path.join("output", img_name), image)
 
     def vertices_reprojection(self, vertices, r, t, k):
         # re-project vertices in pixel space
