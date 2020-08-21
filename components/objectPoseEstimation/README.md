@@ -3,8 +3,8 @@
 `objectPoseEstimation` component is a Python component that merges both `objectPoseEstimationRGB` and `objectPoseEstimationRGBD` components. This component contains an interface method `getObjectPose`, which can be directly called to get the object poses of a certain RGBD image.
 
 Also, this component has three modes of operation :
--   RGB(0) : Inference is done through `Segmentation-driven 6D Object Pose Estimation` neural network using RGB data only.
--   RGBD(1) : Inference is done through `PVN3D` neural network using RGBD data.
+-   RGB(0) : Inference is done through [Segmentation-driven 6D Object Pose Estimation](https://arxiv.org/abs/1812.02541) neural network using RGB data only.
+-   RGBD(1) : Inference is done through [PVN3D](https://arxiv.org/abs/1911.04231) neural network using RGBD data.
 -   Ensemble(2) : Inference is done through both neural networks and the results are ensembled for more precision.
 
 ## Installation

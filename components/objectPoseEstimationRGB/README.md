@@ -1,6 +1,6 @@
 # Python RGB Pose Estimation Component
 
-`objectPoseEstimationRGB` component is a Python component that performs object pose estimation on household objects for precise grasping and manipulation. This component contains an interface method `getObjectPose`, which can be directly called to get the object poses of a certain RGB image.
+`objectPoseEstimationRGB` component is a Python component that performs object pose estimation on household objects for precise grasping and manipulation. This component contains an interface method `getObjectPose`, which can be directly called to get the object poses of a certain RGB image using [Segmentation-driven 6D Object Pose Estimation](https://arxiv.org/abs/1812.02541) DNN.
 
 ## Installation
 

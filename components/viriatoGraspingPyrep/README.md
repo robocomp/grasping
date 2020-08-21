@@ -50,4 +50,4 @@ Like any other component, *viriatoGraspingPyrep* needs a configuration file to s
 
 -   Start the component, using the script `run.sh`, in the third terminal.
 
-__Note :__ Visualizations of the estimated poses for both DNNs will be saved to `./output/` directory.
+__Note :__ Visualizations of the estimated poses for both RGB and RGBD DNNs will be saved to `./output/` directory.
