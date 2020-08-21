@@ -4,6 +4,7 @@ ObjectPoseEstimationRGBD.Endpoints=tcp -p 10119
 
 # DNN configuration
 weights_file = src/dnn/pvn3d/assets/checkpoints/pvn3d_best.pth.tar
+save_viz = False
 
 
 Ice.MessageSizeMax=20004800

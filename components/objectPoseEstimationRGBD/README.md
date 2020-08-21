@@ -24,6 +24,7 @@ Like any other component, *objectPoseEstimationRGBD* needs a configuration file 
 
 -   `ObjectPoseEstimationRGBD.Endpoints` : TCP port number to run `objectPoseEstimationRGBD` endpoints.
 -   `weights_file` : path to PVN3D pretrained weights file.
+-   `save_viz` : boolean to determine whether to save the estimated poses visualization or not (True|False).
 -   Ice parameters.
 
 ## Starting the component

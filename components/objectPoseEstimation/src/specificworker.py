@@ -56,6 +56,8 @@ class SpecificWorker(GenericWorker):
             self.inference_mode = int(params["inference_mode"])
             # define calibartion offset along camera z-axis
             self.z_offset = float(params["rgb_cam_z_offset"])
+            # set save visualizations boolean
+            self.save_viz = True if params["save_viz"].lower() == 'true' else False
             # initialize predicted poses
             self.final_poses = []
         except Exception as e:
@@ -150,15 +152,15 @@ class SpecificWorker(GenericWorker):
         # check for inference mode
         if self.inference_mode == 0:
             # perform segpose inference
-            pred_cls, pred_poses = get_pose(self.segpose, img, self.class_names, intrinsics, self.vertices, save_results=False)
+            pred_cls, pred_poses = get_pose(self.segpose, img, self.class_names, intrinsics, self.vertices, save_results=self.save_viz)
         elif self.inference_mode == 1:
             # perform pvn3d inference
-            pred_cls, pred_poses = self.pvn3d.get_poses(save_results=False)
+            pred_cls, pred_poses = self.pvn3d.get_poses(save_results=self.save_viz)
         else:
             # perform pvn3d inference
-            rgbd_pred_cls, rgbd_pred_poses = self.pvn3d.get_poses(save_results=False)
+            rgbd_pred_cls, rgbd_pred_poses = self.pvn3d.get_poses(save_results=self.save_viz)
             # perform segpose inference
-            rgb_pred_cls, rgb_pred_poses = get_pose(self.segpose, img, self.class_names, intrinsics, self.vertices, save_results=False)
+            rgb_pred_cls, rgb_pred_poses = get_pose(self.segpose, img, self.class_names, intrinsics, self.vertices, save_results=self.save_viz)
             # perform results ensemble
             pred_cls, pred_poses = self.perform_ensemble(rgb_pred_cls, rgb_pred_poses, rgbd_pred_cls, rgbd_pred_poses)
         # post-process network output

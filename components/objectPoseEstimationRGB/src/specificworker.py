@@ -57,6 +57,8 @@ class SpecificWorker(GenericWorker):
             self.model = configure_network(cfg_file=params["config_file"], weights_file=params["weights_file"])
             # define calibartion offset along camera z-axis
             self.z_offset = float(params["cam_z_offset"])
+            # set save visualizations boolean
+            self.save_viz = True if params["save_viz"].lower() == 'true' else False
             # initialize predicted poses
             self.final_poses = []
         except Exception as e:
@@ -118,7 +120,7 @@ class SpecificWorker(GenericWorker):
                                 [0.00000000e+00, cam_focal_y, float(cam_res_y/2.0)],
                                 [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
         # perform network inference
-        pred_poses = get_pose(self.model, img, self.class_names, intrinsics, self.vertices, save_results=False)
+        pred_poses = get_pose(self.model, img, self.class_names, intrinsics, self.vertices, save_results=self.save_viz)
         # post-process network output
         ret_poses = self.process_poses(pred_poses)
         # publish predicted poses

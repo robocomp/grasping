@@ -27,6 +27,7 @@ Like any other component, *objectPoseEstimationRGB* needs a configuration file t
 -   `config_file` : path to DNN config file.
 -   `weights_file` : path to DNN pretrained weights file.
 -   `vertices_file` : path to models vertices file.
+-   `save_viz` : boolean to determine whether to save the estimated poses visualization or not (True|False).
 -   `cam_z_offset` : calibration offset, added along camera z-axis to compensate for lost depth information (can be adjusted according to each camera setting).
 -   Ice parameters.
 

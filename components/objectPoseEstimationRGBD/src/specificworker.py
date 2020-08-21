@@ -53,6 +53,8 @@ class SpecificWorker(GenericWorker):
                                 'custom-plate-02', 'custom-plate-03', 'custom-spoon-01']
             # configure network
             self.pose_estimator = RGBDPoseAPI(weights_path=params["weights_file"])
+            # set save visualizations boolean
+            self.save_viz = True if params["save_viz"].lower() == 'true' else False
             # initialize predicted poses
             self.final_poses = []
         except Exception as e:
@@ -115,7 +117,7 @@ class SpecificWorker(GenericWorker):
         # pre-process RGBD data
         self.pose_estimator.preprocess_rgbd(img, dep, intrinsics, cam_scale=depth.depthFactor)
         # perform network inference
-        pred_cls, pred_poses = self.pose_estimator.get_poses(save_results=False)
+        pred_cls, pred_poses = self.pose_estimator.get_poses(save_results=self.save_viz)
         # post-process network output
         ret_poses = self.process_poses(pred_cls, pred_poses)
         # return predicted poses

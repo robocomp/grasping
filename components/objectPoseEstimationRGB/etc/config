@@ -6,6 +6,7 @@ ObjectPoseEstimationRGB.Endpoints=tcp -p 10117
 config_file = src/configs/data-YCB.cfg
 weights_file = src/models/ckpt_final.pth
 vertices_file = src/configs/YCB-Video/YCB_vertex.npy
+save_viz = False
 
 
 # Calibration parameters
