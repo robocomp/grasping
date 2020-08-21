@@ -49,11 +49,16 @@ class SpecificWorker(GenericWorker):
                                 'scissors_1', 'marker_1', 'large_clamp_1', 'large_clamp_2', 'foam_brick_1']
             # define point cloud vertices of used models
             self.vertices = np.load(params["rgb_vertices_file"])
-            # configure networks
-            self.segpose = configure_network(cfg_file=params["rgb_config_file"], weights_file=params["rgb_weights_file"])
-            self.pvn3d = RGBDPoseAPI(weights_path=params["rgbd_weights_file"])
             # define inference mode
             self.inference_mode = int(params["inference_mode"])
+            # configure networks
+            if self.inference_mode == 0:
+                self.segpose = configure_network(cfg_file=params["rgb_config_file"], weights_file=params["rgb_weights_file"])
+            elif self.inference_mode == 1:
+                self.pvn3d = RGBDPoseAPI(weights_path=params["rgbd_weights_file"])
+            else:
+                self.segpose = configure_network(cfg_file=params["rgb_config_file"], weights_file=params["rgb_weights_file"])
+                self.pvn3d = RGBDPoseAPI(weights_path=params["rgbd_weights_file"])
             # define calibartion offset along camera z-axis
             self.z_offset = float(params["rgb_cam_z_offset"])
             # set save visualizations boolean
@@ -147,16 +152,18 @@ class SpecificWorker(GenericWorker):
         intrinsics = np.array([[cam_focal_x, 0.00000000e+00, float(cam_res_x/2.0)],
                                 [0.00000000e+00, cam_focal_y, float(cam_res_y/2.0)],
                                 [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
-        # pre-process RGBD data
-        self.pvn3d.preprocess_rgbd(img, dep, intrinsics, cam_scale=depth_factor)
         # check for inference mode
         if self.inference_mode == 0:
             # perform segpose inference
             pred_cls, pred_poses = get_pose(self.segpose, img, self.class_names, intrinsics, self.vertices, save_results=self.save_viz)
         elif self.inference_mode == 1:
+            # pre-process RGBD data
+            self.pvn3d.preprocess_rgbd(img, dep, intrinsics, cam_scale=depth_factor)
             # perform pvn3d inference
             pred_cls, pred_poses = self.pvn3d.get_poses(save_results=self.save_viz)
         else:
+            # pre-process RGBD data
+            self.pvn3d.preprocess_rgbd(img, dep, intrinsics, cam_scale=depth_factor)
             # perform pvn3d inference
             rgbd_pred_cls, rgbd_pred_poses = self.pvn3d.get_poses(save_results=self.save_viz)
             # perform segpose inference
