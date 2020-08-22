@@ -24,13 +24,9 @@ class Config:
 
         # log folder
         self.cls_type = cls_type
-        self.log_dir = os.path.abspath(
-            os.path.join(self.exp_dir, 'assets')
-        )
-        ensure_fd(self.log_dir)
-        self.log_model_dir = os.path.join(self.log_dir, 'checkpoints', self.cls_type)
+        self.log_model_dir = os.path.join('src/dnnlib/pvn3d/pvn3d/models', self.cls_type)
         ensure_fd(self.log_model_dir)
-        self.log_eval_dir = os.path.join(self.log_dir, 'eval_results', self.cls_type)
+        self.log_eval_dir = os.path.join('output', self.cls_type)
         ensure_fd(self.log_eval_dir)
 
         self.n_total_epoch = 25
