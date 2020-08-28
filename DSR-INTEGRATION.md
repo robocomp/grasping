@@ -112,3 +112,47 @@ Refer to [robocomp/dsr-graph issues](https://github.com/robocomp/dsr-graph/issue
                 'You requested object of type %s, but the actual type was '
                 '%s' % (assert_type.name, actual.name))
         ```
+
+3)  __DSR agents compilation requires OpenCV3 :__
+    -   Install OS dependencies :
+        ```bash
+        sudo apt-get install build-essential cmake pkg-config unzip
+        
+        sudo apt-get install libopencv-dev libgtk-3-dev libdc1394-22 libdc1394-22-dev libjpeg-dev  
+        
+        sudo apt-get install libavcodec-dev libavformat-dev libswscale-dev libxine2-dev
+        
+        sudo apt-get install libv4l-dev libtbb-dev libfaac-dev libmp3lame-dev libtheora-dev 
+
+        sudo apt-get install libvorbis-dev libxvidcore-dev v4l-utils libopencore-amrnb-dev libopencore-amrwb-dev
+
+        sudo apt-get install libjpeg8-dev libx264-dev libatlas-base-dev gfortran
+        ```
+    -   Pull `opencv` and `opencv_contrib` repositories :
+        ```bash
+        cd ~
+        git clone https://github.com/opencv/opencv.git
+        git clone https://github.com/opencv/opencv_contrib.git
+        ```
+    -   Switch to version `3.4` :
+        ```bash
+        cd opencv_contrib
+        git checkout 3.4
+        cd ../opencv
+        git checkout 3.4
+        ```
+    -   Build OpenCV3 without extra modules :
+        ```bash
+        mkdir build
+        cd build
+        cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/usr/local ..
+        make -j$(nproc)
+        sudo make install
+        ```
+    -   Build OpenCV3 with extra modules :
+        ```bash
+        make clean
+        cmake -DOPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules -DBUILD_opencv_legacy=OFF -DCMAKE_CXX_FLAGS=-std=c++11 ..
+        make -j$(nproc)
+        sudo make install
+        ```
