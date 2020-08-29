@@ -9,15 +9,17 @@ Also, this component has three modes of operation :
 
 ## Installation
 
-1)  Install dependencies :
-    -   Install CUDA9.0+
+1)  Install dependencies __(tested on Ubuntu 16.04/18.04/20.04)__:
+    -   Install CUDA10.2
+    -   Install python3.6
     -   Install python dependencies from `requirement.txt` :
         ```bash
         pip3 install -r requirement.txt
         ```
     -   Install tkinter through `sudo apt install python3-tk`.
     -   Install [python-pcl](https://github.com/strawlab/python-pcl).
-        -   For Ubuntu 18.04, refer to [this issue](https://github.com/strawlab/python-pcl/issues/317#issuecomment-628115649).
+        -   For Ubuntu 18.04 or 20.04, refer to [this issue](https://github.com/strawlab/python-pcl/issues/317#issuecomment-628115649).
+    -   Refer to the original [README](https://github.com/DarkGeekMS/PVN3D/blob/master/README.md) for more information.
 
 
 2)  Setup necessary folders and PointNet++ :
