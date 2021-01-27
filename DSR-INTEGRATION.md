@@ -156,3 +156,11 @@ Refer to [robocomp/dsr-graph issues](https://github.com/robocomp/dsr-graph/issue
         make -j$(nproc)
         sudo make install
         ```
+
+4)  __This application failed to start because no Qt platform plugin could be initialized :__
+    -   This problem can appear when trying to start `viriatoPyrep`, due to compatibility issues with _Qt_ version in _OpenCV_ and _VREP_.
+
+    -   This problem is solved by installing `opencv-python-headless` :
+        ```bash
+        pip install opencv-python-headless
+        ```
